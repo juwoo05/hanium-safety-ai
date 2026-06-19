@@ -34,21 +34,25 @@ description: Use when the user asks to write a commit message, draft a commit, o
 - `ci`: CI 설정
 - `chore`: 기타 잡무
 
-### scope (Spring Boot 기준 예시)
-- 도메인/모듈 이름을 쓴다: `auth`, `order`, `payment`, `user`
+### scope (이 프로젝트 기준)
+- 도메인: `user`, `auth`, `safety`, `ai`
 - 계층이 핵심이면: `controller`, `service`, `repository`, `config`
 - 애매하면 scope 생략 가능.
 
 ## 예시
 
 ```
-feat(order): 주문 취소 시 재고 자동 복원 추가
+feat(user): 이메일 중복 가입 방지 로직 추가
 
-주문이 CANCELLED 상태로 전이될 때 OrderItem 수량만큼
-재고를 되돌리도록 도메인 이벤트 핸들러를 추가했다.
-동시 취소 시 재고 중복 복원을 막기 위해 비관적 락을 적용했다.
+회원가입 시 동일 이메일이 이미 존재하면 DuplicateEmailException을
+던지도록 UserService에 검증을 추가했다.
+```
 
-Refs: #482
+```
+feat(ai): 안전 상황 분석 Spring AI 연동 추가
+
+ChatClient로 상황 설명 텍스트를 전달하고 DANGER/SAFE 판정을
+반환받아 SafetyResult에 저장하도록 구현했다.
 ```
 
 ```

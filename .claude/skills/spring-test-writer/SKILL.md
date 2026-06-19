@@ -28,26 +28,54 @@ description: Use when the user asks to write tests, add unit tests, add integrat
 - 경계/예외 경로를 반드시 포함한다: null, 빈 컬렉션, 권한 없음, 동시성 충돌 등 해당되는 것.
 - 하나의 테스트는 하나의 행위만 검증한다.
 
-## 예시 골격 (단위 테스트)
+## 프로젝트 패키지 구조
+- 인터페이스: `kopo.poly.service.IXxxService`
+- 구현체: `kopo.poly.service.impl.XxxService`
+- 테스트 대상이 구현체(`impl`)일 때 `@InjectMocks`에 구현체 클래스를 사용한다.
+
+## 예시 골격 (단위 테스트 — UserService)
 
 ```java
 @ExtendWith(MockitoExtension.class)
-class OrderServiceTest {
+class UserServiceTest {
 
-    @Mock OrderRepository orderRepository;
-    @Mock StockService stockService;
-    @InjectMocks OrderService orderService;
+    @Mock UserRepository userRepository;
+    @InjectMocks UserService userService; // kopo.poly.service.impl
 
     @Test
-    @DisplayName("재고가 부족하면 주문 생성에 실패한다")
-    void 재고가_부족하면_주문생성에_실패한다() {
+    @DisplayName("이미 존재하는 이메일로 가입하면 예외가 발생한다")
+    void 이미_존재하는_이메일로_가입하면_예외가_발생한다() {
         // given
-        given(stockService.hasStock(anyLong(), anyInt())).willReturn(false);
+        given(userRepository.existsByEmail("test@example.com")).willReturn(true);
 
         // when / then
-        assertThatThrownBy(() -> orderService.create(/* ... */))
-            .isInstanceOf(OutOfStockException.class);
-        then(orderRepository).should(never()).save(any());
+        assertThatThrownBy(() -> userService.register(new UserDTO("test@example.com", "pw")))
+            .isInstanceOf(DuplicateEmailException.class);
+        then(userRepository).should(never()).save(any());
+    }
+}
+```
+
+## 예시 골격 (Spring AI 관련 단위 테스트)
+
+```java
+@ExtendWith(MockitoExtension.class)
+class SafetyAnalysisServiceTest {
+
+    @Mock ChatClient chatClient;
+    @InjectMocks SafetyAnalysisService safetyAnalysisService;
+
+    @Test
+    @DisplayName("AI가 위험 판정을 반환하면 DANGER 상태로 저장된다")
+    void AI가_위험_판정을_반환하면_DANGER_상태로_저장된다() {
+        // given
+        given(chatClient.prompt(any()).call().content()).willReturn("DANGER");
+
+        // when
+        SafetyResult result = safetyAnalysisService.analyze("위험한 상황 설명");
+
+        // then
+        assertThat(result.getStatus()).isEqualTo(SafetyStatus.DANGER);
     }
 }
 ```
