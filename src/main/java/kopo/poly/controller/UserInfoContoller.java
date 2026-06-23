@@ -1,4 +1,5 @@
 package kopo.poly.controller;
 
-public class UserContoller {
+public class UserInfoContoller {
+
 }

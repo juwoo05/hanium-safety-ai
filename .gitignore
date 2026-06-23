@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+## 야물 ##
+src/main/resources/application.properties
+application.properties
