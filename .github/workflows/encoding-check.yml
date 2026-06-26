@@ -1,0 +1,41 @@
+name: Encoding Check
+
+on:
+  pull_request:
+    paths:
+      - '**/*.jsp'
+      - '**/*.java'
+      - '**/*.properties'
+      - '**/*.xml'
+      - '**/*.html'
+      - '**/*.js'
+      - '**/*.css'
+
+jobs:
+  check-encoding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check UTF-8 (no BOM, no invalid bytes)
+        run: |
+          FAILED=0
+          while IFS= read -r -d '' file; do
+            # BOM 검사 (EF BB BF)
+            if head -c 3 "$file" | grep -qP '^\xef\xbb\xbf'; then
+              echo "BOM 발견: $file"
+              FAILED=1
+            fi
+            # 유효하지 않은 UTF-8 바이트 검사
+            if ! iconv -f UTF-8 -t UTF-8 "$file" > /dev/null 2>&1; then
+              echo "UTF-8 인코딩 오류: $file"
+              FAILED=1
+            fi
+          done < <(find src -type f \( -name "*.jsp" -o -name "*.java" -o -name "*.properties" -o -name "*.xml" \) -print0)
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "한글 깨짐 방지: 파일을 UTF-8 (BOM 없음)으로 저장 후 다시 커밋하세요."
+            exit 1
+          fi
+          echo "모든 파일 UTF-8 인코딩 정상"

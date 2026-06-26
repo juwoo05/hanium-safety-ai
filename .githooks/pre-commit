@@ -1,0 +1,35 @@
+#!/bin/sh
+# UTF-8 인코딩 검사 — BOM 및 깨진 바이트가 있으면 커밋 차단
+
+FAILED=0
+
+# 스테이징된 파일 중 소스 파일만 검사
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(jsp|java|properties|xml|html|js|css)$' | while IFS= read -r file; do
+  [ -f "$file" ] || continue
+
+  # BOM 검사 — 순수 셸로 처리 (커맨드 인젝션 방지)
+  if head -c 3 -- "$file" | cmp -s - <(printf '\xef\xbb\xbf'); then
+    printf "BOM 발견: %s\n" "$file"
+    FAILED=1
+  fi
+
+  # 유효하지 않은 UTF-8 바이트 검사
+  if command -v iconv > /dev/null 2>&1; then
+    if ! iconv -f UTF-8 -t UTF-8 "$file" > /dev/null 2>&1; then
+      printf "UTF-8 오류: %s\n" "$file"
+      FAILED=1
+    fi
+  elif command -v python3 > /dev/null 2>&1; then
+    # 파일명을 argv로 전달 — 문자열 보간 금지
+    if ! python3 -c 'import sys; open(sys.argv[1], encoding="utf-8").read()' "$file" > /dev/null 2>&1; then
+      printf "UTF-8 오류: %s\n" "$file"
+      FAILED=1
+    fi
+  fi
+done
+
+if [ "$FAILED" -ne 0 ]; then
+  echo ""
+  echo "커밋 차단: UTF-8 (BOM 없음)으로 저장 후 다시 시도하세요."
+  exit 1
+fi

@@ -6,3 +6,21 @@
 # Windows 스크립트는 CRLF 유지
 *.ps1 text eol=crlf
 *.bat text eol=crlf
+
+# JSP/Java/설정 파일 — UTF-8, LF 고정 (한글 깨짐 방지)
+*.jsp text eol=lf working-tree-encoding=UTF-8
+*.java text eol=lf working-tree-encoding=UTF-8
+*.properties text eol=lf working-tree-encoding=UTF-8
+*.gradle text eol=lf working-tree-encoding=UTF-8
+*.xml text eol=lf working-tree-encoding=UTF-8
+*.html text eol=lf working-tree-encoding=UTF-8
+*.css text eol=lf working-tree-encoding=UTF-8
+*.js text eol=lf working-tree-encoding=UTF-8
+
+# git hooks는 실행 권한 유지
+.githooks/* text eol=lf
+
+# CI/설정 파일
+*.yml text eol=lf
+*.yaml text eol=lf
+.editorconfig text eol=lf
