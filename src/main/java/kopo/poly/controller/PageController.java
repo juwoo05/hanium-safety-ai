@@ -69,4 +69,10 @@ public class PageController {
 
     @PostMapping("/mypage")
     public String mypagePost() { return "redirect:/mypage"; }
+
+    @GetMapping("/report-board")
+    public String reportBoard() { return "report-board/report-board"; }
+
+    @GetMapping("/report-board/detail")
+    public String reportBoardDetail() { return "report-board/report-board-detail"; }
 }

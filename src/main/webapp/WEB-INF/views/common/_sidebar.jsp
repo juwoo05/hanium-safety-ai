@@ -44,6 +44,10 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span class="font-medium">알림</span>
     </a>
+    <a href="/report-board" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-white/70 hover:bg-white/10 hover:text-white" data-path="report-board">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+      <span class="font-medium">신고 게시판</span>
+    </a>
     <a href="/mypage" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-white/70 hover:bg-white/10 hover:text-white" data-path="mypage">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
       <span class="font-medium">설정</span>
