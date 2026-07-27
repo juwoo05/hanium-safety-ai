@@ -39,3 +39,9 @@ out/
 ## 야물 ##
 src/main/resources/application.properties
 application.properties
+
+### Python (ai-pipeline) ###
+ai-pipeline/.venv/
+ai-pipeline/__pycache__/
+ai-pipeline/**/__pycache__/
+ai-pipeline/.env
