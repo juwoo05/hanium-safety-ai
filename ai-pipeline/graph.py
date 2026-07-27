@@ -11,6 +11,7 @@ from config import (
     S3_BUCKET_NAME,
     get_bedrock_agent_runtime_client,
     get_bedrock_runtime_client,
+    get_rerank_client,
     get_s3_client,
 )
 from schemas import RiskItem
@@ -92,7 +93,7 @@ def rerank_documents(state: AnalysisState) -> AnalysisState:
         state["reranked_docs"] = []
         return state
 
-    response = get_bedrock_agent_runtime_client().rerank(
+    response = get_rerank_client().rerank(
         queries=[{"type": "TEXT", "textQuery": {"text": state["image_summary"]}}],
         sources=[
             {

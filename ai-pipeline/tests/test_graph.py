@@ -82,7 +82,7 @@ def test_KnowledgeBase_검색결과가_있으면_candidate_docs에_텍스트를_
 
 def test_candidate_docs가_없으면_rerank를_호출하지_않고_빈_목록을_반환한다(monkeypatch):
     mock_client = MagicMock()
-    monkeypatch.setattr("graph.get_bedrock_agent_runtime_client", lambda: mock_client)
+    monkeypatch.setattr("graph.get_rerank_client", lambda: mock_client)
 
     state = {"image_summary": "추락 위험", "candidate_docs": []}
 
@@ -95,7 +95,7 @@ def test_candidate_docs가_없으면_rerank를_호출하지_않고_빈_목록을
 def test_rerank_결과의_index순서대로_candidate_docs를_재정렬한다(monkeypatch):
     mock_client = MagicMock()
     mock_client.rerank.return_value = {"results": [{"index": 1}, {"index": 0}]}
-    monkeypatch.setattr("graph.get_bedrock_agent_runtime_client", lambda: mock_client)
+    monkeypatch.setattr("graph.get_rerank_client", lambda: mock_client)
 
     state = {
         "image_summary": "추락 위험",
