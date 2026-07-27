@@ -7,13 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 AWS_REGION = os.environ.get("AWS_REGION", "ap-northeast-2")
+AWS_PROFILE = os.environ.get("AWS_PROFILE")
 S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
 INTERNAL_API_KEY = os.environ.get("INTERNAL_API_KEY")
-BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
+# claude-3-5-sonnet-20241022-v2:0 등 최신 모델은 이 계정/리전에서 INFERENCE_PROFILE 방식만 지원해
+# on-demand invoke가 막혀 있다. on-demand로 바로 호출 가능한 버전을 기본값으로 사용한다.
+BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20240620-v1:0")
 KNOWLEDGE_BASE_ID = os.environ.get("KNOWLEDGE_BASE_ID")
+# Cohere Rerank 3.5는 AWS_REGION(ap-northeast-2)에서 제공되지 않아 별도 리전을 사용한다.
+# rerank는 이미 검색된 텍스트(INLINE 소스)만 넘겨 재순위화하므로 KB/S3와 리전이 달라도 무방하다.
+RERANK_REGION = os.environ.get("RERANK_REGION", "ap-northeast-1")
 RERANK_MODEL_ARN = os.environ.get(
     "RERANK_MODEL_ARN",
-    f"arn:aws:bedrock:{AWS_REGION}::foundation-model/cohere.rerank-v3-5:0",
+    f"arn:aws:bedrock:{RERANK_REGION}::foundation-model/cohere.rerank-v3-5:0",
 )
 
 # Bedrock 호출은 응답이 느릴 수 있어 read_timeout을 넉넉히 잡고, 일시적 오류(스로틀링 등)는 표준 재시도로 흡수한다.
@@ -23,20 +29,30 @@ BEDROCK_CLIENT_CONFIG = Config(
     retries={"max_attempts": 3, "mode": "standard"},
 )
 
+# AWS_PROFILE을 명시적으로 지정해 이 프로젝트가 로컬 머신의 다른 기본(default) 자격증명을
+# 실수로 집어쓰는 것을 방지한다. 미설정 시엔 boto3 기본 자격증명 체인(예: 배포 환경의 IAM 역할)을 따른다.
+_session = boto3.Session(profile_name=AWS_PROFILE) if AWS_PROFILE else boto3.Session()
+
 
 def get_s3_client():
-    return boto3.client("s3", region_name=AWS_REGION)
+    return _session.client("s3", region_name=AWS_REGION)
 
 
 def get_bedrock_runtime_client():
-    return boto3.client("bedrock-runtime", region_name=AWS_REGION, config=BEDROCK_CLIENT_CONFIG)
+    return _session.client("bedrock-runtime", region_name=AWS_REGION, config=BEDROCK_CLIENT_CONFIG)
 
 
 def get_bedrock_agent_runtime_client():
-    return boto3.client(
+    return _session.client(
         "bedrock-agent-runtime", region_name=AWS_REGION, config=BEDROCK_CLIENT_CONFIG
     )
 
 
+def get_rerank_client():
+    return _session.client(
+        "bedrock-agent-runtime", region_name=RERANK_REGION, config=BEDROCK_CLIENT_CONFIG
+    )
+
+
 def get_translate_client():
-    return boto3.client("translate", region_name=AWS_REGION)
+    return _session.client("translate", region_name=AWS_REGION)
