@@ -25,6 +25,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     // RestClient의 MultipartBodyBuilder(멀티파트 업로드 프록시)가 내부적으로 reactive-streams 클래스를 필요로 함
     implementation 'org.reactivestreams:reactive-streams'
+    implementation 'org.springframework.security:spring-security-crypto'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
     runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'

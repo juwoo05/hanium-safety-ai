@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -37,6 +38,10 @@
 
   <h2 class="text-2xl font-bold text-[#1B3A5F] text-center mb-2">로그인</h2>
   <p class="text-gray-500 text-center mb-6">현장 안전을 시작해보세요</p>
+
+  <c:if test="${not empty loginError}">
+    <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">${loginError}</div>
+  </c:if>
 
   <form action="/login" method="post" class="space-y-5">
     <div>

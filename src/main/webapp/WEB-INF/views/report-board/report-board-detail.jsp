@@ -1,4 +1,6 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" isELIgnored="true" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -35,10 +37,18 @@
     <div class="max-w-4xl mx-auto space-y-5">
 
       <!-- Back -->
-      <a href="/report-board" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+      <a href="${pageContext.request.contextPath}/report-board" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 transition-colors">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         신고 게시판으로
       </a>
+
+      <c:set var="riskPill" value="bg-yellow-100 text-yellow-700 border-yellow-200"/>
+      <c:if test="${report.riskLevelValue == 'high'}"><c:set var="riskPill" value="bg-red-100 text-red-700 border-red-200"/></c:if>
+      <c:if test="${report.riskLevelValue == 'medium'}"><c:set var="riskPill" value="bg-orange-100 text-orange-700 border-orange-200"/></c:if>
+      <c:set var="statusPill" value="bg-gray-100 text-gray-600"/>
+      <c:if test="${report.statusValue == 'IN_PROGRESS'}"><c:set var="statusPill" value="bg-blue-100 text-blue-700"/></c:if>
+      <c:if test="${report.statusValue == 'COMPLETED'}"><c:set var="statusPill" value="bg-green-100 text-green-700"/></c:if>
+      <c:if test="${report.statusValue == 'REJECTED'}"><c:set var="statusPill" value="bg-red-100 text-red-600"/></c:if>
 
       <!-- Header card -->
       <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -49,34 +59,52 @@
             </div>
             <div>
               <div class="flex flex-wrap items-center gap-2 mb-2">
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full border bg-red-100 text-red-700 border-red-200">고위험</span>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">처리중</span>
-                <span class="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">안전 위반</span>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full border ${riskPill}">${report.riskLevelLabel}</span>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${statusPill}">${report.statusLabel}</span>
+                <span class="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">${report.categoryLabel}</span>
               </div>
-              <h1 class="text-xl font-bold text-gray-900">3동 옥상 안전난간 파손 방치</h1>
+              <h1 class="text-xl font-bold text-gray-900">${report.title}</h1>
             </div>
           </div>
-          <button onclick="showToast('처리 요청이 접수되었습니다.')" class="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-500 rounded-lg text-xs font-medium hover:bg-red-50 transition-colors flex-shrink-0">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-            처리 요청
-          </button>
+          <div class="flex flex-col gap-2 flex-shrink-0">
+            <c:if test="${canManageStatus}">
+              <c:if test="${report.statusValue == 'RECEIVED'}">
+                <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="status" value="IN_PROGRESS"/>
+                  <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-blue-200 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-50 transition-colors">처리 시작</button>
+                </form>
+              </c:if>
+              <c:if test="${report.statusValue == 'IN_PROGRESS'}">
+                <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="status" value="COMPLETED"/>
+                  <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-green-200 text-green-600 rounded-lg text-xs font-medium hover:bg-green-50 transition-colors">완료 처리</button>
+                </form>
+              </c:if>
+              <c:if test="${report.statusValue == 'RECEIVED' || report.statusValue == 'IN_PROGRESS'}">
+                <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="status" value="REJECTED"/>
+                  <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-500 rounded-lg text-xs font-medium hover:bg-red-50 transition-colors">반려</button>
+                </form>
+              </c:if>
+            </c:if>
+          </div>
         </div>
         <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 pt-4 border-t border-gray-100">
           <span class="flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-            3동 옥상
+            ${report.location}
           </span>
           <span class="flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            2026-06-01
+            ${report.createdDateLabel}
           </span>
           <span class="flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            42명 조회
+            ${report.views}명 조회
           </span>
           <span class="flex items-center gap-1.5 ml-auto">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            익명 신고
+            <c:choose><c:when test="${report.anonymous}">익명 신고</c:when><c:otherwise>실명 신고</c:otherwise></c:choose>
           </span>
         </div>
       </div>
@@ -90,48 +118,41 @@
           <!-- Description -->
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h2 class="text-base font-bold text-gray-900 mb-4">신고 내용</h2>
-            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">3동 옥상 남쪽 가장자리 안전난간이 파손된 채로 2주 이상 방치되고 있습니다.
-
-현재 해당 구역에서 외벽 도색 작업이 진행 중인데, 파손된 난간 근처에서 작업자들이 안전장치 없이 작업하는 것을 여러 차례 목격했습니다.
-
-추락 사고가 발생하기 전에 즉각적인 조치가 필요합니다. 최소한 해당 구역 출입을 통제하고 임시 안전장치라도 설치해야 합니다.</p>
-          </div>
-
-          <!-- Images -->
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h2 class="text-base font-bold text-gray-900 mb-4">첨부 사진 (2)</h2>
-            <div class="rounded-xl overflow-hidden mb-3 bg-gray-100 aspect-video">
-              <img id="mainImg" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=450&fit=crop&auto=format" alt="신고 사진" class="w-full h-full object-cover"/>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="setImg(0)" id="thumb0" class="w-16 h-12 rounded-lg overflow-hidden border-2 border-[#FF6B35] ring-2 ring-[#FF6B35]/20 transition-all">
-                <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=120&fit=crop&auto=format" alt="" class="w-full h-full object-cover"/>
-              </button>
-              <button onclick="setImg(1)" id="thumb1" class="w-16 h-12 rounded-lg overflow-hidden border-2 border-gray-200 transition-all">
-                <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=120&fit=crop&auto=format" alt="" class="w-full h-full object-cover"/>
-              </button>
-            </div>
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">${report.description}</p>
           </div>
 
           <!-- Comments -->
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h2 class="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
               <svg class="w-4 h-4 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              댓글 <span id="commentCount">(2)</span>
+              댓글 <span>(${fn:length(comments)})</span>
             </h2>
 
-            <div id="commentList" class="space-y-4 mb-5">
-              <!-- rendered by JS -->
+            <div class="space-y-4 mb-5">
+              <c:if test="${empty comments}">
+                <p class="text-sm text-gray-400">아직 등록된 댓글이 없습니다.</p>
+              </c:if>
+              <c:forEach var="c" items="${comments}">
+                <div class="p-4 rounded-xl border ${c.official ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'}">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${c.official ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}">${fn:substring(c.writerName, 0, 1)}</div>
+                    <span class="text-sm font-semibold text-gray-900">${c.writerName}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${c.official ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-600'}">${c.writerRole}</span>
+                    <span class="text-xs text-gray-400 ml-auto">${c.createdAtLabel}</span>
+                  </div>
+                  <p class="text-sm text-gray-700 leading-relaxed">${c.content}</p>
+                </div>
+              </c:forEach>
             </div>
 
             <!-- Comment input -->
-            <div class="flex gap-2">
-              <input type="text" id="commentInput" onkeydown="if(event.key==='Enter') addComment()" placeholder="댓글을 입력하세요..."
+            <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/comments" class="flex gap-2">
+              <input type="text" name="content" placeholder="댓글을 입력하세요..."
                 class="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
-              <button onclick="addComment()" class="px-4 py-2.5 bg-[#FF6B35] text-white rounded-xl hover:bg-[#E55A2A] transition-colors">
+              <button type="submit" class="px-4 py-2.5 bg-[#FF6B35] text-white rounded-xl hover:bg-[#E55A2A] transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               </button>
-            </div>
+            </form>
           </div>
 
         </div>
@@ -142,8 +163,31 @@
           <!-- Processing timeline -->
           <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
             <h2 class="text-sm font-bold text-gray-900 mb-4">처리 현황</h2>
-            <div class="space-y-4" id="timeline">
-              <!-- rendered by JS -->
+            <div class="space-y-4">
+              <c:forEach var="t" items="${timelines}" varStatus="status">
+                <div class="flex gap-3">
+                  <div class="flex flex-col items-center">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${t.done ? 'bg-[#FF6B35] text-white' : 'bg-gray-100 border-2 border-gray-200'}">
+                      <c:choose>
+                        <c:when test="${t.done}">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                        </c:when>
+                        <c:otherwise>
+                          <div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                        </c:otherwise>
+                      </c:choose>
+                    </div>
+                    <c:if test="${!status.last}">
+                      <div class="w-0.5 flex-1 mt-1 min-h-[20px] ${t.done ? 'bg-[#FF6B35]/30' : 'bg-gray-100'}"></div>
+                    </c:if>
+                  </div>
+                  <div class="pb-4">
+                    <p class="text-xs font-semibold mb-0.5 ${t.done ? 'text-gray-900' : 'text-gray-400'}">${t.label}</p>
+                    <p class="text-xs mb-0.5 ${t.done ? 'text-gray-600' : 'text-gray-400'}">${t.description}</p>
+                    <p class="text-[10px] text-gray-400">${t.dateLabel}</p>
+                  </div>
+                </div>
+              </c:forEach>
             </div>
           </div>
 
@@ -152,19 +196,19 @@
             <h2 class="text-sm font-bold text-gray-900">신고 정보</h2>
             <div class="space-y-0">
               <div class="flex items-center justify-between py-2 border-b border-gray-50">
-                <span class="text-xs text-gray-500">신고 번호</span><span class="text-xs font-semibold text-gray-800">#0001</span>
+                <span class="text-xs text-gray-500">신고 번호</span><span class="text-xs font-semibold text-gray-800">#${report.id}</span>
               </div>
               <div class="flex items-center justify-between py-2 border-b border-gray-50">
-                <span class="text-xs text-gray-500">분류</span><span class="text-xs font-semibold text-gray-800">안전 위반</span>
+                <span class="text-xs text-gray-500">분류</span><span class="text-xs font-semibold text-gray-800">${report.categoryLabel}</span>
               </div>
               <div class="flex items-center justify-between py-2 border-b border-gray-50">
-                <span class="text-xs text-gray-500">위치</span><span class="text-xs font-semibold text-gray-800">3동 옥상</span>
+                <span class="text-xs text-gray-500">위치</span><span class="text-xs font-semibold text-gray-800">${report.location}</span>
               </div>
               <div class="flex items-center justify-between py-2 border-b border-gray-50">
-                <span class="text-xs text-gray-500">접수일</span><span class="text-xs font-semibold text-gray-800">2026-06-01</span>
+                <span class="text-xs text-gray-500">접수일</span><span class="text-xs font-semibold text-gray-800">${report.createdDateLabel}</span>
               </div>
               <div class="flex items-center justify-between py-2">
-                <span class="text-xs text-gray-500">신고자</span><span class="text-xs font-semibold text-gray-800">익명</span>
+                <span class="text-xs text-gray-500">신고자</span><span class="text-xs font-semibold text-gray-800">${report.reporterName}</span>
               </div>
             </div>
           </div>
@@ -180,95 +224,5 @@
     </div>
   </main>
 </div>
-
-<!-- Toast -->
-<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2">
-  <svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-  <span id="toastMsg"></span>
-</div>
-
-<script>
-const IMGS = [
-  'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=450&fit=crop&auto=format',
-  'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=450&fit=crop&auto=format',
-];
-
-function setImg(i) {
-  document.getElementById('mainImg').src = IMGS[i];
-  [0,1].forEach(j => {
-    const t = document.getElementById('thumb'+j);
-    if (j===i) { t.classList.add('border-[#FF6B35]','ring-2','ring-[#FF6B35]/20'); t.classList.remove('border-gray-200'); }
-    else        { t.classList.remove('border-[#FF6B35]','ring-2','ring-[#FF6B35]/20'); t.classList.add('border-gray-200'); }
-  });
-}
-
-const TIMELINE = [
-  { date:'2026-06-01 09:15', label:'신고 접수',    desc:'신고가 안전 관리팀에 접수되었습니다.',         done:true },
-  { date:'2026-06-01 11:30', label:'담당자 배정',   desc:'김현장 안전관리자가 담당자로 배정되었습니다.', done:true },
-  { date:'2026-06-02 14:00', label:'현장 확인 중',  desc:'담당자가 현장 실태를 확인하고 있습니다.',       done:true },
-  { date:'처리 예정',         label:'조치 완료',    desc:'안전난간 교체 작업 예정',                      done:false },
-];
-
-function renderTimeline() {
-  document.getElementById('timeline').innerHTML = TIMELINE.map((s,i)=>`
-    <div class="flex gap-3">
-      <div class="flex flex-col items-center">
-        <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${s.done?'bg-[#FF6B35] text-white':'bg-gray-100 border-2 border-gray-200'}">
-          ${s.done
-            ?'<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>'
-            :'<div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div>'}
-        </div>
-        ${i<TIMELINE.length-1?`<div class="w-0.5 flex-1 mt-1 min-h-[20px] ${s.done?'bg-[#FF6B35]/30':'bg-gray-100'}"></div>`:''}
-      </div>
-      <div class="pb-4">
-        <p class="text-xs font-semibold mb-0.5 ${s.done?'text-gray-900':'text-gray-400'}">${s.label}</p>
-        <p class="text-xs mb-0.5 ${s.done?'text-gray-600':'text-gray-400'}">${s.desc}</p>
-        <p class="text-[10px] text-gray-400">${s.date}</p>
-      </div>
-    </div>`).join('');
-}
-
-let comments = [
-  { id:1, author:'김현장', role:'안전관리자', date:'2026-06-01 14:20', text:'현장 확인 결과 신고 내용이 사실임을 확인했습니다. 오늘 오후 안전 테이프로 임시 통제하고, 내일 난간 교체 작업을 진행할 예정입니다.', official:true },
-  { id:2, author:'익명',   role:'신고자',     date:'2026-06-01 16:05', text:'빠른 확인 감사합니다. 오늘 오후에도 작업자들이 해당 구역에 접근하고 있으니 빠른 조치 부탁드립니다.',                         official:false },
-];
-
-function renderComments() {
-  document.getElementById('commentList').innerHTML = comments.map(c=>`
-    <div class="p-4 rounded-xl border ${c.official?'bg-blue-50 border-blue-100':'bg-gray-50 border-gray-100'}">
-      <div class="flex items-center gap-2 mb-2">
-        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${c.official?'bg-blue-600 text-white':'bg-gray-300 text-gray-700'}">${c.author[0]}</div>
-        <span class="text-sm font-semibold text-gray-900">${c.author}</span>
-        <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${c.official?'bg-blue-100 text-blue-700':'bg-gray-200 text-gray-600'}">${c.role}</span>
-        ${c.official?'<svg class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>':''}
-        <span class="text-xs text-gray-400 ml-auto">${c.date}</span>
-      </div>
-      <p class="text-sm text-gray-700 leading-relaxed">${c.text}</p>
-    </div>`).join('');
-  document.getElementById('commentCount').textContent = `(${comments.length})`;
-}
-
-function addComment() {
-  const input = document.getElementById('commentInput');
-  const text = input.value.trim();
-  if (!text) return;
-  comments.push({ id:comments.length+1, author:'나', role:'작업자', date:new Date().toLocaleString('ko-KR'), text, official:false });
-  input.value='';
-  renderComments();
-  showToast('댓글이 등록되었습니다.');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  el.classList.remove('hidden');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.add('hidden'), 3000);
-}
-
-renderTimeline();
-renderComments();
-</script>
 </body>
 </html>

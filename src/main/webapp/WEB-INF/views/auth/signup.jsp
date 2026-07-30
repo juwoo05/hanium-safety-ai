@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -22,6 +23,10 @@
 
   <h1 class="text-3xl font-bold text-white mb-2">회원가입</h1>
   <p class="text-white/60 mb-10 text-base">계정 유형을 선택해주세요</p>
+
+  <c:if test="${not empty signupError}">
+    <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-6 w-full max-w-md text-center">${signupError}</div>
+  </c:if>
 
   <!-- 카드 2개 -->
   <div class="grid grid-cols-2 gap-5 w-full">

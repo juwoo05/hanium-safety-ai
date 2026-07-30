@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,10 +14,14 @@
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <h1 class="text-lg font-semibold text-gray-900">알림</h1>
-      <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">5</span>
+      <c:if test="${unreadCount > 0}">
+        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">${unreadCount}</span>
+      </c:if>
     </div>
     <div class="flex items-center gap-3">
-      <button onclick="markAllRead()" class="text-sm text-[#FF6B35] hover:text-[#E55A2A] font-medium transition-colors">모두 읽음 처리</button>
+      <form action="${pageContext.request.contextPath}/notifications/read-all" method="post">
+        <button type="submit" class="text-sm text-[#FF6B35] hover:text-[#E55A2A] font-medium transition-colors">모두 읽음 처리</button>
+      </form>
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div></a>
     </div>
   </header>
@@ -25,120 +30,69 @@
 
       <!-- Filter Tabs -->
       <div class="flex gap-2 bg-white rounded-xl p-1.5 shadow-sm border border-gray-100">
-        <button onclick="filterNoti('all',this)" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-[#FF6B35] text-white transition-all">전체</button>
-        <button onclick="filterNoti('unread',this)" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:bg-gray-50 transition-all">읽지 않음</button>
-        <button onclick="filterNoti('danger',this)" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:bg-gray-50 transition-all">위험 알림</button>
-        <button onclick="filterNoti('action',this)" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:bg-gray-50 transition-all">조치 알림</button>
+        <a href="?filter=all" class="flex-1 text-center py-2 text-sm font-semibold rounded-lg transition-all ${empty currentFilter || currentFilter == 'all' ? 'bg-[#FF6B35] text-white' : 'text-gray-500 hover:bg-gray-50'}">전체</a>
+        <a href="?filter=unread" class="flex-1 text-center py-2 text-sm font-semibold rounded-lg transition-all ${currentFilter == 'unread' ? 'bg-[#FF6B35] text-white' : 'text-gray-500 hover:bg-gray-50'}">읽지 않음</a>
+        <a href="?filter=danger" class="flex-1 text-center py-2 text-sm font-semibold rounded-lg transition-all ${currentFilter == 'danger' ? 'bg-[#FF6B35] text-white' : 'text-gray-500 hover:bg-gray-50'}">위험 알림</a>
+        <a href="?filter=action" class="flex-1 text-center py-2 text-sm font-semibold rounded-lg transition-all ${currentFilter == 'action' ? 'bg-[#FF6B35] text-white' : 'text-gray-500 hover:bg-gray-50'}">조치 알림</a>
+        <a href="?filter=report" class="flex-1 text-center py-2 text-sm font-semibold rounded-lg transition-all ${currentFilter == 'report' ? 'bg-[#FF6B35] text-white' : 'text-gray-500 hover:bg-gray-50'}">신고 알림</a>
       </div>
 
-      <!-- Today -->
-      <p class="text-xs font-semibold text-gray-400 px-1 pt-2">오늘</p>
-
-      <a href="/actions/detail" class="block bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-red-500 border border-red-100 hover:shadow-md transition-all" data-type="danger unread">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium">고위험</span><span class="w-2 h-2 bg-red-500 rounded-full"></span></div>
-            <p class="text-sm font-semibold text-gray-900">3동 옥상 안전난간 미설치 감지</p>
-            <p class="text-xs text-gray-500 mt-0.5">AI가 고위험 요소를 감지했습니다. 즉시 확인이 필요합니다.</p>
-            <p class="text-xs text-gray-400 mt-1.5">방금 전</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <c:if test="${empty notifications}">
+        <div class="bg-white rounded-2xl p-12 text-center border border-gray-100">
+          <p class="text-gray-500">표시할 알림이 없습니다</p>
         </div>
-      </a>
+      </c:if>
 
-      <a href="/actions/detail" class="block bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-orange-500 border border-orange-100 hover:shadow-md transition-all" data-type="action unread">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full font-medium">조치 마감</span><span class="w-2 h-2 bg-red-500 rounded-full"></span></div>
-            <p class="text-sm font-semibold text-gray-900">임시 배선 노출 조치 마감 임박</p>
-            <p class="text-xs text-gray-500 mt-0.5">오늘 18:00까지 완료해야 합니다.</p>
-            <p class="text-xs text-gray-400 mt-1.5">1시간 전</p>
+      <c:set var="prevDateGroup" value=""/>
+      <c:forEach var="n" items="${notifications}">
+        <c:if test="${n.dateGroupLabel != prevDateGroup}">
+          <p class="text-xs font-semibold text-gray-400 px-1 pt-2">${n.dateGroupLabel}</p>
+          <c:set var="prevDateGroup" value="${n.dateGroupLabel}"/>
+        </c:if>
+
+        <c:set var="severityColor" value="gray"/>
+        <c:if test="${n.severity == 'HIGH'}"><c:set var="severityColor" value="red"/></c:if>
+        <c:if test="${n.severity == 'MEDIUM'}"><c:set var="severityColor" value="orange"/></c:if>
+        <c:if test="${n.severity == 'LOW'}"><c:set var="severityColor" value="blue"/></c:if>
+        <c:if test="${n.severity == 'INFO'}"><c:set var="severityColor" value="green"/></c:if>
+
+        <a href="${pageContext.request.contextPath}/notifications/${n.id}/redirect"
+           class="block bg-white rounded-2xl p-4 shadow-sm border transition-all hover:shadow-md
+             ${n.read ? 'border-gray-100 opacity-70' : (severityColor == 'red' ? 'border-l-4 border-l-red-500 border-red-100' : severityColor == 'orange' ? 'border-l-4 border-l-orange-500 border-orange-100' : severityColor == 'blue' ? 'border-l-4 border-l-blue-500 border-blue-100' : 'border-l-4 border-l-green-500 border-green-100')}">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
+              ${n.read ? 'bg-gray-100' : (severityColor == 'red' ? 'bg-red-100' : severityColor == 'orange' ? 'bg-orange-100' : severityColor == 'blue' ? 'bg-blue-100' : 'bg-green-100')}">
+              <c:choose>
+                <c:when test="${n.type == 'DANGER'}">
+                  <svg class="w-5 h-5 ${n.read ? 'text-gray-400' : (severityColor == 'red' ? 'text-red-500' : severityColor == 'orange' ? 'text-orange-500' : severityColor == 'blue' ? 'text-blue-500' : 'text-green-500')}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                </c:when>
+                <c:when test="${n.type == 'ACTION'}">
+                  <svg class="w-5 h-5 ${n.read ? 'text-gray-400' : (severityColor == 'red' ? 'text-red-500' : severityColor == 'orange' ? 'text-orange-500' : severityColor == 'blue' ? 'text-blue-500' : 'text-green-500')}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </c:when>
+                <c:when test="${n.type == 'REPORT'}">
+                  <svg class="w-5 h-5 ${n.read ? 'text-gray-400' : (severityColor == 'red' ? 'text-red-500' : severityColor == 'orange' ? 'text-orange-500' : severityColor == 'blue' ? 'text-blue-500' : 'text-green-500')}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
+                </c:when>
+                <c:otherwise>
+                  <img src="/images/mascot.png" alt="마스코트" class="w-7 h-7 object-contain" style="mix-blend-mode:multiply"/>
+                </c:otherwise>
+              </c:choose>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs px-2 py-0.5 rounded-full font-medium
+                  ${n.read ? 'bg-gray-100 text-gray-600' : (severityColor == 'red' ? 'bg-red-100 text-red-700' : severityColor == 'orange' ? 'bg-orange-100 text-orange-700' : severityColor == 'blue' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700')}">${n.typeLabel}</span>
+                <c:if test="${!n.read}"><span class="w-2 h-2 bg-red-500 rounded-full"></span></c:if>
+              </div>
+              <p class="text-sm font-semibold ${n.read ? 'text-gray-700' : 'text-gray-900'}">${n.title}</p>
+              <p class="text-xs text-gray-500 mt-0.5">${n.message}</p>
+              <p class="text-xs text-gray-400 mt-1.5">${n.relativeTime}</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </a>
-
-      <a href="/actions/detail" class="block bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-blue-500 border border-blue-100 hover:shadow-md transition-all" data-type="action unread">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">조치 완료</span><span class="w-2 h-2 bg-red-500 rounded-full"></span></div>
-            <p class="text-sm font-semibold text-gray-900">소화기 위치 재배치 조치 완료</p>
-            <p class="text-xs text-gray-500 mt-0.5">대성철골(주)이 조치를 완료했습니다. 검증 부탁드립니다.</p>
-            <p class="text-xs text-gray-400 mt-1.5">3시간 전</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </a>
-
-      <a href="/dashboard" class="block bg-white rounded-2xl p-4 shadow-sm border-l-4 border-l-green-500 border border-green-100 hover:shadow-md transition-all" data-type="action unread">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0"><img src="/images/mascot.png" alt="마스코트" class="w-7 h-7 object-contain" style="mix-blend-mode:multiply"/></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">AI 팁</span><span class="w-2 h-2 bg-red-500 rounded-full"></span></div>
-            <p class="text-sm font-semibold text-gray-900">오늘의 안전 점수: 87점</p>
-            <p class="text-xs text-gray-500 mt-0.5">지난주 대비 3점 상승했습니다! 조치 완료율을 높이면 90점 달성 가능합니다.</p>
-            <p class="text-xs text-gray-400 mt-1.5">5시간 전</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </a>
-
-      <!-- Yesterday -->
-      <p class="text-xs font-semibold text-gray-400 px-1 pt-3">어제</p>
-
-      <a href="/actions/detail" class="block bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all opacity-70" data-type="danger">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full font-medium">고위험</span></div>
-            <p class="text-sm font-semibold text-gray-700">지하 1층 임시 배선 노출 감지</p>
-            <p class="text-xs text-gray-500 mt-0.5">AI 자동 감지 — 전기 위험</p>
-            <p class="text-xs text-gray-400 mt-1.5">어제 09:15</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </a>
-
-      <a href="/actions/detail" class="block bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all opacity-70" data-type="action">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1"><span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full font-medium">조치 배정</span></div>
-            <p class="text-sm font-semibold text-gray-700">새 조치가 배정되었습니다</p>
-            <p class="text-xs text-gray-500 mt-0.5">5층 외벽 안전망 점검 · 마감 2026-06-19</p>
-            <p class="text-xs text-gray-400 mt-1.5">어제 08:30</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
-      </a>
+        </a>
+      </c:forEach>
     </div>
   </main>
 </div>
-<script>
-function markAllRead() {
-  document.querySelectorAll('[data-type]').forEach(function(el) {
-    el.classList.add('opacity-70');
-    var dot = el.querySelector('.w-2.h-2.bg-red-500');
-    if (dot) dot.classList.replace('bg-red-500', 'bg-transparent');
-  });
-  var badge = document.querySelector('header span.bg-red-500');
-  if (badge) badge.remove();
-}
-
-function filterNoti(type, btn) {
-  document.querySelectorAll('[data-type]').forEach(function(el) {
-    if (type === 'all') { el.style.display = ''; }
-    else if (type === 'unread') { el.style.display = el.dataset.type.includes('unread') ? '' : 'none'; }
-    else { el.style.display = el.dataset.type.includes(type) ? '' : 'none'; }
-  });
-  document.querySelectorAll('button[onclick^="filterNoti"]').forEach(function(b) {
-    b.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:bg-gray-50 transition-all';
-  });
-  btn.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-[#FF6B35] text-white transition-all';
-}
-</script>
 </body>
 </html>

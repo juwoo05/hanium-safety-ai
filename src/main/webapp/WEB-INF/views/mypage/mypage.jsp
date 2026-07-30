@@ -180,7 +180,7 @@
 
       <!-- Logout -->
       <div class="flex justify-center">
-        <a href="/login" class="flex items-center gap-2 px-6 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors">
+        <a href="/logout" class="flex items-center gap-2 px-6 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           로그아웃
         </a>
