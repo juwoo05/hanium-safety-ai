@@ -96,14 +96,19 @@ const riskBadge = { high: 'bg-red-100 text-red-700 border-red-200', medium: 'bg-
 const riskLabel = { high: '고위험', medium: '중위험', low: '저위험' };
 
 // State
+// TODO: 로그인/세션이 아직 없어서 현재 사용자 ID를 하드코딩한다. 인증이 붙으면 세션값으로 교체할 것.
+const CURRENT_USER_ID = 1;
+
 let currentStep = 1;
 let selectedSite = null;
-let uploadedFiles = [];
+let uploadedFiles = []; // { name, size, preview, s3Key, uploading }
 let question = '';
 let analyzing = false;
+let analysisError = '';
 let progress = 0;
 let progressTimer = null;
 let results = [];
+let currentInspectionId = null;
 let regForm = { title:'', category:'', risk:'', assignee:'', discoveredDate: new Date().toISOString().slice(0,10), deadline:'', description:'', regulation:'', recommendation:'', note:'' };
 
 // ─── Render step indicator ───
@@ -184,6 +189,8 @@ function renderStep2() {
           <div class="relative group rounded-xl overflow-hidden border border-gray-200 aspect-square bg-gray-50">
             <img src="${f.preview}" alt="${f.name}" class="w-full h-full object-cover"/>
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors"></div>
+            ${f.uploading ? '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><svg class="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></div>' : ''}
+            ${f.failed ? '<div class="absolute inset-0 bg-red-500/40 flex items-center justify-center"><span class="text-[10px] font-bold text-white">업로드 실패</span></div>' : ''}
             <button onclick="removeFile(${i})" class="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500">
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -290,6 +297,18 @@ function renderStep4() {
             <div id="progressBar" class="bg-gradient-to-r from-[#1B3A5F] to-[#FF6B35] h-2 rounded-full transition-all duration-300" style="width:0%"></div>
           </div>
         </div>
+      </div>`;
+  }
+
+  if (analysisError) {
+    return `
+      <div class="flex-1 flex flex-col">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p class="font-semibold text-red-700">AI 분석에 실패했습니다</p>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">${analysisError}</p>
+        <button onclick="startAnalysis()" class="w-full py-3.5 bg-[#FF6B35] text-white rounded-xl font-bold hover:bg-[#E55A2A] transition-colors shadow-lg">다시 시도</button>
       </div>`;
   }
 
@@ -498,9 +517,20 @@ function selectSite(id) {
 
 function handleFiles(files) {
   Array.from(files).filter(f => f.type.startsWith('image/')).forEach(f => {
-    uploadedFiles.push({ name: f.name, size: (f.size/1024/1024).toFixed(2)+' MB', preview: URL.createObjectURL(f) });
+    const entry = { name: f.name, size: (f.size/1024/1024).toFixed(2)+' MB', preview: URL.createObjectURL(f), s3Key: null, uploading: true };
+    uploadedFiles.push(entry);
+    uploadFile(f, entry);
   });
   renderStep();
+}
+
+function uploadFile(file, entry) {
+  const formData = new FormData();
+  formData.append('file', file);
+  fetch('/api/uploads', { method: 'POST', body: formData })
+    .then(res => { if (!res.ok) throw new Error('업로드 실패'); return res.json(); })
+    .then(data => { entry.s3Key = data.s3Key; entry.uploading = false; renderStep(); })
+    .catch(() => { entry.uploading = false; entry.failed = true; renderStep(); });
 }
 
 function handleDropFiles(files) { handleFiles(files); }
@@ -522,37 +552,72 @@ function prevStep() { if (currentStep > 1) { currentStep--; renderStep(); } }
 const ANALYSIS_LABELS = ['이미지 전처리 중...', '객체 감지 모델 실행 중...', '질문 기반 위험 요소 분석 중...', '법규 데이터베이스 대조 중...', '리포트 생성 중...'];
 let progressValue = 0;
 
+// 백엔드 RiskLevel(HIGH/MEDIUM/SAFE) ↔ 프론트 배지(high/medium/low) 매핑.
+// SAFE는 화면상 표시할 등급이 없어 low로 보여준다(가장 가까운 표현).
+const RISK_LEVEL_TO_BADGE = { HIGH: 'high', MEDIUM: 'medium', SAFE: 'low' };
+const BADGE_TO_RISK_LEVEL = { high: 'HIGH', medium: 'MEDIUM', low: 'SAFE' };
+
 function startAnalysis() {
+  const readyFile = uploadedFiles.find(f => f.s3Key);
+  if (!readyFile) {
+    alert('사진 업로드가 아직 끝나지 않았습니다. 잠시 후 다시 시도해주세요.');
+    return;
+  }
+
   analyzing = true;
+  analysisError = '';
   progressValue = 0;
   results = [];
   renderStep();
+
   progressTimer = setInterval(() => {
-    progressValue += Math.random() * 14 + 4;
-    if (progressValue >= 100) {
-      progressValue = 100;
-      clearInterval(progressTimer);
-      analyzing = false;
-      results = [
-        { title: '안전난간 미설치 감지', risk: 'high', desc: '2층 작업대 가장자리에 안전난간이 설치되지 않아 추락 위험이 높습니다.' },
-        { title: '임시 배선 노출',       risk: 'high', desc: '작업장 바닥에 전선이 노출되어 감전 및 화재 위험이 있습니다.' },
-        { title: '안전모 미착용 의심',   risk: 'medium', desc: '일부 작업자의 안전모 착용 여부가 불명확합니다.' },
-      ];
+    progressValue = Math.min(progressValue + Math.random() * 10 + 3, 92);
+    const bar = document.getElementById('progressBar');
+    const pct = document.getElementById('progressPct');
+    const lbl = document.getElementById('progressLabel');
+    if (bar) bar.style.width = Math.round(progressValue) + '%';
+    if (pct) pct.textContent = Math.round(progressValue) + '%';
+    if (lbl) lbl.textContent = ANALYSIS_LABELS[Math.min(Math.floor((progressValue/100)*ANALYSIS_LABELS.length), ANALYSIS_LABELS.length-1)];
+  }, 300);
+
+  // 현재 FastAPI /analyze는 이미지 1장만 받으므로, 여러 장을 올려도 첫 번째 업로드 완료 사진으로만 분석한다.
+  fetch('/api/inspections/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      siteId: selectedSite.id,
+      imageS3Key: readyFile.s3Key,
+      workInfo: question,
+      location: selectedSite.name,
+      workType: selectedSite.zone,
+      requestedBy: CURRENT_USER_ID,
+    }),
+  })
+    .then(res => res.json().then(body => ({ ok: res.ok, body })))
+    .then(({ ok, body }) => {
+      if (!ok) throw new Error(body.error || '분석 요청이 실패했습니다.');
+      currentInspectionId = body.id;
+      return fetch('/api/inspections/' + body.id + '/actions').then(r => r.json());
+    })
+    .then(actions => {
+      results = actions.map(a => ({
+        title: a.title,
+        risk: RISK_LEVEL_TO_BADGE[a.riskLevel] || 'medium',
+        desc: a.description,
+      }));
       if (results.length > 0) {
         regForm.title = results[0].title;
         regForm.risk = results.find(r => r.risk === 'high')?.risk || results[0].risk;
         regForm.description = results.map((r, i) => (i+1)+'. '+r.title+': '+r.desc).join('\n');
       }
+    })
+    .catch(err => { analysisError = err.message; })
+    .finally(() => {
+      clearInterval(progressTimer);
+      analyzing = false;
+      progressValue = 100;
       renderStep();
-    } else {
-      const bar = document.getElementById('progressBar');
-      const pct = document.getElementById('progressPct');
-      const lbl = document.getElementById('progressLabel');
-      if (bar) bar.style.width = Math.round(progressValue) + '%';
-      if (pct) pct.textContent = Math.round(progressValue) + '%';
-      if (lbl) lbl.textContent = ANALYSIS_LABELS[Math.min(Math.floor((progressValue/100)*ANALYSIS_LABELS.length), ANALYSIS_LABELS.length-1)];
-    }
-  }, 300);
+    });
 }
 
 function submitRegistration() {
@@ -562,8 +627,32 @@ function submitRegistration() {
   if (!regForm.assignee)     { alert('담당자를 지정하세요'); return; }
   if (!regForm.deadline)     { alert('조치 기한을 설정하세요'); return; }
   if (!regForm.description.trim()) { alert('상세 내용을 입력하세요'); return; }
-  alert('조치 사항이 성공적으로 등록되었습니다!');
-  window.location.href = '/actions';
+
+  fetch('/api/actions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      inspectionId: currentInspectionId,
+      title: regForm.title,
+      category: regForm.category,
+      riskLevel: BADGE_TO_RISK_LEVEL[regForm.risk],
+      reporterId: null, // 담당자는 이름만 선택 가능하고 사용자 ID 조회 API가 아직 없어 비워둔다.
+      discoveredDate: regForm.discoveredDate,
+      dueDate: regForm.deadline,
+      description: regForm.description,
+      recommendation: regForm.recommendation || null,
+      regulationRef: regForm.regulation || null,
+      memo: regForm.note || null,
+      createdBy: CURRENT_USER_ID,
+    }),
+  })
+    .then(res => res.json().then(body => ({ ok: res.ok, body })))
+    .then(({ ok, body }) => {
+      if (!ok) throw new Error(body.error || '조치 등록이 실패했습니다.');
+      alert('조치 사항이 성공적으로 등록되었습니다!');
+      window.location.href = '/actions';
+    })
+    .catch(err => alert(err.message));
 }
 
 // Init

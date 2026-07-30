@@ -26,6 +26,10 @@ class ErrorResponse(BaseModel):
     detail: str
 
 
+class UploadResponse(BaseModel):
+    s3_key: str
+
+
 class ActionItem(BaseModel):
     risk_name: str
     action_status: str

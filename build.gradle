@@ -22,6 +22,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // RestClient의 MultipartBodyBuilder(멀티파트 업로드 프록시)가 내부적으로 reactive-streams 클래스를 필요로 함
+    implementation 'org.reactivestreams:reactive-streams'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
     runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
@@ -46,5 +49,8 @@ tasks.named('test') {
 }
 
 tasks.named('bootRun') {
+    // war 플러그인 프로젝트에서는 기본 classpath 계산에서 providedRuntime(내장 톰캣)이 빠져
+    // spring-web조차 런타임에 없는 상태가 된다. classpath를 직접 다시 구성해서 넣어준다.
+    classpath = files(sourceSets.main.output, configurations.compileClasspath, configurations.runtimeClasspath, configurations.providedRuntime)
     jvmArgs = ['-Dfile.encoding=UTF-8', '-Dserver.servlet.encoding.force=true']
 }
