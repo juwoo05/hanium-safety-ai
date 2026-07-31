@@ -162,6 +162,7 @@
       </button>
     </div>
     <form id="reportForm" method="post" action="${pageContext.request.contextPath}/report-board" class="p-6 space-y-4">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="anonymous" id="anonymousInput" value="true"/>
       <!-- Anonymous toggle -->
       <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">

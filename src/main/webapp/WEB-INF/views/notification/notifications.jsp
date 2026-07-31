@@ -20,6 +20,7 @@
     </div>
     <div class="flex items-center gap-3">
       <form action="${pageContext.request.contextPath}/notifications/read-all" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <button type="submit" class="text-sm text-[#FF6B35] hover:text-[#E55A2A] font-medium transition-colors">모두 읽음 처리</button>
       </form>
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div></a>

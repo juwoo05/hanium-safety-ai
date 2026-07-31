@@ -70,18 +70,21 @@
             <c:if test="${canManageStatus}">
               <c:if test="${report.statusValue == 'RECEIVED'}">
                 <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                   <input type="hidden" name="status" value="IN_PROGRESS"/>
                   <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-blue-200 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-50 transition-colors">처리 시작</button>
                 </form>
               </c:if>
               <c:if test="${report.statusValue == 'IN_PROGRESS'}">
                 <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                   <input type="hidden" name="status" value="COMPLETED"/>
                   <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-green-200 text-green-600 rounded-lg text-xs font-medium hover:bg-green-50 transition-colors">완료 처리</button>
                 </form>
               </c:if>
               <c:if test="${report.statusValue == 'RECEIVED' || report.statusValue == 'IN_PROGRESS'}">
                 <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/status">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                   <input type="hidden" name="status" value="REJECTED"/>
                   <button type="submit" class="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-500 rounded-lg text-xs font-medium hover:bg-red-50 transition-colors">반려</button>
                 </form>
@@ -147,6 +150,7 @@
 
             <!-- Comment input -->
             <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/comments" class="flex gap-2">
+              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
               <input type="text" name="content" placeholder="댓글을 입력하세요..."
                 class="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
               <button type="submit" class="px-4 py-2.5 bg-[#FF6B35] text-white rounded-xl hover:bg-[#E55A2A] transition-colors">
