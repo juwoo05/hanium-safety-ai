@@ -59,7 +59,7 @@ public class SafetyReport {
     private boolean anonymous = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporter_id")
+    @JoinColumn(name = "reporter_id", columnDefinition = "bigint unsigned")
     private User reporter;
 
     @Column(name = "reporter_name_snapshot", length = 100)
