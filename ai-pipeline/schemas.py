@@ -50,3 +50,20 @@ class ReportResponse(BaseModel):
     report_s3_key: str
     report_url: str
     generated_at: datetime
+
+
+class EvidenceRequest(BaseModel):
+    query: str
+    category: str | None = None  # "law" | "case" | "guide"; None이면 전체 검색
+
+
+class EvidenceItem(BaseModel):
+    title: str
+    snippet: str
+    source: str
+    category: str
+    relevance: int  # 0~100, rerank relevanceScore를 백분율로 환산
+
+
+class EvidenceResponse(BaseModel):
+    items: list[EvidenceItem]
