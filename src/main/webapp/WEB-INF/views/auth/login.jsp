@@ -42,8 +42,15 @@
   <c:if test="${not empty loginError}">
     <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">${loginError}</div>
   </c:if>
+  <c:if test="${not empty loginMessage}">
+    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 mb-5">${loginMessage}</div>
+  </c:if>
+  <c:if test="${param.signup != null}">
+    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 mb-5">회원가입이 완료되었습니다. 로그인해주세요.</div>
+  </c:if>
 
   <form action="/login" method="post" class="space-y-5">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">이메일</label>
       <div class="relative">
