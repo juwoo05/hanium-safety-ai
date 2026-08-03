@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -23,13 +24,17 @@
     </div>
   </div>
 
-  <div id="formSection">
-    <form onsubmit="findId(event)" class="space-y-5">
+  <div id="formSection" class="${not empty foundEmail ? 'hidden' : ''}">
+    <c:if test="${not empty findIdError}">
+      <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">${findIdError}</div>
+    </c:if>
+    <form action="/find-id" method="post" class="space-y-5">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">이름</label>
         <div class="relative">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <input id="nameInput" type="text" placeholder="가입 시 등록한 이름"
+          <input id="nameInput" type="text" name="name" value="${param.name}" placeholder="가입 시 등록한 이름"
                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1B3A5F] focus:border-transparent outline-none" required/>
         </div>
       </div>
@@ -37,7 +42,7 @@
         <label class="block text-sm font-semibold text-gray-700 mb-2">회사명</label>
         <div class="relative">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-          <input id="companyInput" type="text" placeholder="가입 시 등록한 회사명"
+          <input id="companyInput" type="text" name="company" value="${param.company}" placeholder="가입 시 등록한 회사명"
                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1B3A5F] focus:border-transparent outline-none" required/>
         </div>
       </div>
@@ -45,11 +50,11 @@
     </form>
   </div>
 
-  <div id="resultSection" class="hidden space-y-6">
+  <div id="resultSection" class="${empty foundEmail ? 'hidden' : ''} space-y-6">
     <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-6 text-center">
       <svg class="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <p class="text-sm text-gray-600 mb-2">가입하신 아이디(이메일)는</p>
-      <p class="text-xl font-bold text-[#1B3A5F]">demo@safemate.com</p>
+      <p class="text-xl font-bold text-[#1B3A5F]">${foundEmail}</p>
       <p class="text-sm text-gray-500 mt-2">입니다.</p>
     </div>
     <div class="flex gap-3">
@@ -64,17 +69,5 @@
     <a href="/signup" class="text-gray-500 hover:text-[#FF6B35] transition-colors">회원가입</a>
   </div>
 </div>
-<script>
-function findId(e) {
-  e.preventDefault();
-  var name = document.getElementById('nameInput').value.trim();
-  var company = document.getElementById('companyInput').value.trim();
-  if (!name || !company) { alert('이름과 회사명을 모두 입력해주세요.'); return; }
-  setTimeout(function() {
-    document.getElementById('formSection').classList.add('hidden');
-    document.getElementById('resultSection').classList.remove('hidden');
-  }, 500);
-}
-</script>
 </body>
 </html>

@@ -6,10 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SignupRequestDTO {
-    private String userId;
+    private String name;
     private String password;
     private String passwordConfirm;
     private String email;
     private String company;
-    private String role;
+    private String role; //contractor(원청) / subcontractor(하청)
 }

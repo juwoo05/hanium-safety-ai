@@ -90,20 +90,14 @@
 
     <!-- 폼 -->
     <form id="signupForm" action="/signup" method="post" onsubmit="return validateForm()" class="px-8 py-7 space-y-5">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="role" id="roleInput"/>
 
-      <!-- 아이디 -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1.5">아이디 <span class="text-red-500">*</span></label>
-        <div class="flex gap-2">
-          <input id="userId" type="text" name="userId" placeholder="영문, 숫자 4~16자"
-                 class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none text-sm" required/>
-          <button type="button" onclick="checkId()" class="px-4 py-3 rounded-xl text-sm font-semibold bg-[#1B3A5F] text-white hover:bg-[#2C5282] transition-colors whitespace-nowrap">중복확인</button>
-        </div>
-        <p id="userIdError" class="text-red-500 text-xs mt-1 hidden"></p>
-      </div>
+      <c:if test="${not empty signupError}">
+        <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">${signupError}</div>
+      </c:if>
 
-      <!-- 이름 -->
+      <!-- 이름 (로그인 아이디는 이메일을 사용한다) -->
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">이름 <span class="text-red-500">*</span></label>
         <input type="text" name="name" placeholder="실명을 입력해주세요"
@@ -114,14 +108,9 @@
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">이메일 <span class="text-red-500">*</span></label>
         <div class="flex gap-2">
-          <input id="emailInput" type="email" name="email" placeholder="your@email.com"
+          <input id="emailInput" type="email" name="email" placeholder="your@email.com" oninput="resetEmailCheck()"
                  class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none text-sm" required/>
-          <button type="button" onclick="sendVerifyCode()" class="px-4 py-3 rounded-xl text-sm font-semibold bg-[#FF6B35] text-white hover:bg-[#E55A2A] transition-colors whitespace-nowrap">이메일 인증</button>
-        </div>
-        <div id="verifySection" class="hidden mt-2 flex gap-2">
-          <input id="verifyCode" type="text" placeholder="인증 코드 6자리 (테스트: 123456)" maxlength="6"
-                 class="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
-          <button type="button" onclick="verifyEmail()" class="px-4 py-2 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#2C5282] transition-colors">확인</button>
+          <button type="button" onclick="checkEmail()" class="px-4 py-3 rounded-xl text-sm font-semibold bg-[#1B3A5F] text-white hover:bg-[#2C5282] transition-colors whitespace-nowrap">중복확인</button>
         </div>
         <p id="emailStatus" class="text-xs mt-1 hidden"></p>
       </div>
@@ -161,8 +150,7 @@
 </div>
 
 <script>
-var idChecked = false;
-var emailVerified = false;
+var emailChecked = false;
 
 function selectRole(role) {
   document.getElementById('roleInput').value = role;
@@ -176,41 +164,29 @@ function goBack() {
   document.getElementById('step1').classList.remove('hidden');
 }
 
-function checkId() {
-  var id = document.getElementById('userId').value.trim();
-  var err = document.getElementById('userIdError');
-  if (!id || id.length < 4) {
-    err.textContent = '아이디는 4자 이상이어야 합니다.';
-    err.classList.remove('hidden');
-    return;
-  }
-  idChecked = true;
-  err.classList.add('hidden');
-  document.getElementById('userId').classList.add('border-green-400', 'bg-green-50');
-  alert('사용 가능한 아이디입니다.');
+function resetEmailCheck() {
+  emailChecked = false;
+  document.getElementById('emailStatus').classList.add('hidden');
+  document.getElementById('emailInput').classList.remove('border-green-400', 'bg-green-50');
 }
 
-function sendVerifyCode() {
-  var email = document.getElementById('emailInput').value.trim();
-  if (!email || !email.includes('@')) { alert('올바른 이메일을 입력해주세요.'); return; }
-  var vs = document.getElementById('verifySection');
-  vs.classList.remove('hidden');
-  vs.style.display = 'flex';
-  alert(email + '로 인증 코드를 발송했습니다.');
-}
-
-function verifyEmail() {
-  var code = document.getElementById('verifyCode').value.trim();
+function checkEmail() {
+  var input = document.getElementById('emailInput');
+  var email = input.value.trim();
   var status = document.getElementById('emailStatus');
-  if (code === '123456' || code.length === 6) {
-    emailVerified = true;
-    status.textContent = '이메일 인증이 완료되었습니다!';
-    status.className = 'text-xs mt-1 text-green-600';
-    status.classList.remove('hidden');
-    document.getElementById('emailInput').classList.add('border-green-400', 'bg-green-50');
-  } else {
-    alert('인증 코드가 올바르지 않습니다. (테스트: 123456)');
-  }
+  if (!email || !email.includes('@')) { alert('올바른 이메일을 입력해주세요.'); return; }
+
+  fetch('/api/auth/check-email?email=' + encodeURIComponent(email))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      emailChecked = data.available;
+      status.textContent = data.available ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.';
+      status.className = 'text-xs mt-1 ' + (data.available ? 'text-green-600' : 'text-red-500');
+      status.classList.remove('hidden');
+      input.classList.toggle('border-green-400', data.available);
+      input.classList.toggle('bg-green-50', data.available);
+    })
+    .catch(function() { alert('중복확인 중 오류가 발생했습니다.'); });
 }
 
 function checkPw() {
@@ -233,8 +209,7 @@ function validateForm() {
   var p2 = document.getElementById('pw2').value;
   if (p1 !== p2) { alert('비밀번호가 일치하지 않습니다.'); return false; }
   if (p1.length < 6) { alert('비밀번호는 6자 이상이어야 합니다.'); return false; }
-  if (!idChecked) { alert('아이디 중복확인을 해주세요.'); return false; }
-  if (!emailVerified) { alert('이메일 인증을 완료해주세요.'); return false; }
+  if (!emailChecked) { alert('이메일 중복확인을 해주세요.'); return false; }
   return true;
 }
 </script>

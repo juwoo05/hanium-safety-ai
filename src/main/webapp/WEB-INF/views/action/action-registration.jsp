@@ -25,6 +25,7 @@
   <main class="flex-1 overflow-y-auto p-6 lg:p-8">
     <div class="max-w-3xl mx-auto">
       <form action="/actions/new" method="post" class="space-y-6">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
         <!-- 기본 정보 -->
         <div class="bg-white rounded-2xl p-6 shadow-md">
