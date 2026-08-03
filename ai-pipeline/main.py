@@ -7,12 +7,15 @@ from fastapi.responses import JSONResponse
 
 from auth import verify_api_key
 from config import S3_BUCKET_NAME, get_s3_client
+from evidence import search_evidence
 from graph import build_analysis_graph
 from report import generate_report
 from schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
     ErrorResponse,
+    EvidenceRequest,
+    EvidenceResponse,
     ReportRequest,
     ReportResponse,
     UploadResponse,
@@ -80,3 +83,21 @@ def report(request: ReportRequest):
         )
 
     return ReportResponse(**result)
+
+
+@app.post("/evidence", response_model=EvidenceResponse, responses={500: {"model": ErrorResponse}})
+def evidence(request: EvidenceRequest):
+    try:
+        items = search_evidence(request)
+    except (ClientError, BotoCoreError) as exc:
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(error="AWSServiceError", detail=str(exc)).model_dump(),
+        )
+    except Exception as exc:
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(error=type(exc).__name__, detail=str(exc)).model_dump(),
+        )
+
+    return EvidenceResponse(items=items)

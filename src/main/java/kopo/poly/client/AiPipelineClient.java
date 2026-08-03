@@ -3,6 +3,8 @@ package kopo.poly.client;
 import kopo.poly.client.dto.AnalyzeRequestDto;
 import kopo.poly.client.dto.AnalyzeResponseDto;
 import kopo.poly.client.dto.ErrorResponseDto;
+import kopo.poly.client.dto.EvidenceRequestDto;
+import kopo.poly.client.dto.EvidenceResponseDto;
 import kopo.poly.client.dto.UploadResponseDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -34,6 +36,20 @@ public class AiPipelineClient {
             throw new AiPipelineException("AI 분석 요청이 실패했습니다: " + extractDetail(e), e);
         } catch (RestClientException e) {
             // FastAPI 서버 자체에 연결이 안 되는 경우(미기동, 네트워크 문제 등)
+            throw new AiPipelineException("AI 분석 서버에 연결할 수 없습니다: " + e.getMessage(), e);
+        }
+    }
+
+    public EvidenceResponseDto searchEvidence(EvidenceRequestDto request) {
+        try {
+            return aiPipelineRestClient.post()
+                    .uri("/evidence")
+                    .body(request)
+                    .retrieve()
+                    .body(EvidenceResponseDto.class);
+        } catch (RestClientResponseException e) {
+            throw new AiPipelineException("증거자료 검색이 실패했습니다: " + extractDetail(e), e);
+        } catch (RestClientException e) {
             throw new AiPipelineException("AI 분석 서버에 연결할 수 없습니다: " + e.getMessage(), e);
         }
     }

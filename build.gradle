@@ -47,6 +47,9 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // bootRun과 같은 원인: war 플러그인에서 spring-web이 testRuntimeClasspath에 안 잡혀(compileClasspath에만 있음)
+    // RestClient를 쓰는 클래스(AiPipelineClient 등)를 Mockito로 목킹할 때 NoClassDefFoundError가 난다.
+    classpath = files(sourceSets.test.output, sourceSets.main.output, configurations.testRuntimeClasspath, configurations.compileClasspath)
 }
 
 tasks.named('bootRun') {
