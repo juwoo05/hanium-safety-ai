@@ -25,8 +25,8 @@
         <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
       </a>
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div>
-        <span class="text-sm font-medium text-gray-700 hidden sm:block">김현장</span>
+        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div>
+        <span id="headerUserName" class="text-sm font-medium text-gray-700 hidden sm:block">-</span>
       </a>
     </div>
   </header>
@@ -64,14 +64,10 @@ const STEPS = [
   { number: 5, label: '조치 등록',     icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2' },
 ];
 
-const SITES = [
-  { id: 's1', name: '3동 건물 외벽',  zone: 'A구역', risk: 'high' },
-  { id: 's2', name: '5동 옥상',        zone: 'B구역', risk: 'medium' },
-  { id: 's3', name: '2동 전기실',      zone: 'C구역', risk: 'high' },
-  { id: 's4', name: '4동 1층 로비',    zone: 'A구역', risk: 'low' },
-  { id: 's5', name: '지하 주차장',     zone: 'D구역', risk: 'medium' },
-  { id: 's6', name: '1동 출입구',      zone: 'A구역', risk: 'low' },
-];
+// 서버(/api/sites)에서 실제 등록된 현장 목록을 불러와 채운다. 로드 전까지는 빈 배열.
+let SITES = [];
+let sitesLoading = true;
+let sitesError = false;
 
 const QUESTION_PRESETS = [
   '이 사진에서 안전난간이 제대로 설치되어 있나요?',
@@ -83,7 +79,8 @@ const QUESTION_PRESETS = [
 ];
 
 const CATEGORIES = ['추락 위험', '전기 위험', '화재 위험', '협착 위험', '붕괴 위험', '화학물질', '기타'];
-const ASSIGNEES  = ['김현장', '박안전', '이관리'];
+// 서버(/api/users/subcontractors)에서 실제 하청 담당자 목록을 불러와 채운다.
+let ASSIGNEES = [];
 const REGULATION_REFS = [
   '산업안전보건법 제38조 (추락 위험 방지)',
   '산업안전보건법 제24조 (보호구 착용)',
@@ -96,8 +93,9 @@ const riskBadge = { high: 'bg-red-100 text-red-700 border-red-200', medium: 'bg-
 const riskLabel = { high: '고위험', medium: '중위험', low: '저위험' };
 
 // State
-// TODO: 로그인/세션이 아직 없어서 현재 사용자 ID를 하드코딩한다. 인증이 붙으면 세션값으로 교체할 것.
-const CURRENT_USER_ID = 1;
+// 로그인 세션의 실제 사용자 ID. 페이지 로드시 /api/users/me로 채워진다.
+let CURRENT_USER_ID = null;
+let CURRENT_USER_NAME = null;
 
 let currentStep = 1;
 let selectedSite = null;
@@ -109,7 +107,7 @@ let progress = 0;
 let progressTimer = null;
 let results = [];
 let currentInspectionId = null;
-let regForm = { title:'', category:'', risk:'', assignee:'', discoveredDate: new Date().toISOString().slice(0,10), deadline:'', description:'', regulation:'', recommendation:'', note:'' };
+let regForm = { title:'', category:'', risk:'', assigneeId:'', discoveredDate: new Date().toISOString().slice(0,10), deadline:'', description:'', regulation:'', recommendation:'', note:'' };
 
 // ─── Render step indicator ───
 function renderStepIndicator() {
@@ -138,15 +136,18 @@ function renderStepIndicator() {
 function renderStep1() {
   const siteCards = SITES.map(site => {
     const sel = selectedSite && selectedSite.id === site.id;
+    const badge = site.riskBadgeKey
+      ? `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${riskBadge[site.riskBadgeKey]}">${riskLabel[site.riskBadgeKey]}</span>`
+      : `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-gray-50 text-gray-400 border-gray-200">점검 이력 없음</span>`;
     return `
-      <button onclick="selectSite('${site.id}')" class="flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${sel ? 'border-[#FF6B35] bg-[#FF6B35]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
+      <button onclick="selectSite(${site.id})" class="flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${sel ? 'border-[#FF6B35] bg-[#FF6B35]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
         <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${sel ? 'bg-[#FF6B35] text-white' : 'bg-gray-100 text-gray-500'}">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         </div>
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-gray-900 text-sm">${site.name}</p>
-          <p class="text-xs text-gray-500 mt-0.5">${site.zone}</p>
-          <span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${riskBadge[site.risk]}">${riskLabel[site.risk]}</span>
+          <p class="text-xs text-gray-500 mt-0.5">${site.zone || '구역 미지정'}</p>
+          ${badge}
         </div>
         ${sel ? '<svg class="w-5 h-5 text-[#FF6B35] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
       </button>`;
@@ -155,8 +156,14 @@ function renderStep1() {
   const selectedInfo = selectedSite ? `
     <div class="mt-4 p-3 bg-[#FF6B35]/5 rounded-xl border border-[#FF6B35]/20 flex items-center gap-3">
       <svg class="w-4 h-4 text-[#FF6B35] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#FF6B35]">${selectedSite.name}</span> <span class="text-gray-500">(${selectedSite.zone})</span></p>
+      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#FF6B35]">${selectedSite.name}</span> <span class="text-gray-500">(${selectedSite.zone || '구역 미지정'})</span></p>
     </div>` : '';
+
+  const listArea = sitesLoading
+    ? `<div class="flex-1 flex items-center justify-center text-sm text-gray-400">현장 목록을 불러오는 중...</div>`
+    : sitesError
+      ? `<div class="flex-1 flex items-center justify-center text-sm text-red-400">현장 목록을 불러오지 못했습니다.</div>`
+      : `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">${siteCards || '<p class="text-sm text-gray-400 col-span-2">등록된 현장이 없습니다. 아래에서 새 현장을 추가하세요.</p>'}</div>`;
 
   return `
     <div class="flex-1 flex flex-col">
@@ -169,8 +176,16 @@ function renderStep1() {
           <p class="text-sm text-gray-500">검사할 현장 위치를 선택하세요</p>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">${siteCards}</div>
+      ${listArea}
       ${selectedInfo}
+      <div class="mt-4 pt-4 border-t border-gray-100">
+        <p class="text-xs font-semibold text-gray-500 mb-2">목록에 없는 현장인가요?</p>
+        <div class="flex gap-2">
+          <input id="newSiteName" type="text" placeholder="현장명 (예: 3동 건물 외벽)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
+          <input id="newSiteZone" type="text" placeholder="구역 (선택)" class="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
+          <button onclick="addSite()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-900">추가</button>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -424,9 +439,9 @@ function renderStep5() {
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">담당자 <span class="text-red-500">*</span></label>
-          <select id="regAssignee" onchange="regForm.assignee=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none bg-white">
-            <option value="">선택</option>
-            ${ASSIGNEES.map(a => `<option ${regForm.assignee===a?'selected':''}>${a}</option>`).join('')}
+          <select id="regAssignee" onchange="regForm.assigneeId=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none bg-white">
+            <option value="">${ASSIGNEES.length ? '선택' : '등록된 하청 담당자가 없습니다'}</option>
+            ${ASSIGNEES.map(a => `<option value="${a.id}" ${String(regForm.assigneeId)===String(a.id)?'selected':''}>${a.username}${a.companyName ? ' (' + a.companyName + ')' : ''}</option>`).join('')}
           </select>
         </div>
         <div>
@@ -515,6 +530,79 @@ function selectSite(id) {
   renderStep();
 }
 
+function loadSites() {
+  sitesLoading = true;
+  sitesError = false;
+  if (currentStep === 1) renderStep();
+
+  fetch('/api/sites')
+    .then(res => {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+      if (!res.ok) throw new Error('현장 목록 조회 실패');
+      return res.json();
+    })
+    .then(sites => {
+      SITES = sites.map(s => ({ id: s.id, name: s.name, zone: s.zone, riskBadgeKey: s.lastRiskLevel ? RISK_LEVEL_TO_BADGE[s.lastRiskLevel] : null }));
+      sitesLoading = false;
+    })
+    .catch(() => { sitesError = true; sitesLoading = false; })
+    .finally(() => { if (currentStep === 1) renderStep(); });
+}
+
+function addSite() {
+  const nameEl = document.getElementById('newSiteName');
+  const zoneEl = document.getElementById('newSiteZone');
+  const name = nameEl.value.trim();
+  if (!name) { alert('현장 이름을 입력해주세요.'); return; }
+
+  fetch('/api/sites', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, zone: zoneEl.value.trim() || null }),
+  })
+    .then(res => res.json().then(body => ({ ok: res.ok, body })))
+    .then(({ ok, body }) => {
+      if (!ok) throw new Error(body.error || '현장 추가에 실패했습니다.');
+      const newSite = { id: body.id, name: body.name, zone: body.zone, riskBadgeKey: null };
+      SITES = [...SITES, newSite].sort((a, b) => a.name.localeCompare(b.name));
+      selectedSite = newSite;
+      renderStep();
+    })
+    .catch(err => alert(err.message));
+}
+
+function loadAssignees() {
+  fetch('/api/users/subcontractors')
+    .then(res => {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(users => {
+      ASSIGNEES = users;
+      if (currentStep === 5) renderStep();
+    })
+    .catch(() => { /* 담당자 목록만 실패, 화면은 유지 */ });
+}
+
+function loadCurrentUser() {
+  fetch('/api/users/me')
+    .then(res => {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(user => {
+      CURRENT_USER_ID = user.id;
+      CURRENT_USER_NAME = user.username;
+      const nameEl = document.getElementById('headerUserName');
+      const initialEl = document.getElementById('headerUserInitial');
+      if (nameEl) nameEl.textContent = user.username;
+      if (initialEl) initialEl.textContent = user.username ? user.username.charAt(0) : '?';
+    })
+    .catch(() => { /* 상단 표시만 실패, 화면은 유지 */ });
+}
+
 function handleFiles(files) {
   Array.from(files).filter(f => f.type.startsWith('image/')).forEach(f => {
     const entry = { name: f.name, size: (f.size/1024/1024).toFixed(2)+' MB', preview: URL.createObjectURL(f), s3Key: null, uploading: true };
@@ -563,6 +651,10 @@ function startAnalysis() {
     alert('사진 업로드가 아직 끝나지 않았습니다. 잠시 후 다시 시도해주세요.');
     return;
   }
+  if (!CURRENT_USER_ID) {
+    alert('사용자 정보를 아직 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
+    return;
+  }
 
   analyzing = true;
   analysisError = '';
@@ -585,7 +677,7 @@ function startAnalysis() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      siteId: selectedSite.id,
+      siteId: String(selectedSite.id),
       imageS3Key: readyFile.s3Key,
       workInfo: question,
       location: selectedSite.name,
@@ -624,7 +716,7 @@ function submitRegistration() {
   if (!regForm.title.trim()) { alert('제목을 입력하세요'); return; }
   if (!regForm.category)     { alert('위험 분류를 선택하세요'); return; }
   if (!regForm.risk)         { alert('위험도를 선택하세요'); return; }
-  if (!regForm.assignee)     { alert('담당자를 지정하세요'); return; }
+  if (!regForm.assigneeId)   { alert('담당자를 지정하세요'); return; }
   if (!regForm.deadline)     { alert('조치 기한을 설정하세요'); return; }
   if (!regForm.description.trim()) { alert('상세 내용을 입력하세요'); return; }
 
@@ -636,7 +728,7 @@ function submitRegistration() {
       title: regForm.title,
       category: regForm.category,
       riskLevel: BADGE_TO_RISK_LEVEL[regForm.risk],
-      reporterId: null, // 담당자는 이름만 선택 가능하고 사용자 ID 조회 API가 아직 없어 비워둔다.
+      reporterId: Number(regForm.assigneeId),
       discoveredDate: regForm.discoveredDate,
       dueDate: regForm.deadline,
       description: regForm.description,
@@ -656,6 +748,9 @@ function submitRegistration() {
 }
 
 // Init
+loadCurrentUser();
+loadSites();
+loadAssignees();
 renderStep();
 </script>
 </body>

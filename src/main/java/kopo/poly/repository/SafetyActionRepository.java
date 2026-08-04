@@ -4,11 +4,12 @@ import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.enums.ActionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface SafetyActionRepository extends JpaRepository<SafetyAction, Long> {
+public interface SafetyActionRepository extends JpaRepository<SafetyAction, Long>, JpaSpecificationExecutor<SafetyAction> {
     List<SafetyAction> findByInspectionOrderByCreatedAtDesc(AiSafetyInspection inspection);
     List<SafetyAction> findByStatus(ActionStatus status);
 
