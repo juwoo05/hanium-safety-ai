@@ -79,7 +79,8 @@ const QUESTION_PRESETS = [
 ];
 
 const CATEGORIES = ['추락 위험', '전기 위험', '화재 위험', '협착 위험', '붕괴 위험', '화학물질', '기타'];
-const ASSIGNEES  = ['김현장', '박안전', '이관리'];
+// 서버(/api/users/subcontractors)에서 실제 하청 담당자 목록을 불러와 채운다.
+let ASSIGNEES = [];
 const REGULATION_REFS = [
   '산업안전보건법 제38조 (추락 위험 방지)',
   '산업안전보건법 제24조 (보호구 착용)',
@@ -106,7 +107,7 @@ let progress = 0;
 let progressTimer = null;
 let results = [];
 let currentInspectionId = null;
-let regForm = { title:'', category:'', risk:'', assignee:'', discoveredDate: new Date().toISOString().slice(0,10), deadline:'', description:'', regulation:'', recommendation:'', note:'' };
+let regForm = { title:'', category:'', risk:'', assigneeId:'', discoveredDate: new Date().toISOString().slice(0,10), deadline:'', description:'', regulation:'', recommendation:'', note:'' };
 
 // ─── Render step indicator ───
 function renderStepIndicator() {
@@ -438,9 +439,9 @@ function renderStep5() {
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">담당자 <span class="text-red-500">*</span></label>
-          <select id="regAssignee" onchange="regForm.assignee=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none bg-white">
-            <option value="">선택</option>
-            ${ASSIGNEES.map(a => `<option ${regForm.assignee===a?'selected':''}>${a}</option>`).join('')}
+          <select id="regAssignee" onchange="regForm.assigneeId=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none bg-white">
+            <option value="">${ASSIGNEES.length ? '선택' : '등록된 하청 담당자가 없습니다'}</option>
+            ${ASSIGNEES.map(a => `<option value="${a.id}" ${String(regForm.assigneeId)===String(a.id)?'selected':''}>${a.username}${a.companyName ? ' (' + a.companyName + ')' : ''}</option>`).join('')}
           </select>
         </div>
         <div>
@@ -568,6 +569,20 @@ function addSite() {
       renderStep();
     })
     .catch(err => alert(err.message));
+}
+
+function loadAssignees() {
+  fetch('/api/users/subcontractors')
+    .then(res => {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(users => {
+      ASSIGNEES = users;
+      if (currentStep === 5) renderStep();
+    })
+    .catch(() => { /* 담당자 목록만 실패, 화면은 유지 */ });
 }
 
 function loadCurrentUser() {
@@ -701,7 +716,7 @@ function submitRegistration() {
   if (!regForm.title.trim()) { alert('제목을 입력하세요'); return; }
   if (!regForm.category)     { alert('위험 분류를 선택하세요'); return; }
   if (!regForm.risk)         { alert('위험도를 선택하세요'); return; }
-  if (!regForm.assignee)     { alert('담당자를 지정하세요'); return; }
+  if (!regForm.assigneeId)   { alert('담당자를 지정하세요'); return; }
   if (!regForm.deadline)     { alert('조치 기한을 설정하세요'); return; }
   if (!regForm.description.trim()) { alert('상세 내용을 입력하세요'); return; }
 
@@ -713,7 +728,7 @@ function submitRegistration() {
       title: regForm.title,
       category: regForm.category,
       riskLevel: BADGE_TO_RISK_LEVEL[regForm.risk],
-      reporterId: null, // 담당자는 이름만 선택 가능하고 사용자 ID 조회 API가 아직 없어 비워둔다.
+      reporterId: Number(regForm.assigneeId),
       discoveredDate: regForm.discoveredDate,
       dueDate: regForm.deadline,
       description: regForm.description,
@@ -735,6 +750,7 @@ function submitRegistration() {
 // Init
 loadCurrentUser();
 loadSites();
+loadAssignees();
 renderStep();
 </script>
 </body>
