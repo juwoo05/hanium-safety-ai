@@ -1,8 +1,7 @@
 package kopo.poly.service;
 
-import kopo.poly.client.AiPipelineClient;
-import kopo.poly.client.dto.EvidenceItemDto;
-import kopo.poly.client.dto.EvidenceRequestDto;
+import kopo.poly.dto.EvidenceItemDto;
+import kopo.poly.dto.EvidenceRequestDto;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.repository.AiSafetyInspectionRepository;

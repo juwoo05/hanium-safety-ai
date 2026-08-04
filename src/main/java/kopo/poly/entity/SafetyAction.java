@@ -61,6 +61,11 @@ public class SafetyAction {
     @Column(nullable = false, length = 100)
     private String category;
 
+    // AI 점검(inspection) 없이 수동 등록되는 조치를 위한 현장 위치. inspection이 있으면
+    // 그쪽 location을 우선 사용하고, 이 필드는 inspection이 없는 경우에만 쓰인다.
+    @Column(length = 200)
+    private String location;
+
     @Convert(converter = RiskLevelConverter.class)
     @Column(name = "risk_level", nullable = false, length = 10)
     @Builder.Default

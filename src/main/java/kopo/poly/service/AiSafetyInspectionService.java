@@ -1,16 +1,17 @@
 package kopo.poly.service;
 
-import kopo.poly.client.AiPipelineClient;
-import kopo.poly.client.dto.AnalyzeRequestDto;
-import kopo.poly.client.dto.AnalyzeResponseDto;
-import kopo.poly.client.dto.RiskItemDto;
+import kopo.poly.dto.AnalyzeRequestDto;
+import kopo.poly.dto.AnalyzeResponseDto;
+import kopo.poly.dto.RiskItemDto;
 import kopo.poly.dto.request.AnalysisRequest;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
+import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
+import kopo.poly.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +30,18 @@ public class AiSafetyInspectionService {
     private final AiPipelineClient aiPipelineClient;
     private final AiSafetyInspectionRepository inspectionRepository;
     private final SafetyActionRepository safetyActionRepository;
+    private final UserRepository userRepository;
 
     public AiSafetyInspectionService(
             AiPipelineClient aiPipelineClient,
             AiSafetyInspectionRepository inspectionRepository,
-            SafetyActionRepository safetyActionRepository
+            SafetyActionRepository safetyActionRepository,
+            UserRepository userRepository
     ) {
         this.aiPipelineClient = aiPipelineClient;
         this.inspectionRepository = inspectionRepository;
         this.safetyActionRepository = safetyActionRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -83,6 +87,12 @@ public class AiSafetyInspectionService {
 
     public List<AiSafetyInspection> findByRequestedBy(Long requestedBy) {
         return inspectionRepository.findByRequestedByOrderByCreatedAtDesc(requestedBy);
+    }
+
+    // 리포트 헤더에 담당자 실명을 보여주기 위한 조회. users 테이블은 다른 팀원 모듈이라
+    // 연관관계 대신 ID로만 들고 있어 화면에 표시할 땐 이렇게 별도 조회가 필요하다.
+    public String resolveUserName(Long userId) {
+        return userId == null ? null : userRepository.findById(userId).map(User::getUsername).orElse(null);
     }
 
     // FastAPI가 아직 위험 항목별 심각도(risk_level)를 내려주지 않아, 감지된 항목 수를 기준으로 한

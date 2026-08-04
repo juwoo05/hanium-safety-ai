@@ -24,8 +24,8 @@
     <div class="flex items-center gap-4">
       <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-bold">김</div>
-        <span class="text-sm font-medium text-gray-800">김현장</span>
+        <div id="headerUserInitial" class="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-bold">-</div>
+        <span id="headerUserName" class="text-sm font-medium text-gray-800">-</span>
       </div>
     </div>
   </header>
@@ -38,8 +38,8 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <a href="/actions" class="p-2 hover:bg-gray-100 rounded-lg no-print"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
-            <h1 class="text-xl font-bold text-gray-900">3동 건물 외벽 안전 분석 리포트</h1>
-            <span class="text-xs font-medium px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full">SR-2026-001</span>
+            <h1 id="reportTitle" class="text-xl font-bold text-gray-900">리포트를 불러오는 중...</h1>
+            <span id="reportIdBadge" class="text-xs font-medium px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full"></span>
           </div>
           <div class="flex items-center gap-2 no-print">
             <button onclick="window.print()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2">
@@ -51,26 +51,25 @@
           </div>
         </div>
         <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
-          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>2026-06-01 09:30</span>
-          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>3동 지하 1층</span>
-          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>김현장</span>
+          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="reportDate">-</span></span>
+          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="reportLocation">-</span></span>
+          <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="reportRequester">-</span></span>
           <span class="text-xs font-semibold px-2.5 py-1 bg-green-50 text-green-600 rounded-full">분석 완료</span>
         </div>
         <div class="flex items-center gap-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4">
           <div>
             <p class="text-xs text-gray-500 mb-1">종합 위험도</p>
             <div class="flex items-baseline gap-2">
-              <span class="text-3xl font-bold text-red-600">8.5</span>
-              <span class="text-sm text-gray-400">/ 10</span>
-              <span class="text-xs font-bold px-2 py-0.5 bg-red-500 text-white rounded-full">고위험</span>
+              <span id="riskLevelLabel" class="text-3xl font-bold text-red-600">-</span>
+              <span id="riskLevelBadge" class="text-xs font-bold px-2 py-0.5 bg-red-500 text-white rounded-full"></span>
             </div>
           </div>
           <div class="flex-1">
-            <div class="w-full bg-white/60 rounded-full h-2.5"><div class="bg-red-500 h-2.5 rounded-full" style="width:85%"></div></div>
+            <div class="w-full bg-white/60 rounded-full h-2.5"><div id="riskLevelBar" class="bg-red-500 h-2.5 rounded-full" style="width:0%"></div></div>
           </div>
           <div class="text-right">
             <p class="text-xs text-gray-500 mb-1">감지 항목</p>
-            <p class="text-2xl font-bold text-gray-900">3건</p>
+            <p id="detectedCount" class="text-2xl font-bold text-gray-900">-</p>
           </div>
         </div>
 
@@ -85,22 +84,8 @@
       <!-- 분석결과 탭 -->
       <div id="tab-result" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-md">
         <h3 class="text-base font-semibold text-gray-900 mb-4">감지 항목</h3>
-        <div class="space-y-2">
-          <div class="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
-            <div class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
-            <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-900">안전난간 미설치</p><p class="text-xs text-gray-500">3층 외벽 작업 구역에 추락 방지용 안전난간이 설치되지 않았습니다.</p></div>
-            <div class="text-right flex-shrink-0"><p class="text-sm font-bold text-red-600">개선 필요</p></div>
-          </div>
-          <div class="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
-            <div class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
-            <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-900">임시 배선 노출</p><p class="text-xs text-gray-500">작업장 바닥에 전선이 노출되어 감전 및 화재 위험이 있습니다.</p></div>
-            <div class="text-right flex-shrink-0"><p class="text-sm font-bold text-red-600">개선 필요</p></div>
-          </div>
-          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
-            <div class="w-3 h-3 rounded-full bg-green-500 flex-shrink-0"></div>
-            <div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-900">안전모 미착용</p><p class="text-xs text-gray-500">현장 작업자 중 1명이 안전모를 착용하지 않은 것으로 확인됩니다.</p></div>
-            <div class="text-right flex-shrink-0"><p class="text-sm font-bold text-green-600">양호</p></div>
-          </div>
+        <div id="detectedItems" class="space-y-2">
+          <p class="text-sm text-gray-400">리포트를 선택하면 감지 항목이 표시됩니다.</p>
         </div>
       </div>
 
@@ -633,8 +618,80 @@
     });
   });
 
+  var RISK_LEVEL_META = {
+    HIGH: { label: '고위험', color: 'red-600', barColor: 'bg-red-500', badgeColor: 'bg-red-500', barPct: 90 },
+    MEDIUM: { label: '중위험', color: 'orange-500', barColor: 'bg-orange-400', badgeColor: 'bg-orange-500', barPct: 55 },
+    SAFE: { label: '안전', color: 'green-600', barColor: 'bg-green-500', badgeColor: 'bg-green-500', barPct: 15 }
+  };
+
+  function loadCurrentUser() {
+    fetch('/api/users/me')
+      .then(function (res) {
+        if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(function (user) {
+        qs('#headerUserName').textContent = user.username;
+        qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
+      })
+      .catch(function () { /* 상단 사용자 표시만 실패하는 경우이므로 화면 전체를 막지 않는다 */ });
+  }
+
+  function detectedItemHtml(action) {
+    var bad = action.riskLevel !== 'SAFE';
+    return '<div class="flex items-center gap-3 p-3 ' + (bad ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100') + ' rounded-xl border">' +
+      '<div class="w-3 h-3 rounded-full ' + (bad ? 'bg-red-500' : 'bg-green-500') + ' flex-shrink-0"></div>' +
+      '<div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-900">' + action.title + '</p>' +
+      '<p class="text-xs text-gray-500">' + action.description + '</p></div>' +
+      '<div class="text-right flex-shrink-0"><p class="text-sm font-bold ' + (bad ? 'text-red-600' : 'text-green-600') + '">' +
+      (bad ? '개선 필요' : '양호') + '</p></div></div>';
+  }
+
+  function loadInspectionHeader() {
+    Promise.all([
+      fetch('/api/inspections/' + INSPECTION_ID).then(function (res) {
+        if (!res.ok) throw new Error('리포트를 불러오지 못했습니다.');
+        return res.json();
+      }),
+      fetch('/api/inspections/' + INSPECTION_ID + '/actions').then(function (res) {
+        if (!res.ok) throw new Error('감지 항목을 불러오지 못했습니다.');
+        return res.json();
+      })
+    ]).then(function (results) {
+      var inspection = results[0], actions = results[1];
+      var meta = RISK_LEVEL_META[inspection.riskLevel] || RISK_LEVEL_META.SAFE;
+
+      qs('#reportTitle').textContent = inspection.aiResponseTitle || (inspection.location + ' 안전 분석 리포트');
+      qs('#reportIdBadge').textContent = '#' + inspection.id;
+      qs('#reportDate').textContent = inspection.createdAt ? inspection.createdAt.replace('T', ' ').slice(0, 16) : '-';
+      qs('#reportLocation').textContent = inspection.location;
+      qs('#reportRequester').textContent = inspection.requestedByName || '담당자 정보 없음';
+
+      var riskLabelEl = qs('#riskLevelLabel');
+      riskLabelEl.textContent = meta.label;
+      riskLabelEl.className = 'text-3xl font-bold text-' + meta.color;
+      var badgeEl = qs('#riskLevelBadge');
+      badgeEl.textContent = meta.label;
+      badgeEl.className = 'text-xs font-bold px-2 py-0.5 text-white rounded-full ' + meta.badgeColor;
+      var barEl = qs('#riskLevelBar');
+      barEl.className = meta.barColor + ' h-2.5 rounded-full';
+      barEl.style.width = meta.barPct + '%';
+
+      qs('#detectedCount').textContent = actions.length + '건';
+      qs('#detectedItems').innerHTML = actions.length
+        ? actions.map(detectedItemHtml).join('')
+        : '<p class="text-sm text-gray-400">감지된 위험요소가 없습니다.</p>';
+    }).catch(function (err) {
+      qs('#reportTitle').textContent = err.message || '리포트를 불러오지 못했습니다.';
+    });
+  }
+
+  loadCurrentUser();
+
   // 초기 로드: 저장된 리포트가 있으면 기존 양식 불러오기
   if (INSPECTION_ID) {
+    loadInspectionHeader();
     fetch('/api/documents?inspectionId=' + INSPECTION_ID)
       .then(function (res) { return res.ok ? res.json() : []; })
       .then(function (docs) {
@@ -643,6 +700,7 @@
       })
       .catch(function () { selectFormType(state.currentType); });
   } else {
+    qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다 (데모 모드)';
     setFieldVisibility(state.currentType);
   }
 })();

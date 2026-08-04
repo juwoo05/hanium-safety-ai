@@ -1,6 +1,6 @@
 package kopo.poly.controller.api;
 
-import kopo.poly.client.AiPipelineException;
+import kopo.poly.service.AiPipelineException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,6 +21,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(AiPipelineException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Map<String, String> handleAiPipelineError(AiPipelineException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidArgument(IllegalArgumentException e) {
         return Map.of("error", e.getMessage());
     }
 }

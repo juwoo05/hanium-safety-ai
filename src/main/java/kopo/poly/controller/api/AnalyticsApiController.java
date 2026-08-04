@@ -1,34 +1,33 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.EvidenceItemDto;
-import kopo.poly.service.EvidenceService;
+import kopo.poly.dto.response.AnalyticsSummaryResponse;
+import kopo.poly.service.AnalyticsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
-public class EvidenceApiController {
+public class AnalyticsApiController {
 
-    private final EvidenceService evidenceService;
+    private final AnalyticsService analyticsService;
 
-    public EvidenceApiController(EvidenceService evidenceService) {
-        this.evidenceService = evidenceService;
+    public AnalyticsApiController(AnalyticsService analyticsService) {
+        this.analyticsService = analyticsService;
     }
 
-    @GetMapping("/api/evidence")
-    public List<EvidenceItemDto> search(
-            @RequestParam Long inspectionId,
-            @RequestParam(required = false) String category,
+    @GetMapping("/api/analytics/summary")
+    public AnalyticsSummaryResponse summary(
+            @RequestParam(required = false) Integer year,
             HttpSession session
     ) {
         if (session.getAttribute("LOGIN_USER_ID") == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
-        return evidenceService.searchForInspection(inspectionId, category);
+        return analyticsService.summarize(year != null ? year : LocalDate.now().getYear());
     }
 }

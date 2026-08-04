@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
-import kopo.poly.client.AiPipelineClient;
 import kopo.poly.dto.response.UploadResponse;
+import kopo.poly.service.AiPipelineClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

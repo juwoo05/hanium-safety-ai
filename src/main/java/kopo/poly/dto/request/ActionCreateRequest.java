@@ -18,6 +18,7 @@ public record ActionCreateRequest(
         String recommendation,
         String regulationRef,
         String memo,
+        String location,
         Long createdBy
 ) {
 }

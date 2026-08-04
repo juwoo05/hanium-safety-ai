@@ -18,9 +18,17 @@ public record ActionResponse(
         String regulationRef,
         ActionStatus status,
         LocalDate dueDate,
-        LocalDateTime discoveredAt
+        LocalDateTime discoveredAt,
+        String location,
+        Long reporterId,
+        String reporterName,
+        LocalDateTime updatedAt
 ) {
     public static ActionResponse from(SafetyAction action) {
+        return from(action, null);
+    }
+
+    public static ActionResponse from(SafetyAction action, String reporterName) {
         return new ActionResponse(
                 action.getId(),
                 action.getInspection() != null ? action.getInspection().getId() : null,
@@ -32,7 +40,11 @@ public record ActionResponse(
                 action.getRegulationRef(),
                 action.getStatus(),
                 action.getDueDate(),
-                action.getDiscoveredAt()
+                action.getDiscoveredAt(),
+                action.getInspection() != null ? action.getInspection().getLocation() : action.getLocation(),
+                action.getReporterId(),
+                reporterName,
+                action.getUpdatedAt()
         );
     }
 }
