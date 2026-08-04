@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.response.EvidenceItemResponse;
+import kopo.poly.dto.EvidenceItemDto;
 import kopo.poly.service.EvidenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class EvidenceApiController {
     }
 
     @GetMapping("/api/evidence")
-    public List<EvidenceItemResponse> search(
+    public List<EvidenceItemDto> search(
             @RequestParam Long inspectionId,
             @RequestParam(required = false) String category,
             HttpSession session
@@ -29,8 +29,6 @@ public class EvidenceApiController {
         if (session.getAttribute("LOGIN_USER_ID") == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
-        return evidenceService.searchForInspection(inspectionId, category).stream()
-                .map(EvidenceItemResponse::from)
-                .toList();
+        return evidenceService.searchForInspection(inspectionId, category);
     }
 }

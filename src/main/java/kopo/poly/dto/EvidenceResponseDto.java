@@ -1,4 +1,4 @@
-package kopo.poly.client.dto;
+package kopo.poly.dto;
 
 import java.util.List;
 

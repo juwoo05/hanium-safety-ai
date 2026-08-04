@@ -1,11 +1,11 @@
-package kopo.poly.client;
+package kopo.poly.service;
 
-import kopo.poly.client.dto.AnalyzeRequestDto;
-import kopo.poly.client.dto.AnalyzeResponseDto;
-import kopo.poly.client.dto.ErrorResponseDto;
-import kopo.poly.client.dto.EvidenceRequestDto;
-import kopo.poly.client.dto.EvidenceResponseDto;
-import kopo.poly.client.dto.UploadResponseDto;
+import kopo.poly.dto.AnalyzeRequestDto;
+import kopo.poly.dto.AnalyzeResponseDto;
+import kopo.poly.dto.ErrorResponseDto;
+import kopo.poly.dto.EvidenceRequestDto;
+import kopo.poly.dto.EvidenceResponseDto;
+import kopo.poly.dto.UploadResponseDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Component;

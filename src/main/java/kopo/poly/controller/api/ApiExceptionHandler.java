@@ -1,6 +1,6 @@
 package kopo.poly.controller.api;
 
-import kopo.poly.client.AiPipelineException;
+import kopo.poly.service.AiPipelineException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

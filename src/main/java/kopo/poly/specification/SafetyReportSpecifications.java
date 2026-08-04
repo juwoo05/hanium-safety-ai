@@ -1,4 +1,4 @@
-package kopo.poly.repository;
+package kopo.poly.specification;
 
 import jakarta.persistence.criteria.Predicate;
 import kopo.poly.entity.SafetyReport;
