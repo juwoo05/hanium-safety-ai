@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,22 +44,17 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isNameTaken(String name) {
-        return userRepository.existsByUsername(name);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public boolean isEmailTaken(String email) {
         return userRepository.existsByEmail(email);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<String> findEmailByNameAndCompany(String name, String companyName) {
-        return userRepository.findByUsernameAndCompanyName(name, companyName)
+    public List<String> findEmailsByNameAndCompany(String name, String companyName) {
+        return userRepository.findByUsernameAndCompanyName(name, companyName).stream()
                 .filter(user -> user.getDeletedAt() == null)
-                .map(User::getEmail);
+                .map(User::getEmail)
+                .toList();
     }
 
     @Override
