@@ -23,4 +23,10 @@ public class ApiExceptionHandler {
     public Map<String, String> handleAiPipelineError(AiPipelineException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidArgument(IllegalArgumentException e) {
+        return Map.of("error", e.getMessage());
+    }
 }
