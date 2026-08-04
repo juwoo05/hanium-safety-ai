@@ -15,9 +15,14 @@ public record InspectionResponse(
         String aiResponseContent,
         List<String> imageUrls,
         Long requestedBy,
+        String requestedByName,
         LocalDateTime createdAt
 ) {
     public static InspectionResponse from(AiSafetyInspection inspection) {
+        return from(inspection, null);
+    }
+
+    public static InspectionResponse from(AiSafetyInspection inspection, String requestedByName) {
         return new InspectionResponse(
                 inspection.getId(),
                 inspection.getLocation(),
@@ -27,6 +32,7 @@ public record InspectionResponse(
                 inspection.getAiResponseContent(),
                 inspection.getImageUrls(),
                 inspection.getRequestedBy(),
+                requestedByName,
                 inspection.getCreatedAt()
         );
     }

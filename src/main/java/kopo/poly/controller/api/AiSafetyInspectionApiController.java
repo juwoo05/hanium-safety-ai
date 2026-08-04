@@ -40,7 +40,9 @@ public class AiSafetyInspectionApiController {
 
     @GetMapping("/api/inspections/{id}")
     public InspectionResponse getById(@PathVariable Long id) {
-        return InspectionResponse.from(inspectionService.getById(id));
+        AiSafetyInspection inspection = inspectionService.getById(id);
+        String requestedByName = inspectionService.resolveUserName(inspection.getRequestedBy());
+        return InspectionResponse.from(inspection, requestedByName);
     }
 
     @GetMapping("/api/inspections")
