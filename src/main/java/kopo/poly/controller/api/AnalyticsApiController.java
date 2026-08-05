@@ -2,7 +2,7 @@ package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.response.AnalyticsSummaryResponse;
-import kopo.poly.service.AnalyticsService;
+import kopo.poly.service.IAnalyticsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @RestController
 public class AnalyticsApiController {
 
-    private final AnalyticsService analyticsService;
+    private final IAnalyticsService analyticsService;
 
-    public AnalyticsApiController(AnalyticsService analyticsService) {
+    public AnalyticsApiController(IAnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }
 

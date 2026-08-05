@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.request.DocumentSaveRequest;
 import kopo.poly.dto.response.DocumentResponse;
 import kopo.poly.entity.enums.DocumentType;
-import kopo.poly.service.SafetyDocumentService;
+import kopo.poly.service.ISafetyDocumentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +20,9 @@ import java.util.Map;
 @RestController
 public class SafetyDocumentApiController {
 
-    private final SafetyDocumentService safetyDocumentService;
+    private final ISafetyDocumentService safetyDocumentService;
 
-    public SafetyDocumentApiController(SafetyDocumentService safetyDocumentService) {
+    public SafetyDocumentApiController(ISafetyDocumentService safetyDocumentService) {
         this.safetyDocumentService = safetyDocumentService;
     }
 

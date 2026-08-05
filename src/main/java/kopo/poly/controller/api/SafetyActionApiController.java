@@ -6,7 +6,7 @@ import kopo.poly.dto.request.ActionStatusUpdateRequest;
 import kopo.poly.dto.response.ActionResponse;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
-import kopo.poly.service.SafetyActionService;
+import kopo.poly.service.ISafetyActionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,9 +23,9 @@ import java.util.List;
 @RestController
 public class SafetyActionApiController {
 
-    private final SafetyActionService safetyActionService;
+    private final ISafetyActionService safetyActionService;
 
-    public SafetyActionApiController(SafetyActionService safetyActionService) {
+    public SafetyActionApiController(ISafetyActionService safetyActionService) {
         this.safetyActionService = safetyActionService;
     }
 

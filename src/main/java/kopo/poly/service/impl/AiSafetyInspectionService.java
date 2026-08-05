@@ -1,4 +1,4 @@
-package kopo.poly.service;
+package kopo.poly.service.impl;
 
 import kopo.poly.dto.AnalyzeRequestDto;
 import kopo.poly.dto.AnalyzeResponseDto;
@@ -12,6 +12,8 @@ import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
 import kopo.poly.repository.UserRepository;
+import kopo.poly.service.AiPipelineClient;
+import kopo.poly.service.IAiSafetyInspectionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class AiSafetyInspectionService {
+public class AiSafetyInspectionService implements IAiSafetyInspectionService {
 
     // 신규 조치의 기본 조치 기한: 발견 시점으로부터 며칠 뒤까지로 잡을지에 대한 임시 기준.
     // FastAPI가 위험도별 권장 기한을 내려주게 되면 그 값으로 대체한다.
@@ -44,6 +46,7 @@ public class AiSafetyInspectionService {
         this.userRepository = userRepository;
     }
 
+    @Override
     @Transactional
     public AiSafetyInspection requestAnalysis(AnalysisRequest request) {
         AnalyzeResponseDto response = aiPipelineClient.analyze(
@@ -80,17 +83,20 @@ public class AiSafetyInspectionService {
         return inspection;
     }
 
+    @Override
     public AiSafetyInspection getById(Long id) {
         return inspectionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + id));
     }
 
+    @Override
     public List<AiSafetyInspection> findByRequestedBy(Long requestedBy) {
         return inspectionRepository.findByRequestedByOrderByCreatedAtDesc(requestedBy);
     }
 
     // 리포트 헤더에 담당자 실명을 보여주기 위한 조회. users 테이블은 다른 팀원 모듈이라
     // 연관관계 대신 ID로만 들고 있어 화면에 표시할 땐 이렇게 별도 조회가 필요하다.
+    @Override
     public String resolveUserName(Long userId) {
         return userId == null ? null : userRepository.findById(userId).map(User::getUsername).orElse(null);
     }

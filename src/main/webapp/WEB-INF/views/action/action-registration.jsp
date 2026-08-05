@@ -9,6 +9,7 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
+<%@ include file="../common/_topnav.jsp" %>
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">

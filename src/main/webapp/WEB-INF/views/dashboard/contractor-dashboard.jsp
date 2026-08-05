@@ -10,6 +10,7 @@
 <body class="min-h-screen bg-[#F5F7FA] flex">
 
 <%@ include file="../common/_sidebar.jsp" %>
+<%@ include file="../common/_topnav.jsp" %>
 
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
   <!-- Top Bar -->

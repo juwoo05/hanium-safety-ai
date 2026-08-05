@@ -4,8 +4,8 @@ import kopo.poly.dto.request.AnalysisRequest;
 import kopo.poly.dto.response.ActionResponse;
 import kopo.poly.dto.response.InspectionResponse;
 import kopo.poly.entity.AiSafetyInspection;
-import kopo.poly.service.AiSafetyInspectionService;
-import kopo.poly.service.SafetyActionService;
+import kopo.poly.service.IAiSafetyInspectionService;
+import kopo.poly.service.ISafetyActionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +20,12 @@ import java.util.List;
 @RestController
 public class AiSafetyInspectionApiController {
 
-    private final AiSafetyInspectionService inspectionService;
-    private final SafetyActionService safetyActionService;
+    private final IAiSafetyInspectionService inspectionService;
+    private final ISafetyActionService safetyActionService;
 
     public AiSafetyInspectionApiController(
-            AiSafetyInspectionService inspectionService,
-            SafetyActionService safetyActionService
+            IAiSafetyInspectionService inspectionService,
+            ISafetyActionService safetyActionService
     ) {
         this.inspectionService = inspectionService;
         this.safetyActionService = safetyActionService;

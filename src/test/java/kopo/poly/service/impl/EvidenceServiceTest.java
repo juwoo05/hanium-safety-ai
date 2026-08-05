@@ -1,4 +1,4 @@
-package kopo.poly.service;
+package kopo.poly.service.impl;
 
 import kopo.poly.dto.EvidenceItemDto;
 import kopo.poly.dto.EvidenceRequestDto;
@@ -9,6 +9,7 @@ import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
+import kopo.poly.service.AiPipelineClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
