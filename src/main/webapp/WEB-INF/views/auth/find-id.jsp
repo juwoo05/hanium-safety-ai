@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div id="formSection" class="${not empty foundEmail ? 'hidden' : ''}">
+  <div id="formSection" class="${not empty foundEmails ? 'hidden' : ''}">
     <c:if test="${not empty findIdError}">
       <div class="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-5">${findIdError}</div>
     </c:if>
@@ -50,12 +50,20 @@
     </form>
   </div>
 
-  <div id="resultSection" class="${empty foundEmail ? 'hidden' : ''} space-y-6">
+  <div id="resultSection" class="${empty foundEmails ? 'hidden' : ''} space-y-6">
     <div class="bg-green-50 border-2 border-green-200 rounded-2xl p-6 text-center">
       <svg class="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <p class="text-sm text-gray-600 mb-2">가입하신 아이디(이메일)는</p>
-      <p class="text-xl font-bold text-[#1B3A5F]">${foundEmail}</p>
+      <div class="space-y-1">
+        <c:forEach var="email" items="${foundEmails}">
+          <p class="text-xl font-bold text-[#1B3A5F]">${email}</p>
+        </c:forEach>
+      </div>
       <p class="text-sm text-gray-500 mt-2">입니다.</p>
+      <%-- 동명이인이 같은 회사에 있으면 여러 건이 나온다. --%>
+      <c:if test="${foundEmails.size() > 1}">
+        <p class="text-xs text-gray-500 mt-3">동명이인이 있어 여러 계정이 조회되었습니다.</p>
+      </c:if>
     </div>
     <div class="flex gap-3">
       <a href="/login" class="flex-1 text-center bg-[#FF6B35] text-white py-3 rounded-xl font-semibold hover:bg-[#E55A2A] transition-colors">로그인하기</a>

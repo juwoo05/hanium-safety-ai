@@ -110,7 +110,12 @@
         <div class="flex gap-2">
           <input id="emailInput" type="email" name="email" placeholder="your@email.com" oninput="resetEmailCheck()"
                  class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none text-sm" required/>
-          <button type="button" onclick="checkEmail()" class="px-4 py-3 rounded-xl text-sm font-semibold bg-[#1B3A5F] text-white hover:bg-[#2C5282] transition-colors whitespace-nowrap">중복확인</button>
+          <button type="button" id="sendCodeBtn" onclick="sendVerifyCode()" class="px-4 py-3 rounded-xl text-sm font-semibold bg-[#FF6B35] text-white hover:bg-[#E55A2A] transition-colors whitespace-nowrap">이메일 인증</button>
+        </div>
+        <div id="verifySection" class="hidden gap-2 mt-2">
+          <input id="verifyCode" type="text" inputmode="numeric" placeholder="인증 코드 6자리" maxlength="6"
+                 class="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+          <button type="button" onclick="verifyEmail()" class="px-4 py-2 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#2C5282] transition-colors">확인</button>
         </div>
         <p id="emailStatus" class="text-xs mt-1 hidden"></p>
       </div>
@@ -150,7 +155,8 @@
 </div>
 
 <script>
-var emailChecked = false;
+// 인증에 성공한 이메일 주소. 이메일을 고치면 다시 비워서 재인증을 강제한다.
+var verifiedEmail = '';
 
 function selectRole(role) {
   document.getElementById('roleInput').value = role;
@@ -164,29 +170,79 @@ function goBack() {
   document.getElementById('step1').classList.remove('hidden');
 }
 
+function showEmailStatus(message, ok) {
+  var status = document.getElementById('emailStatus');
+  status.textContent = message;
+  status.className = 'text-xs mt-1 ' + (ok ? 'text-green-600' : 'text-red-500');
+  status.classList.remove('hidden');
+}
+
+// 이메일을 수정하면 이전 인증은 무효고 코드 입력칸도 접음
 function resetEmailCheck() {
-  emailChecked = false;
+  verifiedEmail = '';
   document.getElementById('emailStatus').classList.add('hidden');
+  document.getElementById('verifySection').classList.add('hidden');
+  document.getElementById('verifySection').classList.remove('flex');
+  document.getElementById('verifyCode').value = '';
   document.getElementById('emailInput').classList.remove('border-green-400', 'bg-green-50');
 }
 
-function checkEmail() {
-  var input = document.getElementById('emailInput');
-  var email = input.value.trim();
-  var status = document.getElementById('emailStatus');
+function sendVerifyCode() {
+  var email = document.getElementById('emailInput').value.trim();
   if (!email || !email.includes('@')) { alert('올바른 이메일을 입력해주세요.'); return; }
 
-  fetch('/api/auth/check-email?email=' + encodeURIComponent(email))
+  var btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true;
+  btn.textContent = '발송 중...';
+
+  fetch('/api/auth/send-verify-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'email=' + encodeURIComponent(email)
+  })
     .then(function(res) { return res.json(); })
     .then(function(data) {
-      emailChecked = data.available;
-      status.textContent = data.available ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.';
-      status.className = 'text-xs mt-1 ' + (data.available ? 'text-green-600' : 'text-red-500');
-      status.classList.remove('hidden');
-      input.classList.toggle('border-green-400', data.available);
-      input.classList.toggle('bg-green-50', data.available);
+      showEmailStatus(data.message, data.ok);
+      if (data.ok) {
+        var section = document.getElementById('verifySection');
+        section.classList.remove('hidden');
+        section.classList.add('flex');
+        document.getElementById('verifyCode').focus();
+      }
     })
-    .catch(function() { alert('중복확인 중 오류가 발생했습니다.'); });
+    .catch(function() { showEmailStatus('인증 코드 발송 중 오류가 발생했습니다.', false); })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = '인증 코드 재발송';
+    });
+}
+
+function verifyEmail() {
+  var input = document.getElementById('emailInput');
+  var email = input.value.trim();
+  var code = document.getElementById('verifyCode').value.trim();
+  if (!code) { alert('인증 코드를 입력해주세요.'); return; }
+
+  fetch('/api/auth/verify-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'email=' + encodeURIComponent(email) + '&code=' + encodeURIComponent(code)
+  })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      showEmailStatus(data.message, data.ok);
+      if (!data.ok) { return; }
+
+      verifiedEmail = email;
+      var section = document.getElementById('verifySection');
+      section.classList.add('hidden');
+      section.classList.remove('flex');
+      input.readOnly = true;
+      input.classList.add('border-green-400', 'bg-green-50');
+      document.getElementById('sendCodeBtn').textContent = '인증 완료';
+      document.getElementById('sendCodeBtn').disabled = true;
+    })
+    .catch(function() { showEmailStatus('인증 확인 중 오류가 발생했습니다.', false); });
 }
 
 function checkPw() {
@@ -209,7 +265,8 @@ function validateForm() {
   var p2 = document.getElementById('pw2').value;
   if (p1 !== p2) { alert('비밀번호가 일치하지 않습니다.'); return false; }
   if (p1.length < 6) { alert('비밀번호는 6자 이상이어야 합니다.'); return false; }
-  if (!emailChecked) { alert('이메일 중복확인을 해주세요.'); return false; }
+  var email = document.getElementById('emailInput').value.trim();
+  if (!verifiedEmail || verifiedEmail !== email) { alert('이메일 인증을 완료해주세요.'); return false; }
   return true;
 }
 </script>

@@ -2,6 +2,7 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.SignupRequestDTO;
+import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +17,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class UserController {
+
+    private static final String SIGNUP_EMAIL = "SIGNUP_VERIFY_EMAIL";
+    private static final String SIGNUP_CODE = "SIGNUP_VERIFY_CODE";
+    private static final String SIGNUP_EXPIRES_AT = "SIGNUP_VERIFY_EXPIRES_AT";
+    private static final String SIGNUP_VERIFIED_EMAIL = "SIGNUP_VERIFIED_EMAIL";
 
     private static final String RESET_EMAIL = "PW_RESET_EMAIL";
     private static final String RESET_CODE = "PW_RESET_CODE";
@@ -33,6 +39,7 @@ public class UserController {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final IUserService userService;
+    private final IMailService mailService;
 
     // === 로그인 ===
     @GetMapping("/login")
@@ -55,7 +62,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signupPost(@ModelAttribute SignupRequestDTO request, Model model) {
+    public String signupPost(@ModelAttribute SignupRequestDTO request, HttpSession session, Model model) {
         if (isBlank(request.getName()) || isBlank(request.getEmail()) || isBlank(request.getPassword())) {
             return signupError(model, "필수 항목을 모두 입력해주세요.");
         }
@@ -65,15 +72,17 @@ public class UserController {
         if (request.getPassword().length() < 6) {
             return signupError(model, "비밀번호는 6자 이상이어야 합니다.");
         }
+        // 인증 완료 여부 재확인
+        String verified = (String) session.getAttribute(SIGNUP_VERIFIED_EMAIL);
+        if (verified == null || !verified.equalsIgnoreCase(request.getEmail().trim())) {
+            return signupError(model, "이메일 인증을 완료해주세요.");
+        }
         if (userService.isEmailTaken(request.getEmail())) {
             return signupError(model, "이미 사용 중인 이메일입니다.");
         }
-        // username이 unique 컬럼이라 동명이인은 가입할 수 없어서 나중에 바꿔야 할 것 같음
-        if (userService.isNameTaken(request.getName())) {
-            return signupError(model, "이미 등록된 이름입니다. 관리자에게 문의해주세요.");
-        }
 
         userService.signup(request);
+        clearSignupSession(session);
         return "redirect:/login?signup";
     }
 
@@ -82,12 +91,72 @@ public class UserController {
         return "auth/signup";
     }
 
-    // 회원가입 이메일 중복확인 버튼
-    @GetMapping("/api/auth/check-email")
+    // 회원가입 이메일 인증 코드 발송
+    @PostMapping("/api/auth/send-verify-code")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
-        boolean available = !isBlank(email) && !userService.isEmailTaken(email);
-        return ResponseEntity.ok(Map.of("available", available));
+    public ResponseEntity<Map<String, Object>> sendSignupCode(@RequestParam String email, HttpSession session) {
+        String target = isBlank(email) ? "" : email.trim();
+
+        if (target.isBlank() || !target.contains("@")) {
+            return ResponseEntity.ok(Map.of("ok", false, "message", "올바른 이메일을 입력해주세요."));
+        }
+        if (userService.isEmailTaken(target)) {
+            return ResponseEntity.ok(Map.of("ok", false, "message", "이미 사용 중인 이메일입니다."));
+        }
+
+        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+        session.setAttribute(SIGNUP_EMAIL, target);
+        session.setAttribute(SIGNUP_CODE, code);
+        session.setAttribute(SIGNUP_EXPIRES_AT, LocalDateTime.now().plusMinutes(CODE_TTL_MINUTES));
+        // 이메일을 바꿔 다시 요청하면 이전 인증은 무효
+        session.removeAttribute(SIGNUP_VERIFIED_EMAIL);
+
+        boolean sent = mailService.sendSignupVerifyCode(target, code, CODE_TTL_MINUTES);
+        if (!sent) {
+            // 메일 계정 미설정 등으로 발송이 안 되면 로컬 확인용으로 로그에 남김
+            log.info("[회원가입 인증] {} 인증 코드 = {} ({}분간 유효)", target, code, CODE_TTL_MINUTES);
+            return ResponseEntity.ok(Map.of("ok", false, "message", "메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요."));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "ok", true,
+                "message", "인증 코드를 보냈습니다. 메일함을 확인해주세요. (" + CODE_TTL_MINUTES + "분 이내 입력)"));
+    }
+
+    // 회원가입 이메일 인증 코드 검증
+    @PostMapping("/api/auth/verify-email")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> verifySignupCode(@RequestParam String email,
+                                                                @RequestParam String code,
+                                                                HttpSession session) {
+        String target = isBlank(email) ? "" : email.trim();
+        String issuedTo = (String) session.getAttribute(SIGNUP_EMAIL);
+        String issued = (String) session.getAttribute(SIGNUP_CODE);
+        LocalDateTime expiresAt = (LocalDateTime) session.getAttribute(SIGNUP_EXPIRES_AT);
+
+        if (issuedTo == null || issued == null || expiresAt == null || !issuedTo.equalsIgnoreCase(target)) {
+            return ResponseEntity.ok(Map.of("ok", false, "message", "인증 코드를 먼저 요청해주세요."));
+        }
+        if (LocalDateTime.now().isAfter(expiresAt)) {
+            clearSignupSession(session);
+            return ResponseEntity.ok(Map.of("ok", false, "message", "인증 코드가 만료되었습니다. 다시 요청해주세요."));
+        }
+        if (!issued.equals(isBlank(code) ? "" : code.trim())) {
+            return ResponseEntity.ok(Map.of("ok", false, "message", "인증 코드가 올바르지 않습니다."));
+        }
+
+        session.removeAttribute(SIGNUP_CODE);
+        session.removeAttribute(SIGNUP_EXPIRES_AT);
+        session.setAttribute(SIGNUP_VERIFIED_EMAIL, issuedTo);
+
+        return ResponseEntity.ok(Map.of("ok", true, "message", "이메일 인증이 완료되었습니다."));
+    }
+
+    private void clearSignupSession(HttpSession session) {
+        session.removeAttribute(SIGNUP_EMAIL);
+        session.removeAttribute(SIGNUP_CODE);
+        session.removeAttribute(SIGNUP_EXPIRES_AT);
+        session.removeAttribute(SIGNUP_VERIFIED_EMAIL);
     }
 
     // === 아이디(이메일) 찾기  ===
@@ -98,29 +167,15 @@ public class UserController {
 
     @PostMapping("/find-id")
     public String findIdPost(@RequestParam String name, @RequestParam String company, Model model) {
-        Optional<String> email = userService.findEmailByNameAndCompany(name.trim(), company.trim());
+        // 동명이인이 같은 회사에 있으면 여러 건이 나올 수 있어 전부 보여줌
+        List<String> emails = userService.findEmailsByNameAndCompany(name.trim(), company.trim());
 
-        if (email.isEmpty()) {
+        if (emails.isEmpty()) {
             model.addAttribute("findIdError", "일치하는 가입 정보를 찾을 수 없습니다.");
             return "auth/find-id";
         }
-        model.addAttribute("foundEmail", maskEmail(email.get()));
+        model.addAttribute("foundEmails", emails);
         return "auth/find-id";
-    }
-
-    // 아이디 찾기 결과를 전체 노출이 아닌 일부 마스킹으로 처리함
-    // 전체 노출이 나은지 일부 마스킹이 나은지
-    private String maskEmail(String email) {
-        int at = email.indexOf('@');
-        if (at <= 0) {
-            return "****";
-        }
-        String local = email.substring(0, at);
-        String domain = email.substring(at);
-        if (local.length() <= 2) {
-            return local.charAt(0) + "*" + domain;
-        }
-        return local.substring(0, 2) + "*".repeat(local.length() - 2) + domain;
     }
 
     // === 비밀번호 찾기 ===
@@ -147,8 +202,12 @@ public class UserController {
         session.setAttribute(RESET_EXPIRES_AT, LocalDateTime.now().plusMinutes(CODE_TTL_MINUTES));
         session.setAttribute(RESET_VERIFIED, false);
 
-        // 메일/SMS 발송 연동 전까지는 서버 로그로 코드 확인 부탁
-        log.info("[비밀번호 재설정] {} 인증 코드 = {} ({}분간 유효)", target, code, CODE_TTL_MINUTES);
+        boolean sent = mailService.sendPasswordResetCode(target, code, CODE_TTL_MINUTES);
+        if (!sent) {
+            // 메일 로컬 개발용 확인
+            log.info("[비밀번호 재설정] {} 인증 코드 = {} ({}분간 유효)", target, code, CODE_TTL_MINUTES);
+            model.addAttribute("findPwError", "메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        }
 
         model.addAttribute("step", 2);
         model.addAttribute("targetEmail", target);
