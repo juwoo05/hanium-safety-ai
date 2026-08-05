@@ -1,17 +1,18 @@
-package kopo.poly.service;
+package kopo.poly.service.impl;
 
 import kopo.poly.dto.request.SiteCreateRequest;
 import kopo.poly.dto.response.SiteResponse;
 import kopo.poly.entity.Site;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SiteRepository;
+import kopo.poly.service.ISiteService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class SiteService {
+public class SiteService implements ISiteService {
 
     private final SiteRepository siteRepository;
     private final AiSafetyInspectionRepository inspectionRepository;
@@ -23,6 +24,7 @@ public class SiteService {
 
     // 각 현장의 최근 위험도는 그 현장에서 가장 최근에 실시된 점검 결과를 보여준다.
     // 점검 이력이 없는 신규 현장은 null(위험도 배지 없음)로 내려간다.
+    @Override
     public List<SiteResponse> list() {
         return siteRepository.findAllByOrderByNameAsc().stream()
                 .map(site -> SiteResponse.from(
@@ -34,6 +36,7 @@ public class SiteService {
                 .toList();
     }
 
+    @Override
     @Transactional
     public Site create(SiteCreateRequest request) {
         if (request.name() == null || request.name().isBlank()) {

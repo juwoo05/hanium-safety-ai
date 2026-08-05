@@ -1,4 +1,4 @@
-package kopo.poly.service;
+package kopo.poly.service.impl;
 
 import kopo.poly.dto.response.AnalyticsSummaryResponse;
 import kopo.poly.dto.response.AnalyticsSummaryResponse.CategoryCount;
@@ -11,6 +11,7 @@ import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
 import kopo.poly.repository.UserRepository;
+import kopo.poly.service.IAnalyticsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class AnalyticsService {
+public class AnalyticsService implements IAnalyticsService {
 
     private static final int CATEGORY_TOP_N = 5;
     private static final String UNASSIGNED_COMPANY = "미지정";
@@ -41,6 +42,7 @@ public class AnalyticsService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public AnalyticsSummaryResponse summarize(int year) {
         List<SafetyAction> actions = safetyActionRepository.findAll();
 

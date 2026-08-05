@@ -2,7 +2,7 @@ package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.EvidenceItemDto;
-import kopo.poly.service.EvidenceService;
+import kopo.poly.service.IEvidenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,9 +14,9 @@ import java.util.List;
 @RestController
 public class EvidenceApiController {
 
-    private final EvidenceService evidenceService;
+    private final IEvidenceService evidenceService;
 
-    public EvidenceApiController(EvidenceService evidenceService) {
+    public EvidenceApiController(IEvidenceService evidenceService) {
         this.evidenceService = evidenceService;
     }
 

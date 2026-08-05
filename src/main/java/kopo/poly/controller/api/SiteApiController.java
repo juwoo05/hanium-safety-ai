@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.request.SiteCreateRequest;
 import kopo.poly.dto.response.SiteResponse;
 import kopo.poly.entity.Site;
-import kopo.poly.service.SiteService;
+import kopo.poly.service.ISiteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +18,9 @@ import java.util.List;
 @RestController
 public class SiteApiController {
 
-    private final SiteService siteService;
+    private final ISiteService siteService;
 
-    public SiteApiController(SiteService siteService) {
+    public SiteApiController(ISiteService siteService) {
         this.siteService = siteService;
     }
 

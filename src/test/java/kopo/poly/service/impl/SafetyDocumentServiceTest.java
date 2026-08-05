@@ -1,4 +1,4 @@
-package kopo.poly.service;
+package kopo.poly.service.impl;
 
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
