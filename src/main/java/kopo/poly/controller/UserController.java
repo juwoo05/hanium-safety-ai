@@ -174,8 +174,22 @@ public class UserController {
             model.addAttribute("findIdError", "일치하는 가입 정보를 찾을 수 없습니다.");
             return "auth/find-id";
         }
-        model.addAttribute("foundEmails", emails);
+        model.addAttribute("foundEmails", emails.stream().map(this::maskEmail).toList());
         return "auth/find-id";
+    }
+
+    // 아이디 찾기 결과를 전체 노출이 아닌 일부 마스킹으로 처리함
+    private String maskEmail(String email) {
+        int at = email.indexOf('@');
+        if (at <= 0) {
+            return "****";
+        }
+        String local = email.substring(0, at);
+        String domain = email.substring(at);
+        if (local.length() <= 2) {
+            return local.charAt(0) + "*" + domain;
+        }
+        return local.substring(0, 2) + "*".repeat(local.length() - 2) + domain;
     }
 
     // === 비밀번호 찾기 ===
