@@ -9,6 +9,7 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
+<%@ include file="../common/_topnav.jsp" %>
 
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
   <!-- Top Bar -->
@@ -349,6 +350,10 @@ function renderStep4() {
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2"/></svg>
           조치 등록하러 가기
         </button>
+        <a href="/actions/detail?inspectionId=${currentInspectionId}" class="w-full py-3 mt-2 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          리포트 작성하기
+        </a>
       </div>`;
   }
 
@@ -681,7 +686,7 @@ function startAnalysis() {
       imageS3Key: readyFile.s3Key,
       workInfo: question,
       location: selectedSite.name,
-      workType: selectedSite.zone,
+      workType: selectedSite.zone || '미지정',
       requestedBy: CURRENT_USER_ID,
     }),
   })
