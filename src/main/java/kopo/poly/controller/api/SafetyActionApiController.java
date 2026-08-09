@@ -71,7 +71,8 @@ public class SafetyActionApiController {
 
     // 조치전 카드를 인스펙션 없이(수동 등록) 클릭했을 때의 단건 상세 조회
     @GetMapping("/api/actions/{id}")
-    public ActionResponse getById(@PathVariable Long id) {
+    public ActionResponse getById(@PathVariable Long id, HttpSession session) {
+        requireLoginUserId(session);
         var action = safetyActionService.findById(id);
         return ActionResponse.from(action, safetyActionService.resolveUserName(action.getReporterId()));
     }
