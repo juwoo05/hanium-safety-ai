@@ -287,7 +287,7 @@
         qs('#bannerUrgentCount').textContent = '긴급 조치: ' + actions.length + '건';
         qs('#urgentActionsList').innerHTML = sorted.length
           ? sorted.map(function (a) {
-              var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions';
+              var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions/detail?actionId=' + a.id;
               return '<a href="' + link + '" class="block p-3 bg-red-50 rounded-xl border border-red-100 hover:border-red-300 transition-colors">' +
                 '<p class="text-sm font-semibold text-gray-900 mb-1">' + a.title + '</p>' +
                 '<p class="text-xs text-gray-600">' + (a.location || '현장 미지정') + (a.reporterName ? ' · ' + a.reporterName : '') + '</p>' +

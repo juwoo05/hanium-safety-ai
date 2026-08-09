@@ -1,12 +1,22 @@
 package kopo.poly.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.SignupRequestDTO;
+import kopo.poly.dto.request.SignupRequestDTO;
+import kopo.poly.entity.User;
+import kopo.poly.security.CustomUserDetails;
+import kopo.poly.security.LoginSuccessHandler;
 import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +29,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Controller
@@ -53,6 +64,71 @@ public class UserController {
             model.addAttribute("loginMessage", "로그아웃되었습니다.");
         }
         return "auth/login";
+    }
+
+    // === 로그인 2단계 인증 ===
+    // 아이디/비밀번호는 맞았지만 아직 세션 인증이 완료되지 않은 상태에서만 진입 가능
+    // (LoginSuccessHandler가 2단계 인증 대상 계정에 한해 PENDING_2FA_USER_ID를 세션에 심어둔다).
+    @GetMapping("/login/verify-2fa")
+    public String verify2faForm(HttpSession session, Model model) {
+        if (session.getAttribute(LoginSuccessHandler.PENDING_2FA_USER_ID) == null) {
+            return "redirect:/login";
+        }
+        return "auth/verify-2fa";
+    }
+
+    @PostMapping("/login/verify-2fa")
+    public String verify2faSubmit(@RequestParam String code,
+                                  HttpSession session,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  Model model) {
+        Long pendingUserId = (Long) session.getAttribute(LoginSuccessHandler.PENDING_2FA_USER_ID);
+        String issued = (String) session.getAttribute(LoginSuccessHandler.PENDING_2FA_CODE);
+        LocalDateTime expiresAt = (LocalDateTime) session.getAttribute(LoginSuccessHandler.PENDING_2FA_EXPIRES_AT);
+        Boolean sub = (Boolean) session.getAttribute(LoginSuccessHandler.PENDING_2FA_SUB);
+
+        if (pendingUserId == null || issued == null || expiresAt == null) {
+            return "redirect:/login";
+        }
+        if (LocalDateTime.now().isAfter(expiresAt)) {
+            clearPending2fa(session);
+            model.addAttribute("verifyError", "인증 코드가 만료되었습니다. 다시 로그인해주세요.");
+            return "redirect:/login";
+        }
+        if (!issued.equals(isBlank(code) ? "" : code.trim())) {
+            model.addAttribute("verifyError", "인증 코드가 올바르지 않습니다.");
+            return "auth/verify-2fa";
+        }
+
+        User user;
+        try {
+            user = userService.getProfile(pendingUserId);
+        } catch (NoSuchElementException e) {
+            clearPending2fa(session);
+            return "redirect:/login";
+        }
+
+        CustomUserDetails principal = new CustomUserDetails(user);
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authToken);
+        SecurityContextHolder.setContext(context);
+        SecurityContextRepository contextRepository = new HttpSessionSecurityContextRepository();
+        contextRepository.saveContext(context, request, response);
+
+        session.setAttribute(LoginSuccessHandler.LOGIN_USER_ID, pendingUserId);
+        clearPending2fa(session);
+
+        return "redirect:" + (Boolean.TRUE.equals(sub) ? "/dashboard/sub" : "/dashboard");
+    }
+
+    private void clearPending2fa(HttpSession session) {
+        session.removeAttribute(LoginSuccessHandler.PENDING_2FA_USER_ID);
+        session.removeAttribute(LoginSuccessHandler.PENDING_2FA_CODE);
+        session.removeAttribute(LoginSuccessHandler.PENDING_2FA_EXPIRES_AT);
+        session.removeAttribute(LoginSuccessHandler.PENDING_2FA_SUB);
     }
 
     // === 회원가입 ===

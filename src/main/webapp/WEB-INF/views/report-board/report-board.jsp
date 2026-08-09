@@ -27,8 +27,8 @@
         <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
       </a>
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div>
-        <span class="text-sm font-medium text-gray-700 hidden sm:block">김현장</span>
+        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div>
+        <span id="headerUserName" class="text-sm font-medium text-gray-700 hidden sm:block">-</span>
       </a>
     </div>
   </header>
@@ -230,6 +230,17 @@
 </div>
 
 <script>
+function loadCurrentUser() {
+  fetch('/api/users/me')
+    .then(function (res) { if (res.status === 401) { window.location.href = '/login'; throw new Error(); } if (!res.ok) throw new Error(); return res.json(); })
+    .then(function (user) {
+      document.getElementById('headerUserName').textContent = user.username;
+      document.getElementById('headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
+    })
+    .catch(function () {});
+}
+loadCurrentUser();
+
 function openModal() {
   document.getElementById('fTitle').value='';
   document.getElementById('fLocation').value='';

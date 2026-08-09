@@ -84,9 +84,60 @@
 
       <!-- 분석결과 탭 -->
       <div id="tab-result" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-md">
-        <h3 class="text-base font-semibold text-gray-900 mb-4">감지 항목</h3>
-        <div id="detectedItems" class="space-y-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-semibold text-gray-900">감지 항목</h3>
+          <div class="flex items-center gap-1.5" id="issueFilterTabs">
+            <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#FF6B35] text-white" data-filter="all">전체</button>
+            <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="needed">조치 필요</button>
+            <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="done">완료</button>
+          </div>
+        </div>
+        <div id="detectedItems" class="space-y-3">
           <p class="text-sm text-gray-400">리포트를 선택하면 감지 항목이 표시됩니다.</p>
+        </div>
+
+        <!-- 현장 비교(조치 검증) 패널 -->
+        <div id="verificationPanel" class="hidden mt-4 bg-[#f5f7fa] rounded-2xl border-2 border-[#003b5c]/10 overflow-hidden">
+          <div class="bg-[#003b5c] px-6 py-4 flex items-center justify-between">
+            <div>
+              <p class="text-white font-bold text-base">조치 검증 업로드</p>
+              <p id="verifyIssueLabel" class="text-white/60 text-xs"></p>
+            </div>
+            <button id="closeVerificationBtn" type="button" class="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+              <svg class="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-5">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="flex items-center gap-2 px-5 pt-5 pb-3"><div class="w-3 h-3 rounded-full bg-red-500"></div><span class="font-bold text-[#003b5c]">조치 전</span></div>
+                <div id="verifyBeforeImageWrap" class="mx-5 mb-5 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center" style="height:220px"></div>
+                <div id="verifyContextWrap" class="mx-5 mb-5 space-y-2 text-xs"></div>
+              </div>
+              <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <div class="flex items-center gap-2 px-5 pt-5 pb-3"><div class="w-3 h-3 rounded-full bg-green-600"></div><span class="font-bold text-[#003b5c]">조치 후</span></div>
+                <div class="mx-5 mb-5">
+                  <label id="verifyAfterDropzone" class="relative rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#FF6B35] hover:bg-orange-50 transition-all" style="height:220px">
+                    <input id="verifyAfterInput" type="file" accept="image/*" class="hidden"/>
+                    <svg class="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <p class="text-sm text-gray-600 font-medium mt-2">개선된 현장을 촬영해주세요</p>
+                    <p class="text-xs text-gray-400 mt-0.5">클릭하거나 드래그하여 업로드</p>
+                  </label>
+                  <div id="verifyAfterPreviewWrap" class="hidden relative rounded-xl overflow-hidden bg-gray-100" style="height:220px">
+                    <img id="verifyAfterPreviewImg" class="w-full h-full object-cover" alt="조치 후 사진"/>
+                    <button id="verifyAfterRemoveBtn" type="button" class="absolute top-2 right-2 bg-black/50 hover:bg-black/70 rounded-full p-1.5"><svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p id="verifyResultBox" class="hidden text-sm px-4 py-3 rounded-xl"></p>
+
+            <div class="bg-white rounded-2xl shadow-sm p-5 flex gap-3">
+              <button id="verifyAiRequestBtn" type="button" disabled class="flex-1 h-12 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed">AI 재평가 요청</button>
+              <button id="verifyCompleteBtn" type="button" class="hidden flex-1 h-12 rounded-xl font-bold text-sm bg-green-600 text-white hover:bg-green-700 transition-colors">승인 요청하기</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -328,6 +379,10 @@
 <script>
 (function () {
   var INSPECTION_ID = new URLSearchParams(window.location.search).get('inspectionId');
+  var ACTION_ID = new URLSearchParams(window.location.search).get('actionId');
+  var CURRENT_USER_ID = null;
+  var CURRENT_INSPECTION = null;
+  var VERIFY_AFTER_S3KEY = null;
 
   var FORM_META = {
     INSPECTION_LOG: { title: '안전점검일지', fieldClass: 'field-inspection' },
@@ -560,11 +615,15 @@
   qs('#aiAutoFillBtn').addEventListener('click', function () {
     var type = state.currentType;
 
-    if (!INSPECTION_ID) {
+    if (!INSPECTION_ID && !ACTION_ID) {
       var fallback = AI_FALLBACK_DATA[type];
       state.documents[type] = { formData: fallback, aiGenerated: true };
       renderForm(type, fallback, true);
       qs('#aiAssistStatus').classList.remove('hidden');
+      return;
+    }
+    if (!INSPECTION_ID) {
+      alert('AI 검사 기록이 없는 조치라 자동 작성을 사용할 수 없습니다. 직접 입력해주세요.');
       return;
     }
 
@@ -633,20 +692,188 @@
         return res.json();
       })
       .then(function (user) {
+        CURRENT_USER_ID = user.id;
         qs('#headerUserName').textContent = user.username;
         qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
       })
       .catch(function () { /* 상단 사용자 표시만 실패하는 경우이므로 화면 전체를 막지 않는다 */ });
   }
 
+  var CURRENT_ACTIONS = [];
+  var issueFilter = 'all';
+  var RISK_BADGE_META = {
+    HIGH: { label: '고위험', dot: 'bg-red-500', badge: 'bg-red-500', box: 'bg-red-50 border-red-200' },
+    MEDIUM: { label: '중위험', dot: 'bg-orange-400', badge: 'bg-orange-500', box: 'bg-orange-50 border-orange-200' },
+    SAFE: { label: '안전', dot: 'bg-yellow-400', badge: 'bg-green-500', box: 'bg-green-50 border-green-200' }
+  };
+
   function detectedItemHtml(action) {
-    var bad = action.riskLevel !== 'SAFE';
-    return '<div class="flex items-center gap-3 p-3 ' + (bad ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100') + ' rounded-xl border">' +
-      '<div class="w-3 h-3 rounded-full ' + (bad ? 'bg-red-500' : 'bg-green-500') + ' flex-shrink-0"></div>' +
-      '<div class="flex-1 min-w-0"><p class="text-sm font-semibold text-gray-900">' + action.title + '</p>' +
-      '<p class="text-xs text-gray-500">' + action.description + '</p></div>' +
-      '<div class="text-right flex-shrink-0"><p class="text-sm font-bold ' + (bad ? 'text-red-600' : 'text-green-600') + '">' +
-      (bad ? '개선 필요' : '양호') + '</p></div></div>';
+    var meta = RISK_BADGE_META[action.riskLevel] || RISK_BADGE_META.SAFE;
+    var completed = action.status === 'COMPLETED';
+    var link = action.inspectionId ? '/actions/detail?inspectionId=' + action.inspectionId : '/actions';
+    return '<div class="rounded-xl border-2 p-4 ' + meta.box + '">' +
+      '<div class="flex items-start justify-between mb-2">' +
+      '<div class="flex items-start gap-3 flex-1"><div class="w-2.5 h-2.5 rounded-full ' + meta.dot + ' mt-1.5 flex-shrink-0"></div>' +
+      '<div><h4 class="font-bold text-gray-900 mb-1">' + action.title + '</h4>' +
+      '<span class="px-2 py-0.5 ' + meta.badge + ' text-white text-[10px] font-bold rounded">' + meta.label + '</span></div></div>' +
+      '<span class="px-2.5 py-1 text-xs font-semibold rounded-full flex-shrink-0 ' + (completed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') + '">' + (completed ? '완료' : '조치 필요') + '</span>' +
+      '</div>' +
+      '<p class="text-sm text-gray-700 mb-3">' + (action.description || '') + '</p>' +
+      (action.regulationRef ? '<div class="bg-white/70 rounded-lg p-3 mb-2"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">관련 법규</p><p class="text-xs text-gray-800 font-medium">' + action.regulationRef + '</p></div>' : '') +
+      (action.recommendation ? '<div class="bg-white/80 rounded-lg p-3 border border-orange-200 mb-2"><p class="text-xs font-bold text-orange-800 mb-1">권장 조치사항</p><p class="text-xs text-orange-700">' + action.recommendation + '</p></div>' : '') +
+      '<div class="flex items-center gap-3 mt-1">' +
+      '<a href="' + link + '" class="text-xs text-[#FF6B35] hover:underline font-semibold">조치 상세 보기 →</a>' +
+      (completed ? '' : '<button type="button" class="verify-open-btn text-xs px-3 py-1.5 border-2 border-[#003b5c] text-[#003b5c] rounded-lg font-semibold hover:bg-[#003b5c]/5 transition-colors" data-id="' + action.id + '">현장 비교</button>') +
+      '</div>' +
+      '</div>';
+  }
+
+  function renderDetectedItems() {
+    var filtered = CURRENT_ACTIONS.filter(function (a) {
+      if (issueFilter === 'needed') return a.status !== 'COMPLETED';
+      if (issueFilter === 'done') return a.status === 'COMPLETED';
+      return true;
+    });
+    qs('#detectedItems').innerHTML = filtered.length
+      ? filtered.map(detectedItemHtml).join('')
+      : '<p class="text-sm text-gray-400">해당하는 감지 항목이 없습니다.</p>';
+  }
+
+  qsa('.issue-filter-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      issueFilter = btn.dataset.filter;
+      qsa('.issue-filter-btn').forEach(function (b) { b.className = 'issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200'; });
+      btn.className = 'issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#FF6B35] text-white';
+      renderDetectedItems();
+    });
+  });
+
+  /* ── 현장 비교(조치 검증) ── */
+  var verifyingAction = null;
+  var verifyAfterFile = null;
+
+  qs('#detectedItems').addEventListener('click', function (e) {
+    var btn = e.target.closest('.verify-open-btn');
+    if (!btn) return;
+    var action = CURRENT_ACTIONS.find(function (a) { return String(a.id) === btn.dataset.id; });
+    if (action) openVerification(action);
+  });
+
+  function openVerification(action) {
+    verifyingAction = action;
+    verifyAfterFile = null;
+    qs('#verificationPanel').classList.remove('hidden');
+    qs('#verifyIssueLabel').textContent = '조치 항목: ' + action.title;
+
+    var beforeImg = CURRENT_INSPECTION && CURRENT_INSPECTION.imageUrls && CURRENT_INSPECTION.imageUrls[0];
+    qs('#verifyBeforeImageWrap').innerHTML = beforeImg
+      ? '<img src="' + beforeImg + '" alt="조치 전 현장" class="w-full h-full object-cover"/>'
+      : '<p class="text-xs text-gray-400">등록된 현장 사진이 없습니다.</p>';
+
+    var context = '';
+    if (action.recommendation) context += '<div><p class="text-[#003b5c] font-bold mb-1">권장 조치사항</p><p class="text-gray-600">' + action.recommendation + '</p></div>';
+    if (action.regulationRef) context += '<div><p class="text-[#003b5c] font-bold mb-1">관련 법규</p><p class="text-gray-600">' + action.regulationRef + '</p></div>';
+    qs('#verifyContextWrap').innerHTML = context;
+
+    resetVerifyAfter();
+    qs('#verifyResultBox').classList.add('hidden');
+    qs('#verifyCompleteBtn').classList.add('hidden');
+    qs('#verificationPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function resetVerifyAfter() {
+    verifyAfterFile = null;
+    qs('#verifyAfterDropzone').classList.remove('hidden');
+    qs('#verifyAfterPreviewWrap').classList.add('hidden');
+    qs('#verifyAiRequestBtn').disabled = true;
+    qs('#verifyAiRequestBtn').className = 'flex-1 h-12 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed';
+  }
+
+  function setVerifyAfterFile(file) {
+    if (!file) return;
+    verifyAfterFile = file;
+    qs('#verifyAfterPreviewImg').src = URL.createObjectURL(file);
+    qs('#verifyAfterDropzone').classList.add('hidden');
+    qs('#verifyAfterPreviewWrap').classList.remove('hidden');
+    qs('#verifyAiRequestBtn').disabled = false;
+    qs('#verifyAiRequestBtn').className = 'flex-1 h-12 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 bg-[#003b5c] text-white hover:bg-[#002a44]';
+  }
+
+  qs('#verifyAfterDropzone').addEventListener('click', function () { qs('#verifyAfterInput').click(); });
+  qs('#verifyAfterInput').addEventListener('change', function (e) { setVerifyAfterFile(e.target.files[0]); });
+  qs('#verifyAfterDropzone').addEventListener('dragover', function (e) { e.preventDefault(); });
+  qs('#verifyAfterDropzone').addEventListener('drop', function (e) { e.preventDefault(); setVerifyAfterFile(e.dataTransfer.files[0]); });
+  qs('#verifyAfterRemoveBtn').addEventListener('click', function () { resetVerifyAfter(); });
+  qs('#closeVerificationBtn').addEventListener('click', function () { qs('#verificationPanel').classList.add('hidden'); verifyingAction = null; });
+
+  qs('#verifyAiRequestBtn').addEventListener('click', function () {
+    if (!verifyAfterFile || !verifyingAction) return;
+    var btn = qs('#verifyAiRequestBtn');
+    btn.disabled = true;
+    btn.textContent = 'AI 분석 중...';
+
+    var formData = new FormData();
+    formData.append('file', verifyAfterFile);
+
+    fetch('/api/uploads', { method: 'POST', body: formData })
+      .then(function (res) { if (!res.ok) throw new Error('사진 업로드에 실패했습니다.'); return res.json(); })
+      .then(function (uploaded) {
+        return fetch('/api/inspections/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            siteId: null,
+            imageS3Key: uploaded.s3Key,
+            workInfo: verifyingAction.title + ' 조치 검증',
+            location: (CURRENT_INSPECTION && CURRENT_INSPECTION.location) || verifyingAction.location,
+            workType: (CURRENT_INSPECTION && CURRENT_INSPECTION.workType) || null,
+            requestedBy: CURRENT_USER_ID
+          })
+        });
+      })
+      .then(function (res) { if (!res.ok) throw new Error('AI 재평가에 실패했습니다.'); return res.json(); })
+      .then(function (result) {
+        var meta = RISK_LEVEL_META[result.riskLevel] || RISK_LEVEL_META.SAFE;
+        var resolved = result.riskLevel === 'SAFE';
+        var box = qs('#verifyResultBox');
+        box.classList.remove('hidden');
+        box.className = 'text-sm px-4 py-3 rounded-xl ' + (resolved ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-orange-50 text-orange-800 border border-orange-200');
+        box.innerHTML = '<p class="font-bold mb-1">AI 재평가 결과: ' + meta.label + '</p><p>' + (result.aiResponseContent || result.aiResponseTitle || '분석이 완료되었습니다.') + '</p>';
+        qs('#verifyCompleteBtn').classList.remove('hidden');
+      })
+      .catch(function (err) {
+        var box = qs('#verifyResultBox');
+        box.classList.remove('hidden');
+        box.className = 'text-sm px-4 py-3 rounded-xl bg-red-50 text-red-700 border border-red-200';
+        box.textContent = err.message || 'AI 재평가에 실패했습니다.';
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = 'AI 재평가 요청';
+      });
+  });
+
+  qs('#verifyCompleteBtn').addEventListener('click', function () {
+    if (!verifyingAction) return;
+    var ensureInProgress = verifyingAction.status === 'REQUESTED'
+      ? fetch('/api/actions/' + verifyingAction.id + '/status', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'IN_PROGRESS' })
+        })
+      : Promise.resolve();
+
+    ensureInProgress
+      .then(function () { return fetch('/api/actions/' + verifyingAction.id + '/submit-approval', { method: 'POST' }); })
+      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
+      .then(function () {
+        qs('#verificationPanel').classList.add('hidden');
+        refreshReport();
+      })
+      .catch(function () { alert('승인 요청에 실패했습니다.'); });
+  });
+
+  function refreshReport() {
+    if (INSPECTION_ID) loadInspectionHeader();
+    else if (ACTION_ID) loadActionOnly();
   }
 
   function loadInspectionHeader() {
@@ -661,6 +888,7 @@
       })
     ]).then(function (results) {
       var inspection = results[0], actions = results[1];
+      CURRENT_INSPECTION = inspection;
       var meta = RISK_LEVEL_META[inspection.riskLevel] || RISK_LEVEL_META.SAFE;
 
       qs('#reportTitle').textContent = inspection.aiResponseTitle || (inspection.location + ' 안전 분석 리포트');
@@ -680,12 +908,51 @@
       barEl.style.width = meta.barPct + '%';
 
       qs('#detectedCount').textContent = actions.length + '건';
-      qs('#detectedItems').innerHTML = actions.length
-        ? actions.map(detectedItemHtml).join('')
-        : '<p class="text-sm text-gray-400">감지된 위험요소가 없습니다.</p>';
+      CURRENT_ACTIONS = actions;
+      renderDetectedItems();
     }).catch(function (err) {
       qs('#reportTitle').textContent = err.message || '리포트를 불러오지 못했습니다.';
     });
+  }
+
+  // inspectionId 없이 개별 조치(actionId)만으로 들어온 경우: 검사와 연결된 조치라면 정상 리포트로 이동,
+  // 아니면(수동 등록 조치) 그 조치 하나만 보여주는 단순 상세 화면으로 렌더링한다.
+  function loadActionOnly() {
+    fetch('/api/actions/' + ACTION_ID)
+      .then(function (res) {
+        if (!res.ok) throw new Error('조치를 불러오지 못했습니다.');
+        return res.json();
+      })
+      .then(function (action) {
+        if (action.inspectionId) {
+          window.location.replace('/actions/detail?inspectionId=' + action.inspectionId);
+          return;
+        }
+        var meta = RISK_LEVEL_META[action.riskLevel] || RISK_LEVEL_META.SAFE;
+
+        qs('#reportTitle').textContent = action.title;
+        qs('#reportIdBadge').textContent = '#A' + action.id;
+        qs('#reportDate').textContent = action.discoveredAt ? action.discoveredAt.replace('T', ' ').slice(0, 16) : '-';
+        qs('#reportLocation').textContent = action.location || '-';
+        qs('#reportRequester').textContent = action.reporterName || '담당자 정보 없음';
+
+        var riskLabelEl = qs('#riskLevelLabel');
+        riskLabelEl.textContent = meta.label;
+        riskLabelEl.className = 'text-3xl font-bold text-' + meta.color;
+        var badgeEl = qs('#riskLevelBadge');
+        badgeEl.textContent = meta.label;
+        badgeEl.className = 'text-xs font-bold px-2 py-0.5 text-white rounded-full ' + meta.badgeColor;
+        var barEl = qs('#riskLevelBar');
+        barEl.className = meta.barColor + ' h-2.5 rounded-full';
+        barEl.style.width = meta.barPct + '%';
+
+        qs('#detectedCount').textContent = '1건';
+        CURRENT_ACTIONS = [action];
+        renderDetectedItems();
+      })
+      .catch(function (err) {
+        qs('#reportTitle').textContent = err.message || '조치를 불러오지 못했습니다.';
+      });
   }
 
   loadCurrentUser();
@@ -700,6 +967,9 @@
         selectFormType(state.currentType);
       })
       .catch(function () { selectFormType(state.currentType); });
+  } else if (ACTION_ID) {
+    loadActionOnly();
+    setFieldVisibility(state.currentType);
   } else {
     qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다 (데모 모드)';
     setFieldVisibility(state.currentType);

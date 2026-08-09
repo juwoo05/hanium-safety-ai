@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.EvidenceItemDto;
+import kopo.poly.dto.response.EvidenceItemDto;
 import kopo.poly.service.IEvidenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

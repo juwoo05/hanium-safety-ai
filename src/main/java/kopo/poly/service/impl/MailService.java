@@ -45,6 +45,16 @@ public class MailService implements IMailService {
         return send(toEmail, subject, html);
     }
 
+    @Override
+    public boolean sendTwoFactorCode(String toEmail, String code, int ttlMinutes) {
+        String subject = "[SafeMate] 로그인 2단계 인증 코드";
+        String html = buildCodeHtml(
+                "2단계 인증",
+                "로그인을 완료하려면 아래 인증 코드를 입력해주세요.",
+                code, ttlMinutes);
+        return send(toEmail, subject, html);
+    }
+
     private boolean send(String toEmail, String subject, String html) {
         if (fromAddress.isBlank()) {
             log.warn("메일 계정(GMAIL_USERNAME)이 설정되지 않아 발송을 건너뜁니다. 수신자={}", toEmail);

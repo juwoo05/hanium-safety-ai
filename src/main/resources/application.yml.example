@@ -1,0 +1,61 @@
+# 이 프로젝트는 application.properties를 사용하지만(YAML 아님), 신규 팀원이 필요한 설정 키를
+# 한눈에 보고 채워 넣을 수 있도록 YAML 형식 샘플로 정리한 것입니다.
+# 사용법: 이 파일을 참고해 src/main/resources/application.properties를 직접 만드세요.
+# (application.properties는 실제 DB 비밀번호/메일 비밀번호가 들어가므로 .gitignore 처리되어 있고
+#  git에 올라가지 않습니다 — 반드시 로컬에서 새로 만들어야 앱이 기동됩니다.)
+
+spring:
+  application:
+    name: hanium-safety-ai
+
+  datasource:
+    # MariaDB 접속 정보. useUnicode/characterEncoding은 한글 깨짐 방지용으로 반드시 필요.
+    url: jdbc:mariadb://<DB_HOST>:3306/hanium?useUnicode=true&characterEncoding=UTF-8
+    username: <DB_USERNAME>
+    password: <DB_PASSWORD>
+
+  jpa:
+    hibernate:
+      # update: 엔티티 변경 시 테이블을 자동으로 맞춰준다. 운영 배포 시에는 validate/none으로 바꿀 것.
+      ddl-auto: update
+
+  mail:
+    # Gmail 기준. 계정 비밀번호가 아니라 "앱 비밀번호"(Google 계정 > 보안 > 앱 비밀번호)를 써야 한다.
+    host: smtp.gmail.com
+    port: 587
+    username: <GMAIL_ADDRESS>
+    password: <GMAIL_APP_PASSWORD>
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+server:
+  tomcat:
+    uri-encoding: UTF-8
+
+# Spring Boot <-> FastAPI(ai-pipeline) 간 내부 호출 인증용 키.
+# ai-pipeline/.env의 INTERNAL_API_KEY와 반드시 같은 값을 써야 한다.
+INTERNAL_API_KEY: <INTERNAL_API_KEY>
+
+# FastAPI AI 파이프라인 서버 주소
+ai-pipeline:
+  base-url: http://localhost:8000
+  api-key: ${INTERNAL_API_KEY}

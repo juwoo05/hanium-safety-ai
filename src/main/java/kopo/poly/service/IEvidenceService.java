@@ -1,6 +1,6 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.EvidenceItemDto;
+import kopo.poly.dto.response.EvidenceItemDto;
 
 import java.util.List;
 

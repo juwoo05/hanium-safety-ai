@@ -18,7 +18,7 @@
         <option>이번 달</option><option>지난 달</option><option>최근 3개월</option><option>올해</option>
       </select>
       <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
-      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div></a>
+      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div></a>
     </div>
   </header>
   <main class="flex-1 overflow-y-auto p-6 lg:p-8">
@@ -95,6 +95,13 @@
   function qs(sel, root) { return (root || document).querySelector(sel); }
   var CATEGORY_COLORS = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500'];
   var RISK_COLORS = { '고위험': '#FF6B35', '중위험': '#fb923c', '안전': '#fbbf24' };
+
+  fetch('/api/users/me')
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (user) {
+      if (user) qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
+    })
+    .catch(function () {});
 
   fetch('/api/analytics/summary')
     .then(function (res) {

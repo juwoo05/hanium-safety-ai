@@ -123,8 +123,8 @@
 
 <script>
 (function () {
-  var STATUS_LABEL = { REQUESTED: '미완료', IN_PROGRESS: '진행 중', COMPLETED: '완료' };
-  var STATUS_CLASS = { REQUESTED: 'bg-gray-100 text-gray-600', IN_PROGRESS: 'bg-blue-100 text-blue-700', COMPLETED: 'bg-green-100 text-green-700' };
+  var STATUS_LABEL = { REQUESTED: '미완료', IN_PROGRESS: '진행 중', PENDING_APPROVAL: '승인 대기', COMPLETED: '완료' };
+  var STATUS_CLASS = { REQUESTED: 'bg-gray-100 text-gray-600', IN_PROGRESS: 'bg-blue-100 text-blue-700', PENDING_APPROVAL: 'bg-purple-100 text-purple-700', COMPLETED: 'bg-green-100 text-green-700' };
   var CURRENT_USER_ID = null;
   function qs(sel) { return document.querySelector(sel); }
 
@@ -134,7 +134,7 @@
       return;
     }
     qs('#myTasksList').innerHTML = actions.slice(0, 6).map(function (a) {
-      var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions';
+      var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions/detail?actionId=' + a.id;
       var dot = a.status === 'COMPLETED' ? 'bg-green-500' : (a.riskLevel === 'HIGH' ? 'bg-red-500' : 'bg-orange-500');
       var border = a.status === 'COMPLETED' ? 'border-green-200 bg-green-50 hover:border-green-300' : 'border-gray-200 bg-gray-50 hover:border-gray-300';
       var titleClass = a.status === 'COMPLETED' ? 'text-sm font-semibold text-gray-400 line-through' : 'text-sm font-semibold text-gray-900';
@@ -150,7 +150,7 @@
       .sort(function (a, b) { return (a.dueDate || '') < (b.dueDate || '') ? -1 : 1; }).slice(0, 3);
     qs('#myUrgentList').innerHTML = urgent.length
       ? urgent.map(function (a) {
-          var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions';
+          var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions/detail?actionId=' + a.id;
           return '<a href="' + link + '" class="block p-3 bg-red-50 rounded-xl border border-red-100 hover:border-red-200 transition-colors">' +
             '<p class="text-sm font-semibold text-gray-900 mb-1">' + a.title + '</p>' +
             '<div class="flex justify-between items-center"><span class="text-xs text-red-600">마감: ' + (a.dueDate || '-') + '</span>' +

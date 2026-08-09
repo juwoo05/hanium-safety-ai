@@ -33,7 +33,7 @@ public class SecurityConfig {
                         // 로그인 페이지 렌더링조차 거부되어 /login 무한 리다이렉트가 발생한다.
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/", "/landing", "/login", "/signup").permitAll()
+                        .requestMatchers("/", "/landing", "/login", "/login/verify-2fa", "/signup").permitAll()
                         .requestMatchers("/find-id", "/find-password/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()

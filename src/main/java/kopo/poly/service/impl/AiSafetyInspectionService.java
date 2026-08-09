@@ -1,8 +1,8 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.AnalyzeRequestDto;
-import kopo.poly.dto.AnalyzeResponseDto;
-import kopo.poly.dto.RiskItemDto;
+import kopo.poly.dto.request.AnalyzeRequestDto;
+import kopo.poly.dto.response.AnalyzeResponseDto;
+import kopo.poly.dto.response.RiskItemDto;
 import kopo.poly.dto.request.AnalysisRequest;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
