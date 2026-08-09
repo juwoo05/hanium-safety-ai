@@ -29,34 +29,42 @@
   </c:if>
 
   <!-- 카드 2개 -->
-  <div class="grid grid-cols-2 gap-5 w-full">
+  <div class="grid grid-cols-2 gap-8 w-full">
 
     <!-- 원청 -->
-    <button onclick="selectRole('contractor')" class="group relative bg-white rounded-3xl p-8 flex flex-col items-center gap-3 shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200 text-left">
-      <div class="w-20 h-20 bg-[#FF6B35]/10 rounded-full flex items-center justify-center mb-2 group-hover:bg-[#FF6B35]/20 transition-colors">
-        <svg class="w-10 h-10 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+    <button onclick="selectRole('contractor')" class="group relative bg-white rounded-3xl p-10 flex flex-col items-center gap-4 shadow-2xl hover:scale-[1.04] hover:shadow-[0_24px_64px_rgba(0,0,0,0.35)] transition-all duration-200 text-left overflow-hidden">
+      <div class="absolute top-5 left-5 w-9 h-9 rounded-full border-2 border-[#FF6B35] text-[#FF6B35] flex items-center justify-center text-base font-bold">1</div>
+      <div class="w-24 h-24 bg-[#FF6B35]/10 rounded-full flex items-center justify-center mt-4 group-hover:bg-[#FF6B35]/20 transition-colors">
+        <svg class="w-12 h-12 text-[#FF6B35] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           <path d="M9 22V12h6v10"/>
           <rect x="7" y="5" width="2" height="4"/><rect x="11" y="5" width="2" height="4"/><rect x="15" y="5" width="2" height="4"/>
         </svg>
       </div>
-      <span class="text-xl font-bold text-gray-900">원청</span>
-      <span class="text-sm text-gray-400 font-medium">발주처 / 원도급사</span>
-      <span class="text-sm text-gray-500 text-center leading-relaxed mt-1">현장 전체 안전 관리 및 하청 업체 감독</span>
+      <div class="text-center">
+        <span class="text-2xl font-bold text-gray-900 block">원청</span>
+        <span class="text-sm text-gray-400 font-medium">발주처 / 원도급사</span>
+      </div>
+      <span class="text-sm text-gray-400 text-center leading-relaxed">현장 전체 안전 관리 및 하청 업체 감독</span>
+      <div class="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity bg-[#FF6B35]"></div>
     </button>
 
     <!-- 하청 -->
-    <button onclick="selectRole('subcontractor')" class="group relative bg-white rounded-3xl p-8 flex flex-col items-center gap-3 shadow-xl hover:scale-[1.03] hover:shadow-2xl transition-all duration-200">
-      <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-2 group-hover:bg-green-100 transition-colors">
-        <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+    <button onclick="selectRole('subcontractor')" class="group relative bg-white rounded-3xl p-10 flex flex-col items-center gap-4 shadow-2xl hover:scale-[1.04] hover:shadow-[0_24px_64px_rgba(0,0,0,0.35)] transition-all duration-200 overflow-hidden">
+      <div class="absolute top-5 left-5 w-9 h-9 rounded-full border-2 border-green-500 text-green-500 flex items-center justify-center text-base font-bold">2</div>
+      <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mt-4 group-hover:bg-green-100 transition-colors">
+        <svg class="w-12 h-12 text-green-600 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path d="M2 18h20"/><path d="M4 18V9a1 1 0 0 1 .553-.894l7-3.5a1 1 0 0 1 .894 0l7 3.5A1 1 0 0 1 20 9v9"/>
           <path d="M9 18v-6h6v6"/>
           <circle cx="12" cy="6" r="1"/>
         </svg>
       </div>
-      <span class="text-xl font-bold text-gray-900">하청</span>
-      <span class="text-sm text-gray-400 font-medium">하도급사 / 협력업체</span>
-      <span class="text-sm text-gray-500 text-center leading-relaxed mt-1">현장 작업 및 안전 조치 이행 보고</span>
+      <div class="text-center">
+        <span class="text-2xl font-bold text-gray-900 block">하청</span>
+        <span class="text-sm text-gray-400 font-medium">하도급사 / 협력업체</span>
+      </div>
+      <span class="text-sm text-gray-400 text-center leading-relaxed">현장 작업 및 안전 조치 이행 보고</span>
+      <div class="absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity bg-green-500"></div>
     </button>
 
   </div>

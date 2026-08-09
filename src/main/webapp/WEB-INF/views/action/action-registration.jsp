@@ -24,79 +24,174 @@
     </div>
   </header>
   <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="max-w-3xl mx-auto">
-      <div class="space-y-6">
+    <div class="max-w-2xl mx-auto space-y-5">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">조치 사항 등록</h1>
+        <p class="text-sm text-gray-500 mt-1">새로운 안전 조치 사항을 단계별로 등록합니다</p>
+      </div>
 
-        <!-- 기본 정보 -->
-        <div class="bg-white rounded-2xl p-6 shadow-md">
-          <h2 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
-            <span class="w-6 h-6 bg-[#FF6B35] text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-            기본 정보
-          </h2>
+      <!-- Step indicator -->
+      <div class="bg-white rounded-2xl px-6 py-5 shadow-sm border border-gray-100">
+        <div class="flex items-center" id="stepIndicator">
+          <!-- step 1 -->
+          <div class="flex items-center flex-1">
+            <div class="flex flex-col items-center gap-1.5">
+              <div id="stepDot1" class="w-9 h-9 rounded-full flex items-center justify-center transition-all bg-[#FF6B35] text-white shadow-md shadow-[#FF6B35]/40 scale-110">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <span id="stepLabel1" class="text-[10px] font-medium whitespace-nowrap text-[#FF6B35]">기본 정보</span>
+            </div>
+            <div id="stepBar1" class="flex-1 h-0.5 mx-2 mb-5 bg-gray-200"></div>
+          </div>
+          <!-- step 2 -->
+          <div class="flex items-center flex-1">
+            <div class="flex flex-col items-center gap-1.5">
+              <div id="stepDot2" class="w-9 h-9 rounded-full flex items-center justify-center transition-all bg-gray-100 text-gray-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <span id="stepLabel2" class="text-[10px] font-medium whitespace-nowrap text-gray-400">담당자·일정</span>
+            </div>
+            <div id="stepBar2" class="flex-1 h-0.5 mx-2 mb-5 bg-gray-200"></div>
+          </div>
+          <!-- step 3 -->
+          <div class="flex items-center flex-none">
+            <div class="flex flex-col items-center gap-1.5">
+              <div id="stepDot3" class="w-9 h-9 rounded-full flex items-center justify-center transition-all bg-gray-100 text-gray-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <span id="stepLabel3" class="text-[10px] font-medium whitespace-nowrap text-gray-400">검토·제출</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+
+        <!-- STEP 1: 기본 정보 -->
+        <div id="panel1">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <h2 class="text-base font-bold text-gray-900">기본 정보</h2>
+          </div>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">조치명 <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">조치명 <span class="text-red-500">*</span></label>
               <input id="fieldTitle" type="text" placeholder="조치 내용을 간략히 입력하세요"
-                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+                     class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+              <p id="errTitle" class="text-red-500 text-xs mt-1 hidden">조치명을 입력하세요</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">위험 분류 <span class="text-red-500">*</span></label>
-                <select id="fieldCategory" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">위험 분류 <span class="text-red-500">*</span></label>
+                <select id="fieldCategory" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
                   <option value="">선택</option>
                   <option>추락 위험</option><option>전기 위험</option><option>화재 위험</option>
                   <option>협착 위험</option><option>붕괴 위험</option><option>화학물질</option><option>기타</option>
                 </select>
+                <p id="errCategory" class="text-red-500 text-xs mt-1 hidden">위험 분류를 선택하세요</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">위험 등급 <span class="text-red-500">*</span></label>
-                <select id="fieldRiskLevel" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">위험 등급 <span class="text-red-500">*</span></label>
+                <select id="fieldRiskLevel" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
                   <option value="">선택</option>
                   <option value="HIGH">고위험</option>
                   <option value="MEDIUM">중위험</option>
                   <option value="SAFE">안전</option>
                 </select>
+                <p id="errRiskLevel" class="text-red-500 text-xs mt-1 hidden">위험 등급을 선택하세요</p>
               </div>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">현장 위치 <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">현장 위치 <span class="text-red-500">*</span></label>
               <input id="fieldLocation" type="text" placeholder="예: 3동 옥상"
-                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+                     class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+              <p id="errLocation" class="text-red-500 text-xs mt-1 hidden">현장 위치를 입력하세요</p>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">상세 설명</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">상세 설명</label>
               <textarea id="fieldDescription" rows="4" placeholder="위험 상황 및 조치 내용을 상세히 기입하세요"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none resize-none"></textarea>
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none resize-none"></textarea>
             </div>
           </div>
         </div>
 
-        <!-- 담당자 & 일정 -->
-        <div class="bg-white rounded-2xl p-6 shadow-md">
-          <h2 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
-            <span class="w-6 h-6 bg-[#FF6B35] text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-            담당자 및 일정
-          </h2>
+        <!-- STEP 2: 담당자 및 일정 -->
+        <div id="panel2" class="hidden">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <h2 class="text-base font-bold text-gray-900">담당자 및 일정</h2>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">담당자 <span class="text-red-500">*</span></label>
-              <select id="fieldAssignee" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">담당자 <span class="text-red-500">*</span></label>
+              <select id="fieldAssignee" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none">
                 <option value="">불러오는 중...</option>
               </select>
+              <p id="errAssignee" class="text-red-500 text-xs mt-1 hidden">담당자를 지정하세요</p>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">마감일 <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">마감일 <span class="text-red-500">*</span></label>
               <input id="fieldDeadline" type="date"
-                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+                     class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+              <p id="errDeadline" class="text-red-500 text-xs mt-1 hidden">마감일을 설정하세요</p>
             </div>
           </div>
           <p class="text-xs text-gray-400 mt-3">새로 등록된 조치는 "조치 전" 상태로 시작합니다.</p>
         </div>
 
-        <!-- Submit -->
-        <div class="flex gap-3">
-          <a href="/actions" class="flex-1 py-3 text-center border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors">취소</a>
-          <button id="submitBtn" onclick="submitAction()" class="flex-1 py-3 bg-[#FF6B35] text-white rounded-xl font-semibold hover:bg-[#E55A2A] transition-colors shadow-lg">조치 등록</button>
+        <!-- STEP 3: 검토 및 제출 -->
+        <div id="panel3" class="hidden space-y-4">
+          <div class="flex items-center gap-2 mb-1">
+            <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h2 class="text-base font-bold text-gray-900">검토 및 제출</h2>
+          </div>
+          <div class="space-y-2.5">
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-gray-50">
+              <span class="text-xs text-gray-500 w-20 flex-shrink-0 pt-0.5">조치명</span>
+              <span id="reviewTitle" class="text-sm font-medium text-gray-900 flex-1 text-right">-</span>
+              <button onclick="goToStep(1)" class="text-[10px] text-[#FF6B35] hover:underline flex-shrink-0 pt-0.5">수정</button>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-gray-50">
+              <span class="text-xs text-gray-500 w-20 flex-shrink-0 pt-0.5">위험 분류/등급</span>
+              <span id="reviewRisk" class="text-sm font-medium text-gray-900 flex-1 text-right">-</span>
+              <button onclick="goToStep(1)" class="text-[10px] text-[#FF6B35] hover:underline flex-shrink-0 pt-0.5">수정</button>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-gray-50">
+              <span class="text-xs text-gray-500 w-20 flex-shrink-0 pt-0.5">현장 위치</span>
+              <span id="reviewLocation" class="text-sm font-medium text-gray-900 flex-1 text-right">-</span>
+              <button onclick="goToStep(1)" class="text-[10px] text-[#FF6B35] hover:underline flex-shrink-0 pt-0.5">수정</button>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-gray-50">
+              <span class="text-xs text-gray-500 w-20 flex-shrink-0 pt-0.5">담당자</span>
+              <span id="reviewAssignee" class="text-sm font-medium text-gray-900 flex-1 text-right">-</span>
+              <button onclick="goToStep(2)" class="text-[10px] text-[#FF6B35] hover:underline flex-shrink-0 pt-0.5">수정</button>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5">
+              <span class="text-xs text-gray-500 w-20 flex-shrink-0 pt-0.5">마감일</span>
+              <span id="reviewDeadline" class="text-sm font-medium text-gray-900 flex-1 text-right">-</span>
+              <button onclick="goToStep(2)" class="text-[10px] text-[#FF6B35] hover:underline flex-shrink-0 pt-0.5">수정</button>
+            </div>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3 border border-blue-100 text-xs text-blue-700">
+            등록 후 담당자에게 조치가 배정됩니다.
+          </div>
+          <button id="submitBtn" onclick="submitAction()" class="w-full py-4 bg-[#FF6B35] text-white rounded-xl font-bold hover:bg-[#E55A2A] transition-colors shadow-lg shadow-[#FF6B35]/30 flex items-center justify-center gap-2 text-base">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            조치 사항 등록 완료
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navRow" class="flex items-center justify-between mt-6 pt-5 border-t border-gray-100">
+          <button id="prevBtn" onclick="prevStep()" disabled
+                  class="flex items-center gap-2 px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> 이전
+          </button>
+          <span id="stepCounter" class="text-xs text-gray-400">1 / 3</span>
+          <button id="nextBtn" onclick="nextStep()"
+                  class="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B35] text-white rounded-xl text-sm font-semibold hover:bg-[#E55A2A] transition-colors shadow-sm">
+            다음 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -105,8 +200,96 @@
 <script>
 (function () {
   var CURRENT_USER_ID = null;
+  var step = 1;
+  var CATEGORY_LABEL = {};
+  var RISK_LABEL = { HIGH: '고위험', MEDIUM: '중위험', SAFE: '안전' };
 
   function qs(sel) { return document.querySelector(sel); }
+  function hide(el) { el.classList.add('hidden'); }
+  function show(el) { el.classList.remove('hidden'); }
+
+  function renderStepIndicator() {
+    for (var i = 1; i <= 3; i++) {
+      var dot = qs('#stepDot' + i);
+      var label = qs('#stepLabel' + i);
+      if (i < step) {
+        dot.className = 'w-9 h-9 rounded-full flex items-center justify-center transition-all bg-green-500 text-white';
+        dot.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+        label.className = 'text-[10px] font-medium whitespace-nowrap text-green-600';
+      } else if (i === step) {
+        dot.className = 'w-9 h-9 rounded-full flex items-center justify-center transition-all bg-[#FF6B35] text-white shadow-md shadow-[#FF6B35]/40 scale-110';
+        label.className = 'text-[10px] font-medium whitespace-nowrap text-[#FF6B35]';
+      } else {
+        dot.className = 'w-9 h-9 rounded-full flex items-center justify-center transition-all bg-gray-100 text-gray-400';
+        label.className = 'text-[10px] font-medium whitespace-nowrap text-gray-400';
+      }
+    }
+    var bar1 = qs('#stepBar1'), bar2 = qs('#stepBar2');
+    bar1.className = 'flex-1 h-0.5 mx-2 mb-5 ' + (step > 1 ? 'bg-green-400' : 'bg-gray-200');
+    bar2.className = 'flex-1 h-0.5 mx-2 mb-5 ' + (step > 2 ? 'bg-green-400' : 'bg-gray-200');
+  }
+
+  function renderPanels() {
+    [1, 2, 3].forEach(function (i) {
+      var panel = qs('#panel' + i);
+      if (i === step) show(panel); else hide(panel);
+    });
+    qs('#stepCounter').textContent = step + ' / 3';
+    qs('#prevBtn').disabled = step === 1;
+    if (step === 3) {
+      hide(qs('#nextBtn'));
+      populateReview();
+    } else {
+      show(qs('#nextBtn'));
+    }
+  }
+
+  function clearErrors(ids) {
+    ids.forEach(function (id) { hide(qs('#err' + id)); });
+  }
+
+  function validateStep1() {
+    var ok = true;
+    clearErrors(['Title', 'Category', 'RiskLevel', 'Location']);
+    if (!qs('#fieldTitle').value.trim()) { show(qs('#errTitle')); ok = false; }
+    if (!qs('#fieldCategory').value) { show(qs('#errCategory')); ok = false; }
+    if (!qs('#fieldRiskLevel').value) { show(qs('#errRiskLevel')); ok = false; }
+    if (!qs('#fieldLocation').value.trim()) { show(qs('#errLocation')); ok = false; }
+    return ok;
+  }
+
+  function validateStep2() {
+    var ok = true;
+    clearErrors(['Assignee', 'Deadline']);
+    if (!qs('#fieldAssignee').value) { show(qs('#errAssignee')); ok = false; }
+    if (!qs('#fieldDeadline').value) { show(qs('#errDeadline')); ok = false; }
+    return ok;
+  }
+
+  function populateReview() {
+    qs('#reviewTitle').textContent = qs('#fieldTitle').value.trim() || '-';
+    var category = qs('#fieldCategory').value;
+    var riskLevel = qs('#fieldRiskLevel').value;
+    qs('#reviewRisk').textContent = (category || '-') + ' / ' + (RISK_LABEL[riskLevel] || '-');
+    qs('#reviewLocation').textContent = qs('#fieldLocation').value.trim() || '-';
+    var assigneeSel = qs('#fieldAssignee');
+    qs('#reviewAssignee').textContent = assigneeSel.options[assigneeSel.selectedIndex] ? assigneeSel.options[assigneeSel.selectedIndex].text : '-';
+    qs('#reviewDeadline').textContent = qs('#fieldDeadline').value || '-';
+  }
+
+  window.goToStep = function (n) { step = n; renderStepIndicator(); renderPanels(); };
+  window.nextStep = function () {
+    if (step === 1 && !validateStep1()) return;
+    if (step === 2 && !validateStep2()) return;
+    step = Math.min(3, step + 1);
+    renderStepIndicator();
+    renderPanels();
+  };
+  window.prevStep = function () {
+    step = Math.max(1, step - 1);
+    renderStepIndicator();
+    renderPanels();
+  };
 
   fetch('/api/users/me')
     .then(function (res) { if (res.status === 401) { window.location.href = '/login'; throw new Error(); } if (!res.ok) throw new Error(); return res.json(); })
@@ -139,12 +322,8 @@
     var deadline = qs('#fieldDeadline').value;
     var description = qs('#fieldDescription').value.trim();
 
-    if (!title) { alert('조치명을 입력하세요'); return; }
-    if (!category) { alert('위험 분류를 선택하세요'); return; }
-    if (!riskLevel) { alert('위험 등급을 선택하세요'); return; }
-    if (!location) { alert('현장 위치를 입력하세요'); return; }
-    if (!assigneeId) { alert('담당자를 지정하세요'); return; }
-    if (!deadline) { alert('마감일을 설정하세요'); return; }
+    if (!title || !category || !riskLevel || !location) { goToStep(1); return; }
+    if (!assigneeId || !deadline) { goToStep(2); return; }
     if (!CURRENT_USER_ID) { alert('사용자 정보를 아직 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'); return; }
 
     var btn = qs('#submitBtn');
@@ -179,9 +358,12 @@
       .catch(function (err) {
         alert(err.message);
         btn.disabled = false;
-        btn.textContent = '조치 등록';
+        btn.textContent = '조치 사항 등록 완료';
       });
   };
+
+  renderStepIndicator();
+  renderPanels();
 })();
 </script>
 </body>
