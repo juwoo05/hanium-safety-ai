@@ -28,10 +28,34 @@
             <h1 id="bannerGreeting" class="text-3xl font-bold mb-2">안녕하세요! 👷</h1>
             <p class="text-white/80 text-lg">오늘 내 현장 안전 업무를 확인하세요</p>
             <div class="flex items-center gap-6 mt-4">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                <span id="bannerSafetyScore" class="text-sm font-semibold">안전 점수: -점</span>
+              </div>
               <div class="flex items-center gap-2"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div><span id="bannerTodayDue" class="text-sm">오늘 마감: -건</span></div>
             </div>
           </div>
           <div class="hidden lg:block"><img src="/images/mascot.png" alt="마스코트" class="w-24 h-24 object-contain" style="mix-blend-mode:multiply"/></div>
+        </div>
+      </div>
+
+      <!-- Safety Score -->
+      <div class="bg-white rounded-2xl p-6 shadow-md">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            <h3 class="text-base font-semibold text-gray-900">나의 안전 점수</h3>
+            <span class="text-xs text-gray-400">(조치 완료율 기준)</span>
+          </div>
+          <span id="safetyScoreValue" class="text-3xl font-bold text-green-600">-점</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div id="safetyScoreBar" class="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full transition-all" style="width:0%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>0점</span>
+          <span id="safetyScoreLabel" class="text-green-600 font-medium"></span>
+          <span>100점</span>
         </div>
       </div>
 
@@ -202,6 +226,12 @@
     qs('#perfCompletionBar').style.width = completionRate + '%';
     qs('#perfOnTimeRate').textContent = completed.length ? onTimeRate + '%' : '완료 이력 없음';
     qs('#perfOnTimeBar').style.width = onTimeRate + '%';
+
+    qs('#bannerSafetyScore').textContent = '안전 점수: ' + completionRate + '점';
+    qs('#safetyScoreValue').textContent = completionRate + '점';
+    qs('#safetyScoreBar').style.width = completionRate + '%';
+    var scoreLabel = completionRate >= 80 ? '우수' : completionRate >= 60 ? '보통' : '주의 필요';
+    qs('#safetyScoreLabel').textContent = scoreLabel + ' (' + completionRate + '/100)';
   }
 
   function loadMyActions() {
