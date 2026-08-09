@@ -1,6 +1,6 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.NotificationResponseDTO;
+import kopo.poly.dto.response.NotificationResponseDTO;
 import kopo.poly.entity.Notification;
 import kopo.poly.entity.enums.NotificationSeverity;
 import kopo.poly.entity.enums.NotificationType;

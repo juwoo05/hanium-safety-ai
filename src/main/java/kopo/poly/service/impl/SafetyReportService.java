@@ -1,12 +1,12 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.SafetyReportCommentRequestDTO;
-import kopo.poly.dto.SafetyReportCommentResponseDTO;
-import kopo.poly.dto.SafetyReportCreateRequestDTO;
-import kopo.poly.dto.SafetyReportDetailResponseDTO;
-import kopo.poly.dto.SafetyReportListItemDTO;
-import kopo.poly.dto.SafetyReportStatsResponseDTO;
-import kopo.poly.dto.SafetyReportTimelineItemResponseDTO;
+import kopo.poly.dto.request.SafetyReportCommentRequestDTO;
+import kopo.poly.dto.response.SafetyReportCommentResponseDTO;
+import kopo.poly.dto.request.SafetyReportCreateRequestDTO;
+import kopo.poly.dto.response.SafetyReportDetailResponseDTO;
+import kopo.poly.dto.response.SafetyReportListItemDTO;
+import kopo.poly.dto.response.SafetyReportStatsResponseDTO;
+import kopo.poly.dto.response.SafetyReportTimelineItemResponseDTO;
 import kopo.poly.entity.SafetyReport;
 import kopo.poly.entity.SafetyReportComment;
 import kopo.poly.entity.SafetyReportTimeline;

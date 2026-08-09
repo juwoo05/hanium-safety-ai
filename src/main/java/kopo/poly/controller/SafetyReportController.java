@@ -1,9 +1,9 @@
 package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.SafetyReportCommentRequestDTO;
-import kopo.poly.dto.SafetyReportCreateRequestDTO;
-import kopo.poly.dto.SafetyReportStatusChangeRequestDTO;
+import kopo.poly.dto.request.SafetyReportCommentRequestDTO;
+import kopo.poly.dto.request.SafetyReportCreateRequestDTO;
+import kopo.poly.dto.request.SafetyReportStatusChangeRequestDTO;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ReportCategory;
 import kopo.poly.entity.enums.ReportRiskLevel;

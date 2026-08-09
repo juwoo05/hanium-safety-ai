@@ -19,6 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private final String companyName;
     private final String password;
     private final boolean deleted;
+    private final boolean twoFactorEnabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
@@ -28,6 +29,7 @@ public class CustomUserDetails implements UserDetails {
         this.companyName = user.getCompanyName();
         this.password = user.getPassword();
         this.deleted = user.getDeletedAt() != null;
+        this.twoFactorEnabled = user.isTwoFactorEnabled();
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 

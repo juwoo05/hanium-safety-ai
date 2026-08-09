@@ -44,6 +44,16 @@ public class User {
     @Column(name = "company_name", length = 100)
     private String companyName;
 
+    // 원청 건설사 정보. "건설사 및 현장 연동" 화면에서 원청이 입력/수정한다.
+    @Column(name = "company_biz_no", length = 20)
+    private String companyBizNo;
+
+    @Column(name = "company_ceo_name", length = 50)
+    private String companyCeoName;
+
+    @Column(name = "company_address", length = 255)
+    private String companyAddress;
+
     @Column(length = 100)
     private String email;
 
@@ -62,8 +72,35 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "two_factor_enabled", nullable = false)
+    @Builder.Default
+    private boolean twoFactorEnabled = false;
+
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateProfile(String username, String companyName) {
+        this.username = username;
+        this.companyName = companyName;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateCompanyProfile(String companyName, String companyBizNo, String companyCeoName, String companyAddress) {
+        this.companyName = companyName;
+        this.companyBizNo = companyBizNo;
+        this.companyCeoName = companyCeoName;
+        this.companyAddress = companyAddress;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void withdraw() {
+        this.deletedAt = LocalDateTime.now();
     }
 }

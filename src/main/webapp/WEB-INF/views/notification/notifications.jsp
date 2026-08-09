@@ -24,7 +24,7 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <button type="submit" class="text-sm text-[#FF6B35] hover:text-[#E55A2A] font-medium transition-colors">모두 읽음 처리</button>
       </form>
-      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span class="text-white font-semibold text-sm">김</span></div></a>
+      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div></a>
     </div>
   </header>
   <main class="flex-1 overflow-y-auto p-6 lg:p-8">
@@ -96,5 +96,13 @@
     </div>
   </main>
 </div>
+<script>
+fetch('/api/users/me')
+  .then(function (res) { if (res.status === 401) { window.location.href = '/login'; throw new Error(); } if (!res.ok) throw new Error(); return res.json(); })
+  .then(function (user) {
+    document.getElementById('headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
+  })
+  .catch(function () {});
+</script>
 </body>
 </html>

@@ -1,0 +1,22 @@
+package kopo.poly.dto.response;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+public class SafetyReportDetailResponseDTO {
+    private Long id;
+    private String title;
+    private String categoryLabel;
+    private String riskLevelValue;
+    private String riskLevelLabel;
+    private String statusValue;
+    private String statusLabel;
+    private String location;
+    private String createdDateLabel;
+    private boolean anonymous;
+    private String reporterName;
+    private long views;
+    private String description;
+}

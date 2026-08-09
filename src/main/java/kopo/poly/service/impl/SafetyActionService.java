@@ -100,9 +100,54 @@ public class SafetyActionService implements ISafetyActionService {
     @Override
     @Transactional
     public SafetyAction updateStatus(Long actionId, ActionStatus newStatus) {
-        SafetyAction action = safetyActionRepository.findById(actionId)
-                .orElseThrow(() -> new NoSuchElementException("조치를 찾을 수 없습니다: " + actionId));
+        if (newStatus == ActionStatus.COMPLETED) {
+            throw new IllegalArgumentException("완료 처리는 승인 절차를 통해서만 가능합니다.");
+        }
+        SafetyAction action = requireAction(actionId);
         action.updateStatus(newStatus);
         return action;
+    }
+
+    @Override
+    public SafetyAction findById(Long actionId) {
+        return requireAction(actionId);
+    }
+
+    @Override
+    @Transactional
+    public SafetyAction submitForApproval(Long actionId) {
+        SafetyAction action = requireAction(actionId);
+        if (action.getStatus() != ActionStatus.IN_PROGRESS) {
+            throw new IllegalArgumentException("진행중인 조치만 승인 요청할 수 있습니다.");
+        }
+        action.updateStatus(ActionStatus.PENDING_APPROVAL);
+        return action;
+    }
+
+    @Override
+    @Transactional
+    public SafetyAction approveCompletion(Long actionId) {
+        SafetyAction action = requireAction(actionId);
+        if (action.getStatus() != ActionStatus.PENDING_APPROVAL) {
+            throw new IllegalArgumentException("승인 대기 중인 조치만 승인할 수 있습니다.");
+        }
+        action.updateStatus(ActionStatus.COMPLETED);
+        return action;
+    }
+
+    @Override
+    @Transactional
+    public SafetyAction rejectCompletion(Long actionId) {
+        SafetyAction action = requireAction(actionId);
+        if (action.getStatus() != ActionStatus.PENDING_APPROVAL) {
+            throw new IllegalArgumentException("승인 대기 중인 조치만 반려할 수 있습니다.");
+        }
+        action.updateStatus(ActionStatus.IN_PROGRESS);
+        return action;
+    }
+
+    private SafetyAction requireAction(Long actionId) {
+        return safetyActionRepository.findById(actionId)
+                .orElseThrow(() -> new NoSuchElementException("조치를 찾을 수 없습니다: " + actionId));
     }
 }
