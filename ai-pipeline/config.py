@@ -8,6 +8,8 @@ load_dotenv()
 
 AWS_REGION = os.environ.get("AWS_REGION", "ap-northeast-2")
 AWS_PROFILE = os.environ.get("AWS_PROFILE")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
 INTERNAL_API_KEY = os.environ.get("INTERNAL_API_KEY")
 # claude-3-5-sonnet-20241022-v2:0 등 최신 모델은 이 계정/리전에서 INFERENCE_PROFILE 방식만 지원해
@@ -29,9 +31,18 @@ BEDROCK_CLIENT_CONFIG = Config(
     retries={"max_attempts": 3, "mode": "standard"},
 )
 
-# AWS_PROFILE을 명시적으로 지정해 이 프로젝트가 로컬 머신의 다른 기본(default) 자격증명을
-# 실수로 집어쓰는 것을 방지한다. 미설정 시엔 boto3 기본 자격증명 체인(예: 배포 환경의 IAM 역할)을 따른다.
-_session = boto3.Session(profile_name=AWS_PROFILE) if AWS_PROFILE else boto3.Session()
+# .env에 액세스 키가 있으면 그걸 우선 쓴다 - 팀원마다 로컬에 `aws configure --profile ...`를
+# 따로 해야 하는 걸 피하기 위함이다. 없을 때만 AWS_PROFILE로 폴백하고, 그마저 없으면
+# boto3 기본 자격증명 체인(예: 배포 환경의 IAM 역할)을 따른다.
+if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+    _session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+elif AWS_PROFILE:
+    _session = boto3.Session(profile_name=AWS_PROFILE)
+else:
+    _session = boto3.Session()
 
 
 def get_s3_client():
