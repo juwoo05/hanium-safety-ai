@@ -33,7 +33,7 @@ public class SafetyReportComment {
     private SafetyReport report;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id", columnDefinition = "bigint unsigned")
+    @JoinColumn(name = "writer_id")
     private User writer;
 
     @Column(name = "writer_name_snapshot", length = 100)

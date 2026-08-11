@@ -46,7 +46,7 @@ public class SafetyReportTimeline {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", columnDefinition = "bigint unsigned")
+    @JoinColumn(name = "created_by")
     private User createdBy;
 
     @Column(name = "created_at", nullable = false)
