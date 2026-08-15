@@ -33,8 +33,7 @@ public class Notification {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // users.id 가 BIGINT UNSIGNED 라서 FK 컬럼도 부호를 맞춰야함
-    @JoinColumn(name = "receiver_id", columnDefinition = "bigint unsigned")
+    @JoinColumn(name = "receiver_id")
     private User receiver;
 
     @Enumerated(EnumType.STRING)
