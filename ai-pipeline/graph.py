@@ -75,16 +75,20 @@ def analyze_with_bedrock(state: AnalysisState) -> AnalysisState:
 # retrieve()는 Knowledge Base 내부에서 Titan Embeddings로 쿼리를 자동 벡터화한 뒤
 # OpenSearch를 검색하므로, 별도의 임베딩 노드를 두지 않는다.
 def search_knowledge_base(state: AnalysisState) -> AnalysisState:
-    response = get_bedrock_agent_runtime_client().retrieve(
-        knowledgeBaseId=KNOWLEDGE_BASE_ID,
-        retrievalQuery={"text": state["image_summary"]},
-        retrievalConfiguration={"vectorSearchConfiguration": {"numberOfResults": 10}},
-    )
-    state["candidate_docs"] = [
-        result["content"]["text"]
-        for result in response.get("retrievalResults", [])
-        if result.get("content", {}).get("text")
-    ]
+    # TEMP-QA-DUMMY: AOSS 데이터 액세스 정책 403 이슈로 KB 검색이 막혀있어 더미 데이터 생성을 위해 임시 우회.
+    try:
+        response = get_bedrock_agent_runtime_client().retrieve(
+            knowledgeBaseId=KNOWLEDGE_BASE_ID,
+            retrievalQuery={"text": state["image_summary"]},
+            retrievalConfiguration={"vectorSearchConfiguration": {"numberOfResults": 10}},
+        )
+        state["candidate_docs"] = [
+            result["content"]["text"]
+            for result in response.get("retrievalResults", [])
+            if result.get("content", {}).get("text")
+        ]
+    except Exception:
+        state["candidate_docs"] = []
     return state
 
 
