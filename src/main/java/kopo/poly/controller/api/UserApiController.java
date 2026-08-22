@@ -9,8 +9,10 @@ import kopo.poly.dto.request.WithdrawRequest;
 import kopo.poly.dto.response.CurrentUserResponse;
 import kopo.poly.dto.response.MyActivityStatsResponse;
 import kopo.poly.dto.response.MyProfileResponse;
+import kopo.poly.entity.SiteMembership;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.UserRole;
+import kopo.poly.repository.SiteMembershipRepository;
 import kopo.poly.repository.UserRepository;
 import kopo.poly.service.IUserService;
 import org.springframework.http.HttpStatus;
@@ -29,10 +31,12 @@ import java.util.Map;
 public class UserApiController {
 
     private final UserRepository userRepository;
+    private final SiteMembershipRepository siteMembershipRepository;
     private final IUserService userService;
 
-    public UserApiController(UserRepository userRepository, IUserService userService) {
+    public UserApiController(UserRepository userRepository, SiteMembershipRepository siteMembershipRepository, IUserService userService) {
         this.userRepository = userRepository;
+        this.siteMembershipRepository = siteMembershipRepository;
         this.userService = userService;
     }
 
@@ -98,16 +102,21 @@ public class UserApiController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "사용자를 찾을 수 없습니다."));
     }
 
-    // 조치 등록 화면의 "담당자" 선택 목록. 위험요소는 원청이 등록하고 하청이 조치를 수행하는
-    // 구조라 담당자는 하청(SUBCONTRACTOR) 역할 사용자로 한정하고, 호출자도 원청으로만 제한한다.
-    // (하청 계정이 다른 하청 업체 인력 명단을 조회할 이유가 없음 — 정보 노출 방지)
+    // 조치 등록 화면의 "담당자" 선택 목록. DB 전체 하청이 아니라, 마이페이지에서 공유 코드로
+    // 이 원청의 현장에 실제로 연결된(site_memberships) 하청만 후보로 보여준다.
+    // (연결 안 된 하청은 이 원청과 무관하므로 담당자로 배정할 수 없어야 함)
     @GetMapping("/api/users/subcontractors")
     public List<CurrentUserResponse> subcontractors(HttpSession session) {
         Long loginUserId = requireLoginUserId(session);
         if (!isPrimeContractor(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "원청만 조회할 수 있습니다.");
         }
-        return userRepository.findByRoleAndDeletedAtIsNull(UserRole.하청).stream()
+        List<Long> connectedUserIds = siteMembershipRepository.findBySiteOwnerIdOrderByJoinedAtDesc(loginUserId).stream()
+                .map(SiteMembership::getUserId)
+                .distinct()
+                .toList();
+        return userRepository.findAllById(connectedUserIds).stream()
+                .filter(u -> u.getRole() == UserRole.하청 && u.getDeletedAt() == null)
                 .map(CurrentUserResponse::from)
                 .toList();
     }
