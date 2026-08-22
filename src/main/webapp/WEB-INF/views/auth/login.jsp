@@ -20,10 +20,10 @@
 
   <!-- Mascot -->
   <div class="flex flex-col items-center gap-3 mb-6">
-    <img src="/images/mascot.png" alt="SafeMate 마스코트" class="w-24 h-24 object-contain" style="mix-blend-mode:multiply"/>
+    <img src="/images/mascot.png" alt="SafeMate 마스코트" class="w-24 h-24 object-contain" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
     <div class="relative bg-white rounded-2xl shadow-lg border border-gray-100 px-4 py-3 max-w-xs">
       <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
-      <p class="text-sm text-gray-700">안녕하세요! SafeMate에 오신 것을 환영합니다 👋</p>
+      <p class="text-sm text-gray-700">안녕하세요! SafeMate에 오신 것을 환영합니다</p>
     </div>
   </div>
 
@@ -31,8 +31,8 @@
   <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
     <p class="text-sm font-semibold text-blue-900 mb-2">테스트 계정 정보</p>
     <div class="grid grid-cols-2 gap-2">
-      <button type="button" onclick="fillContractor()" class="text-sm bg-[#1B3A5F] text-white px-3 py-2 rounded-lg hover:bg-[#2C5282] transition-colors font-medium">🏢 원청 계정</button>
-      <button type="button" onclick="fillSubcontractor()" class="text-sm bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium">👷 하청 계정</button>
+      <button type="button" onclick="fillContractor()" class="text-sm bg-[#1B3A5F] text-white px-3 py-2 rounded-lg hover:bg-[#2C5282] transition-colors font-medium">원청 계정</button>
+      <button type="button" onclick="fillSubcontractor()" class="text-sm bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium">하청 계정</button>
     </div>
   </div>
 

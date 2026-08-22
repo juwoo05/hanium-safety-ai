@@ -315,7 +315,7 @@
       qs('#managerLeaderboard').innerHTML = '<p class="text-sm text-gray-400">데이터가 없습니다.</p>';
       return;
     }
-    var medals = ['🥇', '🥈', '🥉'];
+    var medals = ['1위', '2위', '3위'];
     qs('#managerLeaderboard').innerHTML = ranking.map(function (m, i) {
       return '<div class="flex items-center gap-4 p-4 rounded-xl border ' + (i === 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 bg-gray-50') + '">' +
         '<span class="text-xl flex-shrink-0 w-7 text-center">' + (medals[i] || (i + 1)) + '</span>' +

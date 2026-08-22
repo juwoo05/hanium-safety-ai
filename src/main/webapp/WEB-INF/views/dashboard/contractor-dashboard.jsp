@@ -44,7 +44,7 @@
               <span class="bg-[#FF6B35] text-white text-xs font-bold px-3 py-1 rounded-full">원청</span>
               <span id="bannerCompany" class="text-white/60 text-sm"></span>
             </div>
-            <h1 id="bannerGreeting" class="text-2xl font-bold mb-1">안녕하세요! 👋</h1>
+            <h1 id="bannerGreeting" class="text-2xl font-bold mb-1">안녕하세요!</h1>
             <p id="bannerSubtitle" class="text-white/70 text-sm mb-4">전체 현장 안전 현황을 불러오는 중...</p>
             <div class="grid grid-cols-3 gap-3">
               <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
@@ -103,7 +103,7 @@
 
       <!-- AI Tip -->
       <div id="mascotTipCard" class="hidden bg-gradient-to-r from-[#FF6B35]/10 to-[#FF6B35]/5 rounded-2xl p-4 border border-[#FF6B35]/20 flex items-start gap-3">
-        <img src="/images/mascot.png" alt="마스코트" class="w-10 h-10 object-contain flex-shrink-0" style="mix-blend-mode:multiply"/>
+        <img src="/images/mascot.png" alt="마스코트" class="w-10 h-10 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
         <div class="flex-1">
           <p class="text-sm font-semibold text-[#1B3A5F]">AI 안전 현황 요약</p>
           <p id="mascotTipText" class="text-xs text-gray-600 mt-0.5 leading-relaxed"></p>
@@ -204,7 +204,7 @@
       .then(function (user) {
         qs('#headerUserName').textContent = user.username;
         qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
-        qs('#bannerGreeting').textContent = '안녕하세요, ' + user.username + '님! 👋';
+        qs('#bannerGreeting').textContent = '안녕하세요, ' + user.username + '님!';
         qs('#bannerCompany').textContent = user.companyName || '';
         qs('#bannerSubtitle').textContent = '전체 현장 안전 현황';
         return user;

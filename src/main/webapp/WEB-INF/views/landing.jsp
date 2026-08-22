@@ -52,10 +52,10 @@
     <div class="relative">
       <div class="bg-gradient-to-br from-[#FF6B35]/10 to-[#1B3A5F]/10 rounded-3xl p-12">
         <div class="flex flex-col items-center gap-3 mb-6">
-          <img src="/images/mascot.png" alt="SafeMate 안전 도우미" class="w-32 h-32 object-contain" style="mix-blend-mode:multiply"/>
+          <img src="/images/mascot.png" alt="SafeMate 안전 도우미" class="w-32 h-32 object-contain" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
           <div class="relative bg-white rounded-2xl shadow-lg px-4 py-3 max-w-xs">
             <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
-            <p class="text-sm text-gray-700">사진을 올리면 AI가 위험 요소를 분석해드려요 🔍</p>
+            <p class="text-sm text-gray-700">사진을 올리면 AI가 위험 요소를 분석해드려요</p>
           </div>
         </div>
         <div class="bg-white rounded-2xl p-6 shadow-xl">
@@ -220,10 +220,10 @@
 <section class="bg-gradient-to-r from-[#1B3A5F] to-[#2C5282] py-20">
   <div class="container mx-auto px-6 text-center">
     <div class="flex flex-col items-center gap-3 mb-8">
-      <img src="/images/mascot.png" alt="SafeMate 마스코트" class="w-32 h-32 object-contain" style="mix-blend-mode:multiply"/>
+      <img src="/images/mascot.png" alt="SafeMate 마스코트" class="w-32 h-32 object-contain" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
       <div class="relative bg-white rounded-2xl shadow-lg px-4 py-3 max-w-xs">
         <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
-        <p class="text-sm text-gray-700">오늘은 고위험 항목 3건을 먼저 확인해보세요 📋</p>
+        <p class="text-sm text-gray-700">오늘은 고위험 항목 3건을 먼저 확인해보세요</p>
       </div>
     </div>
     <h2 class="text-4xl font-bold text-white mb-6">지금 바로 SafeMate를 시작하세요</h2>

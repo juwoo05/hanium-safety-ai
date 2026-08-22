@@ -25,7 +25,7 @@
         <div class="flex items-center justify-between">
           <div class="flex-1">
             <div class="flex items-center gap-2 mb-1"><span class="bg-white text-green-700 text-xs font-bold px-3 py-1 rounded-full">하청</span><span id="bannerCompany" class="text-white/70 text-sm"></span></div>
-            <h1 id="bannerGreeting" class="text-3xl font-bold mb-2">안녕하세요! 👷</h1>
+            <h1 id="bannerGreeting" class="text-3xl font-bold mb-2">안녕하세요!</h1>
             <p class="text-white/80 text-lg">오늘 내 현장 안전 업무를 확인하세요</p>
             <div class="flex items-center gap-6 mt-4">
               <div class="flex items-center gap-2">
@@ -35,7 +35,7 @@
               <div class="flex items-center gap-2"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div><span id="bannerTodayDue" class="text-sm">오늘 마감: -건</span></div>
             </div>
           </div>
-          <div class="hidden lg:block"><img src="/images/mascot.png" alt="마스코트" class="w-24 h-24 object-contain" style="mix-blend-mode:multiply"/></div>
+          <div class="hidden lg:block"><img src="/images/mascot.png" alt="마스코트" class="w-24 h-24 object-contain" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/></div>
         </div>
       </div>
 
@@ -81,9 +81,9 @@
 
       <!-- Mascot Tip -->
       <div id="mascotTipCard" class="hidden bg-gradient-to-r from-green-500/10 to-green-500/5 rounded-2xl p-5 border-2 border-green-500/20 flex items-start gap-4">
-        <img src="/images/mascot.png" alt="마스코트" class="w-16 h-16 object-contain flex-shrink-0" style="mix-blend-mode:multiply"/>
+        <img src="/images/mascot.png" alt="마스코트" class="w-16 h-16 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
         <div>
-          <h3 class="text-base font-semibold text-green-800 mb-1">💡 오늘의 안전 팁</h3>
+          <h3 class="text-base font-semibold text-green-800 mb-1">오늘의 안전 팁</h3>
           <p id="mascotTipText" class="text-sm text-gray-700"></p>
           <a href="/actions" class="inline-block mt-2 text-sm bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors font-medium">내 조치 목록 보기</a>
         </div>
@@ -259,7 +259,7 @@
       CURRENT_USER_ID = user.id;
       qs('#headerUserName').textContent = user.username;
       qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
-      qs('#bannerGreeting').textContent = '안녕하세요, ' + user.username + '님! 👷';
+      qs('#bannerGreeting').textContent = '안녕하세요, ' + user.username + '님!';
       qs('#bannerCompany').textContent = user.companyName || '';
       loadMyActions();
     })

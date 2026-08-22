@@ -81,7 +81,7 @@
                     <svg class="w-4 h-4 ${n.read ? 'text-gray-400' : (severityColor == 'red' ? 'text-red-600' : severityColor == 'orange' ? 'text-orange-600' : severityColor == 'blue' ? 'text-blue-600' : 'text-green-600')}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
                   </c:when>
                   <c:otherwise>
-                    <img src="/images/mascot.png" alt="마스코트" class="w-6 h-6 object-contain" style="mix-blend-mode:multiply"/>
+                    <img src="/images/mascot.png" alt="마스코트" class="w-6 h-6 object-contain" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -104,7 +104,7 @@
       <div class="space-y-5">
         <!-- Mascot -->
         <div class="bg-gradient-to-br from-[#1B3A5F] to-[#2C5282] rounded-2xl p-5 flex items-center gap-3">
-          <img src="/images/mascot.png" alt="마스코트" class="w-12 h-12 object-contain flex-shrink-0" style="mix-blend-mode:multiply"/>
+          <img src="/images/mascot.png" alt="마스코트" class="w-12 h-12 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
           <p id="mascotDeadlineText" class="text-sm text-white/90"></p>
         </div>
 
@@ -156,7 +156,7 @@
 
         if (!withDue.length) {
           qs('#deadlineGroups').innerHTML = '<p class="text-sm text-gray-400">마감 예정인 조치가 없습니다.</p>';
-          qs('#mascotDeadlineText').textContent = '지금은 마감 임박 조치가 없어요. 안전한 하루 보내세요! 🙂';
+          qs('#mascotDeadlineText').textContent = '지금은 마감 임박 조치가 없어요. 안전한 하루 보내세요!';
           return;
         }
 
@@ -187,7 +187,7 @@
 
         var todayCount = (groups[todayStr] || []).length;
         qs('#mascotDeadlineText').textContent = todayCount > 0
-          ? '마감 임박 조치가 ' + todayCount + '건 있습니다! ⚠️'
+          ? '마감 임박 조치가 ' + todayCount + '건 있습니다!'
           : '다가오는 마감 조치가 ' + withDue.length + '건 있습니다.';
       })
       .catch(function () {

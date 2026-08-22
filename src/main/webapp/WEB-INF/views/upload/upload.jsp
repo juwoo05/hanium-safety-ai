@@ -393,8 +393,8 @@ function renderStep4() {
         </div>
       </div>
       <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-[#1B3A5F]/5 to-[#FF6B35]/5 rounded-xl border border-[#FF6B35]/20 mb-4">
-        <img src="/images/mascot.png" alt="마스코트" class="w-12 h-12 object-contain flex-shrink-0" style="mix-blend-mode:multiply"/>
-        <p class="text-sm text-gray-700">모든 내용이 입력됐어요! AI 분석을 시작하면 약 30초 내에 결과를 알려드릴게요 🔍</p>
+        <img src="/images/mascot.png" alt="마스코트" class="w-12 h-12 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
+        <p class="text-sm text-gray-700">모든 내용이 입력됐어요! AI 분석을 시작하면 약 30초 내에 결과를 알려드릴게요</p>
       </div>
       <button onclick="startAnalysis()" class="w-full py-4 bg-[#FF6B35] text-white rounded-xl font-bold text-base hover:bg-[#E55A2A] transition-colors shadow-lg flex items-center justify-center gap-2 mt-auto">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
