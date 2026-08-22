@@ -150,12 +150,14 @@
             </div>
             <p id="companySaveMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
             <div class="flex flex-wrap gap-3 pt-1">
-              <button id="kisconDemoFillBtn" type="button" class="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1B3A5F] text-[#1B3A5F] rounded-xl text-sm font-semibold hover:bg-[#1B3A5F]/5 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>KISCON 조회 (데모)
+              <button id="kisconSearchBtn" type="button" class="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1B3A5F] text-[#1B3A5F] rounded-xl text-sm font-semibold hover:bg-[#1B3A5F]/5 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>KISCON 조회
               </button>
               <button id="saveCompanyBtn" type="button" class="px-5 py-2.5 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
             </div>
-            <p class="text-[11px] text-gray-400">※ 실제 KISCON 건설업체정보 API 연동 전이라, 이 버튼은 예시 데이터를 채워주는 데모 기능입니다. 실제 정보는 직접 입력 후 저장해주세요.</p>
+            <div id="kisconResultsWrap" class="hidden border border-gray-200 rounded-xl divide-y divide-gray-100 max-h-56 overflow-y-auto"></div>
+            <p id="kisconMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+            <p class="text-[11px] text-gray-400">※ 건설사명으로 검색하면 국토교통부 KISCON 공시 자료에서 일치하는 업체를 찾아드립니다. 목록에서 선택하면 정보가 자동으로 채워집니다.</p>
           </div>
 
           <!-- 원청 전용: §2 현장 등록/선택 -->
@@ -654,15 +656,57 @@ function loadJoinedSites() {
     .catch(function () {});
 }
 
-/* ── 데모: KISCON 가상 조회 ── */
-document.getElementById('kisconDemoFillBtn').addEventListener('click', function () {
-  document.getElementById('companyNameInput').value = '대한안전건설';
-  document.getElementById('companyBizNoInput').value = '123-45-67890';
-  document.getElementById('companyCeoInput').value = '김현장';
-  document.getElementById('companyAddressInput').value = '서울특별시 강남구 테헤란로 120';
-  var msg = document.getElementById('companySaveMessage');
+/* ── KISCON 건설업체정보 조회 ── */
+document.getElementById('kisconSearchBtn').addEventListener('click', function () {
+  var keyword = document.getElementById('companyNameInput').value.trim();
+  var msg = document.getElementById('kisconMessage');
+  var resultsWrap = document.getElementById('kisconResultsWrap');
+  resultsWrap.innerHTML = '';
+  resultsWrap.classList.add('hidden');
+
+  if (!keyword) {
+    msg.classList.remove('hidden');
+    showMessage(msg, '건설사명을 입력한 뒤 조회해주세요.', false);
+    return;
+  }
+
   msg.classList.remove('hidden');
-  showMessage(msg, '데모 데이터를 채웠습니다. 실제 정보로 수정 후 저장해주세요.', true);
+  showMessage(msg, '조회 중...', true);
+
+  fetch('/api/kiscon/companies?keyword=' + encodeURIComponent(keyword))
+    .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
+    .then(function (r) {
+      if (!r.ok) {
+        showMessage(msg, r.body.error || 'KISCON 조회에 실패했습니다.', false);
+        return;
+      }
+      var companies = r.body;
+      if (!companies.length) {
+        showMessage(msg, '일치하는 건설업체를 찾지 못했습니다. 직접 입력 후 저장해주세요.', false);
+        return;
+      }
+      msg.classList.add('hidden');
+      resultsWrap.classList.remove('hidden');
+      resultsWrap.innerHTML = companies.map(function (c, i) {
+        return '<button type="button" data-idx="' + i + '" class="kisconResultItem w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors">' +
+          '<p class="text-sm font-semibold text-gray-900">' + c.name + '</p>' +
+          '<p class="text-xs text-gray-500">' + (c.bizNo || '-') + ' · ' + (c.address || '-') + '</p></button>';
+      }).join('');
+      resultsWrap.querySelectorAll('.kisconResultItem').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var c = companies[Number(btn.dataset.idx)];
+          document.getElementById('companyNameInput').value = c.name || '';
+          document.getElementById('companyBizNoInput').value = c.bizNo || '';
+          document.getElementById('companyCeoInput').value = c.ceoName || '';
+          document.getElementById('companyAddressInput').value = c.address || '';
+          resultsWrap.classList.add('hidden');
+          resultsWrap.innerHTML = '';
+        });
+      });
+    })
+    .catch(function () {
+      showMessage(msg, 'KISCON 조회에 실패했습니다.', false);
+    });
 });
 
 document.getElementById('saveCompanyBtn').addEventListener('click', function () {

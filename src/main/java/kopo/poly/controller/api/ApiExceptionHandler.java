@@ -1,6 +1,7 @@
 package kopo.poly.controller.api;
 
 import kopo.poly.service.AiPipelineException;
+import kopo.poly.service.KisconException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,6 +22,12 @@ public class ApiExceptionHandler {
     @ExceptionHandler(AiPipelineException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Map<String, String> handleAiPipelineError(AiPipelineException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(KisconException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public Map<String, String> handleKisconError(KisconException e) {
         return Map.of("error", e.getMessage());
     }
 
