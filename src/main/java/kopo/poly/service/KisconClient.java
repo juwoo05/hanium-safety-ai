@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import kopo.poly.dto.response.KisconCompanyResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -16,6 +17,7 @@ import java.util.List;
 // 국토교통부_키스콘 건설업체정보 서비스(공공데이터포털, ConAdminInfoSvc1/GongsiReg) 연동.
 // 이 API는 사업자등록번호/업체명으로 직접 조회가 안 되고 공시기간+지역으로만 검색되므로,
 // 최근 3년 공시 목록을 가져온 뒤 업체명(ncrGsKname)에 검색어가 포함되는 항목만 걸러서 돌려준다.
+@Slf4j
 @Component
 public class KisconClient {
 
@@ -61,7 +63,8 @@ public class KisconClient {
                     .retrieve()
                     .body(String.class);
         } catch (RestClientException e) {
-            throw new KisconException("KISCON 서비스에 연결할 수 없습니다: " + e.getMessage(), e);
+            log.warn("KISCON 서비스 호출 실패", e);
+            throw new KisconException("KISCON 서비스에 연결할 수 없습니다.", e);
         }
 
         KisconApiResponse parsed;

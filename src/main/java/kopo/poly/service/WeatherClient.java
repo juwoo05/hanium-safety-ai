@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import kopo.poly.dto.response.WeatherResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -20,6 +21,7 @@ import java.util.TreeMap;
 // 기상청 단기예보 조회서비스(공공데이터포털, VilageFcstInfoService_2.0) 연동.
 // 대시보드에 서울(고정 격자좌표) 오늘 날씨 요약만 보여주면 되므로, 가장 가까운 예보 시각 한 슬롯과
 // 오늘의 최고/최저기온만 뽑아 간단히 정리한다.
+@Slf4j
 @Component
 public class WeatherClient {
 
@@ -69,7 +71,8 @@ public class WeatherClient {
                     .retrieve()
                     .body(String.class);
         } catch (RestClientException e) {
-            throw new WeatherException("기상청 단기예보 서비스에 연결할 수 없습니다: " + e.getMessage(), e);
+            log.warn("기상청 단기예보 서비스 호출 실패", e);
+            throw new WeatherException("기상청 단기예보 서비스에 연결할 수 없습니다.", e);
         }
 
         WeatherApiResponse parsed;
