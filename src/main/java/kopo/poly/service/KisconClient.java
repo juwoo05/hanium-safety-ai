@@ -22,7 +22,9 @@ import java.util.List;
 public class KisconClient {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
-    private static final int NUM_OF_ROWS = 100;
+    // 최근 3년 공시 건수가 2만 건이 넘어 한 페이지로 전부 가져올 수는 없지만,
+    // API가 허용하는 최대치까지 늘려서 최근 공시부터 최대한 많이 확보한다.
+    private static final int NUM_OF_ROWS = 10000;
 
     private final RestClient kisconRestClient;
     private final String serviceKey;
