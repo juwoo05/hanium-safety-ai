@@ -63,8 +63,10 @@ public class KisconClient {
                     .retrieve()
                     .body(String.class);
         } catch (RestClientException e) {
-            log.warn("KISCON 서비스 호출 실패", e);
-            throw new KisconException("KISCON 서비스에 연결할 수 없습니다.", e);
+            // RestClientException 메시지/스택트레이스에는 인증키가 담긴 요청 URL이 그대로 포함되므로
+            // 예외 객체나 e.getMessage()를 로그에 남기지 않고 예외 종류만 남긴다.
+            log.warn("KISCON 서비스 호출 실패: {}", e.getClass().getSimpleName());
+            throw new KisconException("KISCON 서비스에 연결할 수 없습니다.");
         }
 
         KisconApiResponse parsed;

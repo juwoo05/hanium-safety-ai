@@ -67,12 +67,12 @@
             <p class="text-xs text-white/60 mt-1">협력사 평균 완료율</p>
           </div>
           <div id="weatherWidget" class="hidden lg:flex flex-col justify-center gap-1 bg-white/10 rounded-2xl px-5 py-4 flex-shrink-0 min-w-[150px]">
-            <p class="text-xs text-white/60">서울 오늘 날씨</p>
+            <p class="text-xs text-white/60">서울 현재 날씨</p>
             <div class="flex items-center gap-2">
               <p id="weatherTemp" class="text-2xl font-bold">-</p>
               <p id="weatherSky" class="text-sm text-white/80">-</p>
             </div>
-            <p id="weatherDetail" class="text-xs text-white/60">강수확률 - · 최저/최고 -/-</p>
+            <p id="weatherDetail" class="text-xs text-white/60">강수량 -</p>
           </div>
         </div>
       </div>
@@ -356,8 +356,7 @@
       .then(function (w) {
         qs('#weatherTemp').textContent = (w.temperature != null ? w.temperature : '-') + '°';
         qs('#weatherSky').textContent = w.skyCondition + (w.precipitationType && w.precipitationType !== '없음' ? ' · ' + w.precipitationType : '');
-        qs('#weatherDetail').textContent = '강수확률 ' + (w.precipitationProbability != null ? w.precipitationProbability : '-') + '% · 최저/최고 '
-          + (w.todayMin != null ? w.todayMin : '-') + '°/' + (w.todayMax != null ? w.todayMax : '-') + '°';
+        qs('#weatherDetail').textContent = '강수량 ' + (w.precipitationAmount || '-');
       })
       .catch(function () {});
   }

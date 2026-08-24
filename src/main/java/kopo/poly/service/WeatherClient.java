@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -18,15 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-// 기상청 단기예보 조회서비스(공공데이터포털, VilageFcstInfoService_2.0) 연동.
-// 대시보드에 서울(고정 격자좌표) 오늘 날씨 요약만 보여주면 되므로, 가장 가까운 예보 시각 한 슬롯과
-// 오늘의 최고/최저기온만 뽑아 간단히 정리한다.
+// 기상청 API허브(apihub.kma.go.kr) 초단기예보 조회(getUltraSrtFcst) 연동.
+// 이 계정은 아직 단기예보(getVilageFcst)는 활용신청이 안 되어 있고 초단기예보만 승인된 상태라,
+// 향후 6시간 이내 예보만 제공하는 이 오퍼레이션을 사용한다. 일 최저/최고기온·강수확률은
+// 이 오퍼레이션에 없는 항목이라 응답에 포함하지 않는다.
 @Slf4j
 @Component
 public class WeatherClient {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
-    private static final int[] BASE_HOURS = {2, 5, 8, 11, 14, 17, 20, 23};
 
     private final RestClient weatherRestClient;
     private final String serviceKey;
@@ -50,18 +49,19 @@ public class WeatherClient {
     }
 
     public WeatherResponse getTodayForecast() {
-        LocalDateTime baseDateTime = LocalDateTime.now().minusMinutes(10);
-        String baseDate = resolveBaseDate(baseDateTime);
-        String baseTime = resolveBaseTime(baseDateTime);
+        // 초단기예보는 매시 30분에 발표되고 약 10~15분 뒤 조회 가능하다.
+        LocalDateTime baseDateTime = LocalDateTime.now().minusMinutes(45);
+        String baseDate = baseDateTime.format(DATE_FORMAT);
+        String baseTime = String.format("%02d30", baseDateTime.getHour());
 
         String raw;
         try {
             raw = weatherRestClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/getVilageFcst")
+                            .path("/getUltraSrtFcst")
                             .queryParam("authKey", serviceKey)
                             .queryParam("pageNo", 1)
-                            .queryParam("numOfRows", 1000)
+                            .queryParam("numOfRows", 100)
                             .queryParam("dataType", "JSON")
                             .queryParam("base_date", baseDate)
                             .queryParam("base_time", baseTime)
@@ -71,8 +71,10 @@ public class WeatherClient {
                     .retrieve()
                     .body(String.class);
         } catch (RestClientException e) {
-            log.warn("기상청 단기예보 서비스 호출 실패", e);
-            throw new WeatherException("기상청 단기예보 서비스에 연결할 수 없습니다.", e);
+            // RestClientException 메시지/스택트레이스에는 인증키가 담긴 요청 URL이 그대로 포함되므로
+            // 예외 객체나 e.getMessage()를 로그에 남기지 않고 예외 종류만 남긴다.
+            log.warn("기상청 초단기예보 서비스 호출 실패: {}", e.getClass().getSimpleName());
+            throw new WeatherException("기상청 초단기예보 서비스에 연결할 수 없습니다.");
         }
 
         WeatherApiResponse parsed;
@@ -109,29 +111,14 @@ public class WeatherClient {
                 .orElse(slots.keySet().iterator().next());
         Map<String, String> chosen = slots.get(chosenKey);
 
-        String today = LocalDate.now().format(DATE_FORMAT);
-        Integer todayMax = findFirstValue(items, "TMX", today);
-        Integer todayMin = findFirstValue(items, "TMN", today);
-
         return new WeatherResponse(
                 skyConditionLabel(chosen.get("SKY")),
                 precipitationTypeLabel(chosen.get("PTY")),
-                parseIntOrNull(chosen.get("POP")),
-                parseIntOrNull(chosen.get("TMP")),
-                todayMin,
-                todayMax,
+                chosen.getOrDefault("RN1", "-"),
+                parseIntOrNull(chosen.get("T1H")),
                 chosenKey.substring(0, 8),
                 chosenKey.substring(8)
         );
-    }
-
-    private Integer findFirstValue(List<WeatherItem> items, String category, String date) {
-        return items.stream()
-                .filter(item -> category.equals(item.category()) && date.equals(item.fcstDate()))
-                .map(item -> parseIntOrNull(item.fcstValue()))
-                .filter(v -> v != null)
-                .findFirst()
-                .orElse(null);
     }
 
     private Integer parseIntOrNull(String value) {
@@ -163,29 +150,11 @@ public class WeatherClient {
             case "2" -> "비/눈";
             case "3" -> "눈";
             case "4" -> "소나기";
+            case "5" -> "빗방울";
+            case "6" -> "빗방울눈날림";
+            case "7" -> "눈날림";
             default -> "없음";
         };
-    }
-
-    // 단기예보는 02,05,08,11,14,17,20,23시에 발표되고 발표 후 약 10분 뒤 조회 가능하다.
-    private String resolveBaseDate(LocalDateTime reference) {
-        LocalDate date = reference.toLocalDate();
-        if (reference.getHour() < BASE_HOURS[0]) {
-            date = date.minusDays(1);
-        }
-        return date.format(DATE_FORMAT);
-    }
-
-    private String resolveBaseTime(LocalDateTime reference) {
-        int hour = reference.getHour();
-        int chosen = BASE_HOURS[BASE_HOURS.length - 1];
-        for (int i = BASE_HOURS.length - 1; i >= 0; i--) {
-            if (BASE_HOURS[i] <= hour) {
-                chosen = BASE_HOURS[i];
-                break;
-            }
-        }
-        return String.format("%02d00", chosen);
     }
 
     // 기상청 응답 JSON 파싱 전용 내부 구조 (data.go.kr 공통 response/header/body 포맷)
