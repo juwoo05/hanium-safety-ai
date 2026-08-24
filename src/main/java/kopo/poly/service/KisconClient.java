@@ -127,15 +127,13 @@ public class KisconClient {
     private record Items(List<KisconItem> item) {
     }
 
+    // 건설사명/사업자번호/대표자명/본사주소 외 나머지 필드(등록업종, 공시일자, 지역 등)는
+    // 화면에서 쓰지 않으므로 파싱 대상에서 제외해 바인딩 비용을 줄인다.
     private record KisconItem(
             String ncrGsKname,
             String ncrMasterNum,
             String ncrGsMaster,
-            String ncrGsAddr,
-            String ncrAreaName,
-            String ncrAreaDetailName,
-            String ncrGsDate,
-            String ncrItemName
+            String ncrGsAddr
     ) {
     }
 }
