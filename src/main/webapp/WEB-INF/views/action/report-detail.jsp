@@ -15,8 +15,7 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
-<%@ include file="../common/_topnav.jsp" %>
-<div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
+<div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between no-print">
     <div class="flex items-center gap-3 flex-1 max-w-md">
       <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -25,7 +24,7 @@
     <div class="flex items-center gap-4">
       <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
       <div class="flex items-center gap-2">
-        <div id="headerUserInitial" class="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-bold">-</div>
+        <div id="headerUserInitial" class="w-8 h-8 rounded-full bg-[#1A2E44] flex items-center justify-center text-white text-xs font-bold">-</div>
         <span id="headerUserName" class="text-sm font-medium text-gray-800">-</span>
       </div>
     </div>
@@ -76,18 +75,20 @@
 
         <!-- Tabs -->
         <div class="flex gap-6 mt-5 border-b border-gray-200">
-          <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="result">분석결과</button>
-          <button class="tab-btn pb-3 text-sm font-semibold text-[#FF6B35] border-b-2 border-[#FF6B35]" data-tab="form">안전양식</button>
+          <button class="tab-btn pb-3 text-sm font-semibold text-gray-900 border-b-2 border-gray-900" data-tab="result">분석결과</button>
+          <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="form">안전양식</button>
           <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="evidence">증거자료</button>
         </div>
       </div>
 
       <!-- 분석결과 탭 -->
-      <div id="tab-result" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-md">
+      <div id="tab-result" class="tab-panel grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div class="lg:col-span-2 space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-md">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-base font-semibold text-gray-900">감지 항목</h3>
           <div class="flex items-center gap-1.5" id="issueFilterTabs">
-            <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#FF6B35] text-white" data-filter="all">전체</button>
+            <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#1A2E44] text-white" data-filter="all">전체</button>
             <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="needed">조치 필요</button>
             <button type="button" class="issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="done">완료</button>
           </div>
@@ -117,7 +118,7 @@
               <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-5 pt-5 pb-3"><div class="w-3 h-3 rounded-full bg-green-600"></div><span class="font-bold text-[#003b5c]">조치 후</span></div>
                 <div class="mx-5 mb-5">
-                  <label id="verifyAfterDropzone" class="relative rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#FF6B35] hover:bg-orange-50 transition-all" style="height:220px">
+                  <label id="verifyAfterDropzone" class="relative rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#1A2E44] hover:bg-orange-50 transition-all" style="height:220px">
                     <input id="verifyAfterInput" type="file" accept="image/*" class="hidden"/>
                     <svg class="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     <p class="text-sm text-gray-600 font-medium mt-2">개선된 현장을 촬영해주세요</p>
@@ -140,15 +141,51 @@
           </div>
         </div>
       </div>
+      </div>
+
+      <!-- 우측: 조치 항목 요약 + AI 종합 의견 -->
+      <div class="space-y-4">
+        <div class="rounded-xl p-5 border border-gray-200" style="background:#F9FAFB">
+          <h3 class="font-bold text-gray-900 mb-4">조치 항목 요약</h3>
+          <div class="space-y-2.5 mb-4">
+            <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2">
+              <span class="text-sm text-gray-600">전체 항목</span>
+              <span id="summaryTotal" class="text-sm font-bold text-gray-900">-</span>
+            </div>
+            <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2">
+              <span class="text-sm text-gray-600">조치 필요</span>
+              <span id="summaryNeeded" class="text-sm font-bold text-red-600">-</span>
+            </div>
+            <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2">
+              <span class="text-sm text-gray-600">완료</span>
+              <span id="summaryDone" class="text-sm font-bold text-green-600">-</span>
+            </div>
+          </div>
+          <button id="goToFormBtn" type="button" class="w-full py-2.5 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2" style="background:#1A2E44;color:white">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            안전양식 자동 작성
+          </button>
+          <a href="/actions" class="w-full mt-2 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+            조치 관리로 이동
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </div>
+
+        <div class="rounded-xl p-5 border border-gray-200" style="background:#EFF6FF">
+          <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">AI 종합 의견</p>
+          <p id="aiOpinionText" class="text-xs text-gray-700 leading-relaxed">리포트를 선택하면 표시됩니다.</p>
+        </div>
+      </div>
+      </div>
 
       <!-- 안전양식 탭 -->
-      <div id="tab-form" class="tab-panel grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div id="tab-form" class="tab-panel hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-1 space-y-5">
           <div id="formTypeCard" class="bg-white rounded-2xl p-4 shadow-md">
             <h3 class="text-sm font-semibold text-gray-500 px-2 mb-2">양식 종류</h3>
             <div class="space-y-1" id="formTypeList">
-              <button class="form-type-btn w-full text-left px-4 py-3 rounded-xl border-2 border-[#FF6B35] bg-orange-50 flex items-start gap-3" data-type="INSPECTION_LOG">
-                <svg class="w-5 h-5 text-[#FF6B35] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <button class="form-type-btn w-full text-left px-4 py-3 rounded-xl border-2 border-[#1A2E44] bg-orange-50 flex items-start gap-3" data-type="INSPECTION_LOG">
+                <svg class="w-5 h-5 text-[#1A2E44] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                 <span><span class="block text-sm font-bold text-gray-900">안전점검일지</span><span class="block text-xs text-gray-500">일상 현장 안전점검 결과 기록</span></span>
               </button>
               <button class="form-type-btn w-full text-left px-4 py-3 rounded-xl border-2 border-transparent hover:bg-gray-50 flex items-start gap-3" data-type="RISK_ASSESSMENT">
@@ -166,13 +203,13 @@
             </div>
           </div>
 
-          <div id="aiAssistCard" class="bg-gradient-to-br from-[#1B3A5F] to-[#2C5282] rounded-2xl p-5 text-white">
+          <div id="aiAssistCard" class="bg-gradient-to-br from-[#1A2E44] to-[#2C5282] rounded-2xl p-5 text-white">
             <div class="flex items-center gap-2 mb-2">
-              <svg class="w-5 h-5 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
+              <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
               <h3 class="text-sm font-semibold">AI 자동 작성</h3>
             </div>
             <p class="text-xs text-white/70 mb-4">조치관리 데이터를 기반으로 AI가 양식을 자동 작성합니다.</p>
-            <button id="aiAutoFillBtn" class="w-full py-2.5 bg-[#FF6B35] hover:bg-[#E55A2A] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+            <button id="aiAutoFillBtn" class="w-full py-2.5 bg-[#1A2E44] hover:bg-[#0F2233] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>자동 작성하기
             </button>
             <p id="aiAssistStatus" class="hidden text-xs text-green-300 mt-2 text-center">✓ 자동 작성 완료 — 내용을 검토하세요</p>
@@ -181,7 +218,7 @@
           <div id="formFileCard" class="bg-white rounded-2xl p-4 shadow-md">
             <h3 class="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>양식 파일 읽기</h3>
             <p class="text-xs text-gray-500 mb-3">PDF·이미지·Excel·Word 형식의 안전양식을 업로드하면 AI가 내용을 읽어 자동 입력합니다.</p>
-            <label class="block border-2 border-dashed border-gray-200 rounded-xl py-6 text-center cursor-pointer hover:border-[#FF6B35] transition-colors">
+            <label class="block border-2 border-dashed border-gray-200 rounded-xl py-6 text-center cursor-pointer hover:border-[#1A2E44] transition-colors">
               <input type="file" class="hidden"/>
               <svg class="w-6 h-6 text-gray-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p class="text-xs text-gray-500">파일을 드래그하거나 클릭</p>
@@ -195,31 +232,31 @@
             <div class="flex items-center justify-between mb-1">
               <h2 id="formTitle" class="text-lg font-bold text-gray-900">안전점검일지</h2>
               <div class="flex items-center gap-2 no-print">
-                <button id="saveFormBtn" class="px-4 py-2 bg-[#1B3A5F] text-white rounded-lg text-sm font-semibold hover:bg-[#15304d] flex items-center gap-2">
+                <button id="saveFormBtn" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#15304d] flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>저장
                 </button>
-                <button onclick="window.print()" class="px-4 py-2 bg-[#FF6B35] text-white rounded-lg text-sm font-semibold hover:bg-[#E55A2A] flex items-center gap-2">
+                <button onclick="window.print()" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#0F2233] flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>출력·PDF
                 </button>
               </div>
             </div>
-            <p id="formAiNotice" class="hidden text-xs text-[#FF6B35] font-medium mb-4">AI가 조치관리 데이터를 기반으로 작성하였습니다</p>
+            <p id="formAiNotice" class="hidden text-xs text-[#1A2E44] font-medium mb-4">AI가 조치관리 데이터를 기반으로 작성하였습니다</p>
             <div id="formAiNoticeSpacer" class="mb-4"></div>
 
             <!-- 기본 정보 (공통) -->
             <div class="mb-6">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">기본 정보</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">기본 정보</h4>
               <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-xs text-gray-500 mb-1">건설사명</label><input type="text" data-field="companyName" placeholder="예) (주)세이프메이트 건설" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div><label class="block text-xs text-gray-500 mb-1">현장명</label><input type="text" data-field="siteName" placeholder="예) 3동 건물 외벽 공사현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div><label class="block text-xs text-gray-500 mb-1">점검일시</label><input type="datetime-local" data-field="inspectedAt" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div><label class="block text-xs text-gray-500 mb-1">점검자</label><input type="text" data-field="inspector" placeholder="예) 김현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div><label class="block text-xs text-gray-500 mb-1">관리감독자</label><input type="text" data-field="supervisor" placeholder="예) 박안전" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div class="field-inspection field-workpermit hidden"><label class="block text-xs text-gray-500 mb-1">기상 상태</label><input type="text" data-field="weather" placeholder="맑음" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
-                <div class="field-workpermit hidden"><label class="block text-xs text-gray-500 mb-1">작업 종류</label><input type="text" data-field="workType" placeholder="예) 외벽 마감 작업" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">건설사명</label><input type="text" data-field="companyName" placeholder="예) (주)세이프메이트 건설" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">현장명</label><input type="text" data-field="siteName" placeholder="예) 3동 건물 외벽 공사현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">점검일시</label><input type="datetime-local" data-field="inspectedAt" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">점검자</label><input type="text" data-field="inspector" placeholder="예) 김현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">관리감독자</label><input type="text" data-field="supervisor" placeholder="예) 박안전" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div class="field-inspection field-workpermit hidden"><label class="block text-xs text-gray-500 mb-1">기상 상태</label><input type="text" data-field="weather" placeholder="맑음" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div class="field-workpermit hidden"><label class="block text-xs text-gray-500 mb-1">작업 종류</label><input type="text" data-field="workType" placeholder="예) 외벽 마감 작업" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
               </div>
               <div class="field-inspection grid grid-cols-2 gap-4 mt-4 hidden">
-                <div><label class="block text-xs text-gray-500 mb-1">작업인원 수</label><input type="number" data-field="workerCount" placeholder="명" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">작업인원 수</label><input type="number" data-field="workerCount" placeholder="명" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
                 <div>
                   <label class="block text-xs text-gray-500 mb-1">종합 점검 결과</label>
                   <div class="grid grid-cols-3 gap-2">
@@ -229,15 +266,15 @@
                   </div>
                 </div>
               </div>
-              <div class="field-workpermit mt-4 hidden"><label class="block text-xs text-gray-500 mb-1">작업 범위</label><input type="text" data-field="workScope" placeholder="예) 3동 2~4층 외벽 구간" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"/></div>
+              <div class="field-workpermit mt-4 hidden"><label class="block text-xs text-gray-500 mb-1">작업 범위</label><input type="text" data-field="workScope" placeholder="예) 3동 2~4층 외벽 구간" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
             </div>
 
             <!-- 안전점검일지: 점검 항목 -->
             <div class="field-inspection mb-6 hidden">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">점검 항목</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">점검 항목</h4>
               <div id="inspectionItems" class="space-y-2">
                 <div class="text-center py-8 text-gray-400 text-sm" id="inspectionItemsEmpty">
-                  <svg class="w-6 h-6 mx-auto mb-2 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
+                  <svg class="w-6 h-6 mx-auto mb-2 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
                   AI 자동 작성으로 점검 항목을 채워보세요
                 </div>
               </div>
@@ -245,13 +282,13 @@
 
             <!-- 위험성평가서 -->
             <div class="field-risk mb-6 hidden">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">평가 목적 및 개요</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">평가 목적 및 개요</h4>
               <label class="block text-xs text-gray-500 mb-1">평가 목적</label>
-              <textarea data-field="assessmentPurpose" rows="3" placeholder="AI 자동 작성을 사용해보세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"></textarea>
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3 mt-5">위험 요소 평가표</h4>
+              <textarea data-field="assessmentPurpose" rows="3" placeholder="AI 자동 작성을 사용해보세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">위험 요소 평가표</h4>
               <div id="riskItems" class="space-y-2">
                 <div class="text-center py-8 text-gray-400 text-sm" id="riskItemsEmpty">
-                  <svg class="w-6 h-6 mx-auto mb-2 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
+                  <svg class="w-6 h-6 mx-auto mb-2 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
                   AI 자동 작성으로 평가 항목을 채워보세요
                 </div>
               </div>
@@ -259,38 +296,38 @@
 
             <!-- 조치결과보고서 -->
             <div class="field-action mb-6 hidden">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">조치 내용 요약</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">조치 내용 요약</h4>
               <label class="block text-xs text-gray-500 mb-1">완료된 조치 사항</label>
-              <textarea data-field="completedAction" rows="3" placeholder="어떤 조치를 취했는지 서술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"></textarea>
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3 mt-5">재발 방지 계획</h4>
+              <textarea data-field="completedAction" rows="3" placeholder="어떤 조치를 취했는지 서술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">재발 방지 계획</h4>
               <label class="block text-xs text-gray-500 mb-1">재발 방지 대책</label>
-              <textarea data-field="preventionPlan" rows="3" placeholder="향후 재발 방지를 위한 계획을 기술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"></textarea>
+              <textarea data-field="preventionPlan" rows="3" placeholder="향후 재발 방지를 위한 계획을 기술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
             </div>
 
             <!-- 작업허가서 -->
             <div class="field-workpermit mb-6 hidden">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">안전 주의사항</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">안전 주의사항</h4>
               <label class="block text-xs text-gray-500 mb-1">작업 전 안전 조치사항</label>
-              <textarea data-field="safetyPrecaution" rows="4" placeholder="관련 법규 및 안전 주의사항을 기술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]"></textarea>
+              <textarea data-field="safetyPrecaution" rows="4" placeholder="관련 법규 및 안전 주의사항을 기술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
             </div>
 
             <!-- 서명 (공통) -->
             <div>
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#FF6B35] pl-2 mb-3">서명</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">서명</h4>
               <div class="grid grid-cols-3 gap-4">
                 <div class="border border-gray-200 rounded-xl p-4 text-center">
                   <p class="text-xs font-semibold text-gray-700 mb-2">작성자</p>
-                  <input type="text" data-field="signWriter" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#FF6B35] mb-1"/>
+                  <input type="text" data-field="signWriter" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#1A2E44] mb-1"/>
                   <p class="text-[10px] text-gray-400">(서명 또는 인)</p>
                 </div>
                 <div class="border border-gray-200 rounded-xl p-4 text-center">
                   <p class="text-xs font-semibold text-gray-700 mb-2">검토자</p>
-                  <input type="text" data-field="signReviewer" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#FF6B35] mb-1"/>
+                  <input type="text" data-field="signReviewer" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#1A2E44] mb-1"/>
                   <p class="text-[10px] text-gray-400">(서명 또는 인)</p>
                 </div>
                 <div class="border border-gray-200 rounded-xl p-4 text-center">
                   <p class="text-xs font-semibold text-gray-700 mb-2">승인자</p>
-                  <input type="text" data-field="signApprover" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#FF6B35] mb-1"/>
+                  <input type="text" data-field="signApprover" placeholder="성명 입력" class="form-input w-full text-center px-2 py-1.5 border-b border-gray-200 text-sm outline-none focus:border-[#1A2E44] mb-1"/>
                   <p class="text-[10px] text-gray-400">(서명 또는 인)</p>
                 </div>
               </div>
@@ -302,7 +339,7 @@
       <!-- 증거자료 탭 -->
       <div id="tab-evidence" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-md">
         <div class="flex gap-2 mb-5">
-          <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#1B3A5F] text-white" data-evidence="law">법규</button>
+          <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#1A2E44] text-white" data-evidence="law">법규</button>
           <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-evidence="case">사고사례</button>
           <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-evidence="guide">지침</button>
         </div>
@@ -391,38 +428,6 @@
     WORK_PERMIT: { title: '작업허가서', fieldClass: 'field-workpermit' }
   };
 
-  // inspectionId 없이 열람 중일 때만 쓰는 데모 데이터. 실제 리포트에서는 /api/documents/draft로 대체된다.
-  var AI_FALLBACK_DATA = {
-    INSPECTION_LOG: {
-      companyName: '(주)세이프메이트 건설', siteName: '3동 건물 외벽 공사현장', inspector: '김현장',
-      supervisor: '박안전', weather: '맑음', workerCount: 24, overallResult: '불량',
-      items: [
-        { name: '안전난간 미설치', result: 'bad', note: '3층 외벽 작업 구역에 추락 방지용 안전난간이 설치되지 않았습니다. — 권장조치: 즉시 안전난간 설치 및 작업자 출입 통제' },
-        { name: '임시 배선 노출', result: 'bad', note: '작업장 바닥에 전선이 노출되어 감전 및 화재 위험이 있습니다. — 권장조치: 배선 정리 및 전선 보호 커버 설치' },
-        { name: '안전모 미착용', result: 'good', note: '현장 작업자 중 1명이 안전모를 착용하지 않은 것으로 확인됩니다. — 권장조치: 안전모 착용 교육 및 관리 강화' }
-      ]
-    },
-    RISK_ASSESSMENT: {
-      companyName: '(주)세이프메이트 건설', siteName: '3동 건물 외벽 공사현장', inspector: '김현장', supervisor: '박안전',
-      assessmentPurpose: '3동 건물 외벽 공사현장의 AI 위험요소 분석 결과를 기반으로 위험성을 평가하고 개선대책을 수립한다.',
-      items: [
-        { name: '안전난간 미설치', level: '개선 필요', note: '3층 외벽 작업 구역에 추락 방지용 안전난간이 설치되지 않았습니다. — 권장조치: 즉시 안전난간 설치 및 작업자 출입 통제' },
-        { name: '임시 배선 노출', level: '개선 필요', note: '작업장 바닥에 전선이 노출되어 감전 및 화재 위험이 있습니다. — 권장조치: 배선 정리 및 전선 보호 커버 설치' },
-        { name: '안전모 미착용', level: '양호', note: '현장 작업자 중 1명이 안전모를 착용하지 않은 것으로 확인됩니다. — 권장조치: 안전모 착용 교육 및 관리 강화' }
-      ]
-    },
-    ACTION_REPORT: {
-      companyName: '(주)세이프메이트 건설', siteName: '3동 건물 외벽 공사현장', inspector: '김현장', supervisor: '박안전',
-      completedAction: '3층 외벽 작업 구역에 안전난간을 설치하고, 노출된 임시 배선을 정리 후 보호 커버를 설치하였습니다. 미착용 작업자에게 안전모 착용 교육을 실시하였습니다.',
-      preventionPlan: '작업 전 안전점검 체크리스트에 안전난간·배선 상태 항목을 추가하고, 주간 단위로 재점검을 실시한다.'
-    },
-    WORK_PERMIT: {
-      companyName: '(주)세이프메이트 건설', siteName: '3동 건물 외벽 공사현장', inspector: '김현장', supervisor: '박안전',
-      workType: '외벽 마감 및 전기 배선 작업', workScope: '3동 2~4층 외벽 구간, 전기실 임시 배선 정비',
-      safetyPrecaution: '작업 전 안전난간 설치 상태를 확인하고, 전기 작업 구역은 차단 후 진행한다. 관련 근거: 산업안전보건법 제38조, 전기사업법 제67조.'
-    }
-  };
-
   var state = { currentType: 'INSPECTION_LOG', documents: {} };
 
   function qs(sel, root) { return (root || document).querySelector(sel); }
@@ -431,8 +436,8 @@
   // 탭 전환
   qsa('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      qsa('.tab-btn').forEach(function (b) { b.classList.remove('text-[#FF6B35]', 'border-[#FF6B35]'); b.classList.add('text-gray-400', 'border-transparent'); });
-      btn.classList.remove('text-gray-400', 'border-transparent'); btn.classList.add('text-[#FF6B35]', 'border-[#FF6B35]');
+      qsa('.tab-btn').forEach(function (b) { b.classList.remove('text-gray-900', 'border-gray-900'); b.classList.add('text-gray-400', 'border-transparent'); });
+      btn.classList.remove('text-gray-400', 'border-transparent'); btn.classList.add('text-gray-900', 'border-gray-900');
       qsa('.tab-panel').forEach(function (p) { p.classList.add('hidden'); });
       qs('#tab-' + btn.dataset.tab).classList.remove('hidden');
       qs('#tab-form').classList.toggle('hidden', btn.dataset.tab !== 'form');
@@ -445,10 +450,26 @@
   var evidenceLoaded = {};
   var CATEGORY_LABEL = { law: '법규', case: '사고사례', guide: '지침' };
 
+  // AI 검색(OpenSearch/Bedrock) 연결 실패 시 보여줄 예시 자료
+  var DUMMY_EVIDENCE = {
+    law: [
+      { title: '산업안전보건법 제38조 - 추락 위험 방지', snippet: '사업주는 근로자가 추락할 위험이 있는 장소에는 안전난간, 울, 수직형 추락방호망...', category: 'law', relevance: 98 },
+      { title: '전기사업법 제67조 - 전기설비 기술기준', snippet: '전기사용장소의 시설은 감전, 화재 그 밖에 사람에게 위해를 주거나...', category: 'law', relevance: 95 }
+    ],
+    case: [
+      { title: '건설현장 추락사고 사례 (2025.03)', snippet: '안전난간 미설치로 인한 3층 높이 추락사고로 중상자 1명 발생', category: 'case', relevance: 92 },
+      { title: '전기감전 사고 사례 (2025.01)', snippet: '임시 전선 노출로 인한 감전사고, 작업 중단 및 안전점검 실시', category: 'case', relevance: 88 }
+    ],
+    guide: [
+      { title: '건설현장 안전난간 설치 가이드', snippet: '안전난간의 높이, 재질, 설치 방법에 대한 상세 지침', category: 'guide', relevance: 96 },
+      { title: '전기안전 작업수칙', snippet: '전기 작업 시 안전수칙 및 점검사항', category: 'guide', relevance: 90 }
+    ]
+  };
+
   qsa('.evidence-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      qsa('.evidence-tab-btn').forEach(function (b) { b.classList.remove('bg-[#1B3A5F]', 'text-white'); b.classList.add('bg-gray-100', 'text-gray-600'); });
-      btn.classList.add('bg-[#1B3A5F]', 'text-white'); btn.classList.remove('bg-gray-100', 'text-gray-600');
+      qsa('.evidence-tab-btn').forEach(function (b) { b.classList.remove('bg-[#1A2E44]', 'text-white'); b.classList.add('bg-gray-100', 'text-gray-600'); });
+      btn.classList.add('bg-[#1A2E44]', 'text-white'); btn.classList.remove('bg-gray-100', 'text-gray-600');
       qsa('.evidence-panel').forEach(function (p) { p.classList.add('hidden'); });
       qs('#evidence-' + btn.dataset.evidence).classList.remove('hidden');
       loadEvidence(btn.dataset.evidence);
@@ -487,7 +508,9 @@
           : '<p class="col-span-2 text-center text-sm text-gray-400 py-6">관련 자료를 찾지 못했습니다.</p>';
       })
       .catch(function () {
-        panel.innerHTML = '<p class="col-span-2 text-center text-sm text-red-400 py-6">증거자료를 불러오지 못했습니다.</p>';
+        evidenceLoaded[category] = true;
+        panel.innerHTML = DUMMY_EVIDENCE[category].map(evidenceCardHtml).join('') +
+          '<p class="col-span-2 text-xs text-gray-400 mt-1">AI 검색 서버에 연결하지 못해 예시 자료를 표시하고 있습니다.</p>';
       });
   }
 
@@ -501,8 +524,8 @@
   function clearForm() {
     qsa('.form-input').forEach(function (el) { el.value = ''; });
     qsa('.result-btn').forEach(function (el) { el.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50', 'border-yellow-500', 'bg-yellow-50'); el.classList.add('border-gray-200'); });
-    qs('#inspectionItems').innerHTML = '<div class="text-center py-8 text-gray-400 text-sm" id="inspectionItemsEmpty"><svg class="w-6 h-6 mx-auto mb-2 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동 작성으로 점검 항목을 채워보세요</div>';
-    qs('#riskItems').innerHTML = '<div class="text-center py-8 text-gray-400 text-sm" id="riskItemsEmpty"><svg class="w-6 h-6 mx-auto mb-2 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동 작성으로 평가 항목을 채워보세요</div>';
+    qs('#inspectionItems').innerHTML = '<div class="text-center py-8 text-gray-400 text-sm" id="inspectionItemsEmpty"><svg class="w-6 h-6 mx-auto mb-2 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동 작성으로 점검 항목을 채워보세요</div>';
+    qs('#riskItems').innerHTML = '<div class="text-center py-8 text-gray-400 text-sm" id="riskItemsEmpty"><svg class="w-6 h-6 mx-auto mb-2 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동 작성으로 평가 항목을 채워보세요</div>';
     qs('#formAiNotice').classList.add('hidden');
   }
 
@@ -510,10 +533,10 @@
     state.currentType = type;
     qsa('.form-type-btn').forEach(function (btn) {
       var active = btn.dataset.type === type;
-      btn.classList.toggle('border-[#FF6B35]', active);
+      btn.classList.toggle('border-[#1A2E44]', active);
       btn.classList.toggle('bg-orange-50', active);
       btn.classList.toggle('border-transparent', !active);
-      qs('svg', btn).classList.toggle('text-[#FF6B35]', active);
+      qs('svg', btn).classList.toggle('text-[#1A2E44]', active);
       qs('svg', btn).classList.toggle('text-gray-400', !active);
     });
     qs('#formTitle').textContent = FORM_META[type].title;
@@ -616,10 +639,7 @@
     var type = state.currentType;
 
     if (!INSPECTION_ID && !ACTION_ID) {
-      var fallback = AI_FALLBACK_DATA[type];
-      state.documents[type] = { formData: fallback, aiGenerated: true };
-      renderForm(type, fallback, true);
-      qs('#aiAssistStatus').classList.remove('hidden');
+      alert('리포트가 선택되지 않았습니다. 조치 관리에서 리포트를 선택한 뒤 다시 시도해주세요.');
       return;
     }
     if (!INSPECTION_ID) {
@@ -711,19 +731,27 @@
     var meta = RISK_BADGE_META[action.riskLevel] || RISK_BADGE_META.SAFE;
     var completed = action.status === 'COMPLETED';
     var link = action.inspectionId ? '/actions/detail?inspectionId=' + action.inspectionId : '/actions';
-    return '<div class="rounded-xl border-2 p-4 ' + meta.box + '">' +
-      '<div class="flex items-start justify-between mb-2">' +
-      '<div class="flex items-start gap-3 flex-1"><div class="w-2.5 h-2.5 rounded-full ' + meta.dot + ' mt-1.5 flex-shrink-0"></div>' +
+    var infoBoxes = '';
+    if (action.location || action.regulationRef) {
+      infoBoxes = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">' +
+        (action.location ? '<div class="bg-white/70 rounded-lg p-3"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">감지 위치</p><p class="text-xs text-gray-800">' + action.location + '</p></div>' : '') +
+        (action.regulationRef ? '<div class="bg-white/70 rounded-lg p-3"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">관련 법규</p><p class="text-xs text-gray-800 font-medium">' + action.regulationRef + '</p></div>' : '') +
+        '</div>';
+    }
+    return '<div class="rounded-xl border-2 p-5 ' + meta.box + '">' +
+      '<div class="flex items-start justify-between mb-3">' +
+      '<div class="flex items-start gap-3 flex-1"><div class="w-2.5 h-2.5 rounded-full ' + meta.dot + ' mt-2 flex-shrink-0"></div>' +
       '<div><h4 class="font-bold text-gray-900 mb-1">' + action.title + '</h4>' +
       '<span class="px-2 py-0.5 ' + meta.badge + ' text-white text-[10px] font-bold rounded">' + meta.label + '</span></div></div>' +
       '<span class="px-2.5 py-1 text-xs font-semibold rounded-full flex-shrink-0 ' + (completed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') + '">' + (completed ? '완료' : '조치 필요') + '</span>' +
       '</div>' +
       '<p class="text-sm text-gray-700 mb-3">' + (action.description || '') + '</p>' +
-      (action.regulationRef ? '<div class="bg-white/70 rounded-lg p-3 mb-2"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">관련 법규</p><p class="text-xs text-gray-800 font-medium">' + action.regulationRef + '</p></div>' : '') +
-      (action.recommendation ? '<div class="bg-white/80 rounded-lg p-3 border border-orange-200 mb-2"><p class="text-xs font-bold text-orange-800 mb-1">권장 조치사항</p><p class="text-xs text-orange-700">' + action.recommendation + '</p></div>' : '') +
-      '<div class="flex items-center gap-3 mt-1">' +
-      '<a href="' + link + '" class="text-xs text-[#FF6B35] hover:underline font-semibold">조치 상세 보기 →</a>' +
-      (completed ? '' : '<button type="button" class="verify-open-btn text-xs px-3 py-1.5 border-2 border-[#003b5c] text-[#003b5c] rounded-lg font-semibold hover:bg-[#003b5c]/5 transition-colors" data-id="' + action.id + '">현장 비교</button>') +
+      infoBoxes +
+      (action.recommendation ? '<div class="bg-white/80 rounded-lg p-3 mb-4 border border-orange-200"><p class="text-xs font-bold text-orange-800 mb-1">권장 조치사항</p><p class="text-xs text-orange-700">' + action.recommendation + '</p></div>' : '') +
+      '<div class="flex gap-2">' +
+      (completed ? '' : '<a href="' + link + '" class="flex-1 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>조치 상세 보기</a>') +
+      '<button type="button" class="' + (completed ? 'flex-1 ' : '') + 'verify-open-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44]/5" data-id="' + action.id + '">' +
+      '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>현장 비교</button>' +
       '</div>' +
       '</div>';
   }
@@ -737,13 +765,37 @@
     qs('#detectedItems').innerHTML = filtered.length
       ? filtered.map(detectedItemHtml).join('')
       : '<p class="text-sm text-gray-400">해당하는 감지 항목이 없습니다.</p>';
+    renderSummaryPanel();
   }
+
+  function renderSummaryPanel() {
+    var total = CURRENT_ACTIONS.length;
+    var needed = CURRENT_ACTIONS.filter(function (a) { return a.status !== 'COMPLETED'; }).length;
+    var done = total - needed;
+    var high = CURRENT_ACTIONS.filter(function (a) { return a.riskLevel === 'HIGH'; }).length;
+    qs('#summaryTotal').textContent = total + '건';
+    qs('#summaryNeeded').textContent = needed + '건';
+    qs('#summaryDone').textContent = done + '건';
+
+    var opinion;
+    if (total === 0) {
+      opinion = '아직 감지된 위험요소가 없습니다.';
+    } else {
+      opinion = '고위험 항목 ' + high + '건이 감지되었습니다. ';
+      opinion += needed > 0 ? '조치가 필요한 항목이 ' + needed + '건 남아있어 담당자 배정을 권장합니다.' : '감지된 항목이 모두 조치 완료되었습니다.';
+    }
+    qs('#aiOpinionText').textContent = opinion;
+  }
+
+  qs('#goToFormBtn').addEventListener('click', function () {
+    qs('.tab-btn[data-tab="form"]').click();
+  });
 
   qsa('.issue-filter-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       issueFilter = btn.dataset.filter;
       qsa('.issue-filter-btn').forEach(function (b) { b.className = 'issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200'; });
-      btn.className = 'issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#FF6B35] text-white';
+      btn.className = 'issue-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-[#1A2E44] text-white';
       renderDetectedItems();
     });
   });
@@ -971,7 +1023,7 @@
     loadActionOnly();
     setFieldVisibility(state.currentType);
   } else {
-    qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다 (데모 모드)';
+    qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다. 조치 관리에서 리포트를 선택해주세요.';
     setFieldVisibility(state.currentType);
   }
 })();

@@ -9,60 +9,62 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
-<%@ include file="../common/_topnav.jsp" %>
-<div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
+<div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-    <div class="flex-1 max-w-xl"><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/></div></div>
+    <div class="flex-1 max-w-xl"><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/></div></div>
     <div class="flex items-center gap-4 ml-4">
-      <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
-      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div></a>
+      <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
+      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"><div class="w-8 h-8 bg-[#1A2E44] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div></a>
     </div>
   </header>
   <main class="flex-1 overflow-y-auto p-6 lg:p-8">
     <div class="space-y-5">
-      <div><h1 class="text-2xl font-bold text-gray-900">통계 분석</h1><p class="text-sm text-gray-500 mt-0.5">현장 안전 데이터 인사이트</p></div>
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p style="font-size:11px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:5px">통계 현황</p>
+          <h1 style="font-size:22px;font-weight:600;color:#0F172A;letter-spacing:-0.02em;line-height:1">분석 리포트</h1>
+        </div>
+        <div id="periodToggle" class="flex items-center" style="background:#F3F4F6;border-radius:4px;padding:3px;gap:1px"></div>
+      </div>
 
       <!-- KPI Row -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center mb-3"><svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <p class="text-xs text-gray-500 mb-1">총 업로드 수</p>
-          <p id="kpiTotalUploads" class="text-2xl font-bold text-gray-900">-</p>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CBD4" stroke-width="1.5" style="margin-bottom:12px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;letter-spacing:0.01em">총 업로드 수</p>
+          <p id="kpiTotalUploads" style="font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-0.03em">-</p>
         </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center mb-3"><svg class="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg></div>
-          <p class="text-xs text-gray-500 mb-1">위험 감지 건수</p>
-          <p id="kpiTotalDetections" class="text-2xl font-bold text-gray-900">-</p>
+        <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CBD4" stroke-width="1.5" style="margin-bottom:12px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+          <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;letter-spacing:0.01em">위험 감지 건수</p>
+          <p id="kpiTotalDetections" style="font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-0.03em">-</p>
         </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center mb-3"><svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <p class="text-xs text-gray-500 mb-1">조치 완료율</p>
-          <p id="kpiCompletionRate" class="text-2xl font-bold text-gray-900">-</p>
+        <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CBD4" stroke-width="1.5" style="margin-bottom:12px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;letter-spacing:0.01em">조치 완료율</p>
+          <p id="kpiCompletionRate" style="font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-0.03em">-</p>
         </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div class="w-9 h-9 bg-purple-50 rounded-lg flex items-center justify-center mb-3"><svg class="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <p class="text-xs text-gray-500 mb-1">평균 조치 기간</p>
-          <p id="kpiAvgActionDays" class="text-2xl font-bold text-gray-900">-</p>
+        <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4CBD4" stroke-width="1.5" style="margin-bottom:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <p style="font-size:10px;color:#9CA3AF;margin-bottom:5px;letter-spacing:0.01em">평균 조치 기간</p>
+          <p id="kpiAvgActionDays" style="font-size:22px;font-weight:700;color:#0F172A;letter-spacing:-0.03em">-</p>
         </div>
       </div>
 
       <!-- AI Insights -->
-      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <h3 class="text-base font-bold text-gray-900">AI 인사이트</h3>
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 20px">
+        <div class="flex items-center justify-between mb-3">
+          <h3 style="font-size:14px;font-weight:600;color:#0F172A">주요 지표 분석</h3>
         </div>
-        <div id="insightGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div id="insightGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <p class="text-sm text-gray-400 col-span-2">데이터를 불러오는 중...</p>
         </div>
       </div>
 
       <!-- Monthly Trend (line) -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
         <div class="flex items-center justify-between mb-5">
-          <h3 class="text-base font-bold text-gray-900">월별 위험도 추이</h3>
+          <h3 style="font-size:14px;font-weight:600;color:#0F172A">월별 위험도 추이</h3>
           <div class="flex items-center gap-4 text-xs text-gray-500">
             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>고위험</span>
             <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-400 inline-block"></span>중위험</span>
@@ -72,23 +74,23 @@
         <svg id="trendLineChart" viewBox="0 0 600 220" class="w-full" style="height:220px" preserveAspectRatio="none"></svg>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Category -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-base font-bold text-gray-900 mb-5">위험 유형별 분류</h3>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
+          <h3 style="font-size:14px;font-weight:600;color:#0F172A;margin-bottom:16px">위험 유형별 분류</h3>
           <div id="categoryBreakdown" class="space-y-4"></div>
         </div>
 
         <!-- Donuts -->
-        <div class="space-y-4">
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">조치 상태 분포</h3>
+        <div class="flex flex-col" style="gap:12px">
+          <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 20px;flex:1">
+            <h3 style="font-size:13px;font-weight:600;color:#0F172A;margin-bottom:12px">조치 상태 분포</h3>
             <div id="statusDonut" class="flex items-center gap-4">
               <p class="text-sm text-gray-400">불러오는 중...</p>
             </div>
           </div>
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">위험도 분포</h3>
+          <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 20px;flex:1">
+            <h3 style="font-size:13px;font-weight:600;color:#0F172A;margin-bottom:12px">위험도 분포</h3>
             <div id="riskDonut" class="flex items-center gap-4">
               <p class="text-sm text-gray-400">불러오는 중...</p>
             </div>
@@ -97,14 +99,14 @@
       </div>
 
       <!-- Company Ranking -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 class="text-base font-bold text-gray-900 mb-5">업체별 조치 완료율</h3>
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
+        <h3 style="font-size:14px;font-weight:600;color:#0F172A;margin-bottom:16px">업체별 조치 완료율</h3>
         <div id="companyRanking" class="space-y-3"></div>
       </div>
 
       <!-- Manager leaderboard -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 class="text-base font-bold text-gray-900 mb-5">담당자 성과 순위</h3>
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
+        <h3 style="font-size:14px;font-weight:600;color:#0F172A;margin-bottom:16px">담당자 성과 순위</h3>
         <div id="managerLeaderboard" class="space-y-3">
           <p class="text-sm text-gray-400">불러오는 중...</p>
         </div>
@@ -120,6 +122,26 @@
   var RISK_COLORS = { '고위험': '#ef4444', '중위험': '#f97316', '안전': '#eab308' };
   var STATUS_COLORS = { REQUESTED: '#ef4444', IN_PROGRESS: '#f97316', PENDING_APPROVAL: '#3b82f6', COMPLETED: '#22c55e' };
   var STATUS_LABEL = { REQUESTED: '조치 전', IN_PROGRESS: '조치 중', PENDING_APPROVAL: '검증 중', COMPLETED: '완료' };
+  var PERIODS = [{ key: '3개월', months: 3 }, { key: '6개월', months: 6 }, { key: '1년', months: 12 }];
+  var fullMonthlyTrend = [];
+  var currentPeriod = '6개월';
+
+  function renderPeriodToggle() {
+    qs('#periodToggle').innerHTML = PERIODS.map(function (p) {
+      var active = currentPeriod === p.key;
+      return '<button type="button" class="period-btn" data-key="' + p.key + '" style="padding:4px 10px;font-size:12px;font-weight:' + (active ? 600 : 400) +
+        ';border-radius:3px;background:' + (active ? 'white' : 'transparent') + ';color:' + (active ? '#0F172A' : '#9CA3AF') +
+        ';border:none;cursor:pointer;box-shadow:' + (active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none') + '">' + p.key + '</button>';
+    }).join('');
+    document.querySelectorAll('.period-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        currentPeriod = btn.dataset.key;
+        renderPeriodToggle();
+        var months = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
+        renderTrendLine(fullMonthlyTrend.slice(-months));
+      });
+    });
+  }
 
   fetch('/api/users/me')
     .then(function (res) { return res.ok ? res.json() : null; })
@@ -153,7 +175,10 @@
     qs('#kpiCompletionRate').textContent = data.completionRate.toFixed(1) + '%';
     qs('#kpiAvgActionDays').textContent = data.avgActionDays.toFixed(1) + '일';
 
-    renderTrendLine(data.monthlyTrend);
+    fullMonthlyTrend = data.monthlyTrend;
+    renderPeriodToggle();
+    var initMonths = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
+    renderTrendLine(fullMonthlyTrend.slice(-initMonths));
     renderDonut('#riskDonut', Object.keys(data.riskDistribution).map(function (k) {
       return { name: k, value: data.riskDistribution[k], color: RISK_COLORS[k] || '#9ca3af' };
     }));
@@ -255,7 +280,7 @@
     qs('#companyRanking').innerHTML = companies.map(function (c, i) {
       var pct = Math.round(c.completionRate);
       var color = pct >= 90 ? 'text-green-600' : pct >= 80 ? 'text-blue-600' : 'text-orange-600';
-      return '<div class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:border-gray-200 transition-colors">' +
+      return '<div class="flex items-center gap-3 p-3 border border-gray-100 rounded hover:border-gray-200 transition-colors">' +
         '<span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">' + (i + 1) + '</span>' +
         '<div class="flex-1 min-w-0"><p class="text-sm font-medium text-gray-900 truncate">' + c.companyName +
         '</p><div class="flex items-center gap-2 mt-0.5"><div class="flex-1 bg-gray-100 rounded-full h-1.5">' +
@@ -284,7 +309,7 @@
     };
     qs('#insightGrid').innerHTML = items.map(function (item) {
       var c = cfg[item.type];
-      return '<div class="flex items-start gap-2.5 p-3 rounded-xl border ' + c.bg + '">' +
+      return '<div class="flex items-start gap-2.5 p-3 rounded border ' + c.bg + '">' +
         '<div class="w-2 h-2 rounded-full ' + c.dot + ' flex-shrink-0 mt-1.5"></div>' +
         '<p class="text-xs leading-relaxed ' + c.text + '">' + item.text + '</p></div>';
     }).join('');
@@ -317,14 +342,14 @@
     }
     var medals = ['1위', '2위', '3위'];
     qs('#managerLeaderboard').innerHTML = ranking.map(function (m, i) {
-      return '<div class="flex items-center gap-4 p-4 rounded-xl border ' + (i === 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 bg-gray-50') + '">' +
+      return '<div class="flex items-center gap-4 p-4 rounded border ' + (i === 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 bg-gray-50') + '">' +
         '<span class="text-xl flex-shrink-0 w-7 text-center">' + (medals[i] || (i + 1)) + '</span>' +
-        '<div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style="background:' + (i === 0 ? '#FF6B35' : '#1B3A5F') + '">' +
+        '<div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style="background:' + (i === 0 ? '#1A2E44' : '#1A2E44') + '">' +
         m.name.charAt(0) + '</div>' +
         '<div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-1.5">' +
         '<span class="font-semibold text-gray-900 text-sm">' + m.name + '</span>' +
         '<span class="ml-auto text-xs text-gray-500">담당 ' + m.assigned + '건 · 완료 ' + m.completed + '건</span></div>' +
-        '<div class="h-1.5 bg-gray-200 rounded-full"><div class="h-full rounded-full" style="width:' + m.rate + '%;background:#FF6B35"></div></div>' +
+        '<div class="h-1.5 bg-gray-200 rounded-full"><div class="h-full rounded-full" style="width:' + m.rate + '%;background:#1A2E44"></div></div>' +
         '</div><span class="text-sm font-bold text-gray-900 flex-shrink-0">' + m.rate + '%</span></div>';
     }).join('');
   }

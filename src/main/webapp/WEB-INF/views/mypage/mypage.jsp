@@ -9,8 +9,7 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
-<%@ include file="../common/_topnav.jsp" %>
-<div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
+<div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
     <h1 class="text-lg font-semibold text-gray-900">마이페이지</h1>
     <div class="flex items-center gap-3">
@@ -22,15 +21,15 @@
 
       <!-- 좌측 사이드바 -->
       <aside class="w-56 flex-shrink-0 hidden lg:block">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-4">
-          <div class="px-5 py-5 bg-gradient-to-br from-[#1B3A5F] to-[#2C5282]">
-            <div id="profileInitial" class="w-11 h-11 rounded-full bg-[#FF6B35] flex items-center justify-center mb-3"><span class="text-white font-bold text-lg">-</span></div>
+        <div class="bg-white rounded shadow-sm border border-gray-100 overflow-hidden sticky top-4">
+          <div class="px-5 py-5 bg-gradient-to-br from-[#1A2E44] to-[#003b5c]">
+            <div id="profileInitial" class="w-11 h-11 rounded-full bg-[#1A2E44] flex items-center justify-center mb-3"><span class="text-white font-bold text-lg">-</span></div>
             <p id="profileName" class="text-white font-semibold text-sm">불러오는 중...</p>
-            <span id="profileRoleBadge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF6B35]/30 text-orange-200"></span>
+            <span id="profileRoleBadge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/30 text-orange-200"></span>
           </div>
 
           <nav class="py-2" id="menuNav">
-            <button type="button" data-menu="profile" onclick="switchMenu('profile', this)" class="menu-btn w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-all text-left bg-[#1B3A5F]/8 text-[#1B3A5F] border-r-2 border-[#1B3A5F] font-semibold">
+            <button type="button" data-menu="profile" onclick="switchMenu('profile', this)" class="menu-btn w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-all text-left bg-[#1A2E44]/8 text-[#1A2E44] border-r-2 border-[#1A2E44] font-semibold">
               <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>내 정보
             </button>
             <button type="button" data-menu="account" onclick="switchMenu('account', this)" class="menu-btn w-full flex items-center gap-3 px-5 py-3 text-sm font-medium transition-all text-left text-gray-600 hover:bg-gray-50 hover:text-gray-900">
@@ -53,7 +52,7 @@
           <div class="border-t border-gray-100 p-3">
             <form action="/logout" method="post">
               <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors font-medium">
+              <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded transition-colors font-medium">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>로그아웃
               </button>
             </form>
@@ -69,7 +68,7 @@
             <h1 id="menuTitle" class="text-xl font-bold text-gray-900">내 정보</h1>
           </div>
           <div class="lg:hidden">
-            <select id="mobileMenuSelect" onchange="switchMenu(this.value, null)" class="px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none bg-white">
+            <select id="mobileMenuSelect" onchange="switchMenu(this.value, null)" class="px-3 py-2 border border-gray-200 rounded text-sm outline-none bg-white">
               <option value="profile">내 정보</option>
               <option value="account">계정 설정</option>
               <option id="mobileMenuSitesOption" value="sites" class="hidden">건설사 및 현장 연동</option>
@@ -81,130 +80,130 @@
         </div>
 
         <!-- panel: 내 정보 -->
-        <div id="panel-profile" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
-          <p id="profileSaveMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+        <div id="panel-profile" class="bg-white rounded shadow-sm border border-gray-100 p-6 space-y-5">
+          <p id="profileSaveMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
           <form id="profileForm" class="space-y-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">이름</label>
-                <input id="profileUsernameInput" type="text" required class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"/>
+                <input id="profileUsernameInput" type="text" required class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent transition-all"/>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">역할</label>
-                <input id="profileRoleInput" type="text" readonly class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 outline-none"/>
+                <input id="profileRoleInput" type="text" readonly class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm bg-gray-50 text-gray-500 outline-none"/>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">이메일 (로그인 아이디)</label>
-                <input id="profileEmailInput" type="email" readonly class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 outline-none"/>
+                <input id="profileEmailInput" type="email" readonly class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm bg-gray-50 text-gray-500 outline-none"/>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">소속 업체</label>
-                <input id="profileCompanyInput" type="text" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent transition-all"/>
+                <input id="profileCompanyInput" type="text" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent transition-all"/>
               </div>
             </div>
             <div class="pt-1">
-              <button type="submit" class="px-6 py-2.5 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
+              <button type="submit" class="px-6 py-2.5 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
             </div>
           </form>
         </div>
 
         <!-- panel: 계정 설정 (비밀번호 변경) -->
-        <div id="panel-account" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
-          <p id="passwordChangeMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+        <div id="panel-account" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-5">
+          <p id="passwordChangeMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
           <form id="passwordChangeForm" class="space-y-4 max-w-md">
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1.5">현재 비밀번호</label>
-              <input id="currentPasswordInput" type="password" required placeholder="현재 비밀번호" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/>
+              <input id="currentPasswordInput" type="password" required placeholder="현재 비밀번호" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/>
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호</label>
-              <input id="newPasswordInput" type="password" required placeholder="6자 이상" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/>
+              <input id="newPasswordInput" type="password" required placeholder="6자 이상" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/>
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1.5">새 비밀번호 확인</label>
-              <input id="newPasswordConfirmInput" type="password" required placeholder="새 비밀번호 재입력" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/>
+              <input id="newPasswordConfirmInput" type="password" required placeholder="새 비밀번호 재입력" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/>
             </div>
-            <button type="submit" class="px-6 py-2.5 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#003b5c] transition-colors">비밀번호 변경</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#003b5c] transition-colors">비밀번호 변경</button>
           </form>
         </div>
 
         <!-- panel: 건설사 및 현장 연동 -->
         <div id="panel-sites" class="hidden space-y-6">
 
-          <div id="siteRoleBanner" class="flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium"></div>
+          <div id="siteRoleBanner" class="flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium"></div>
 
           <!-- 원청 전용: §1 내 건설사 정보 -->
-          <div id="ownerCompanySection" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <div id="ownerCompanySection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-5">
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-xl bg-[#1B3A5F]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1B3A5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg></div>
+              <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg></div>
               <div class="flex-1">
-                <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">내 건설사 정보</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1B3A5F]/10 text-[#1B3A5F]">원청</span></div>
+                <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">내 건설사 정보</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
                 <p class="text-xs text-gray-500 mt-0.5">건설사 정보를 등록합니다.</p>
               </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">건설사명</label><input id="companyNameInput" placeholder="건설사명" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/></div>
-              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">사업자등록번호</label><input id="companyBizNoInput" placeholder="예) 123-45-67890" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/></div>
-              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">대표자명</label><input id="companyCeoInput" placeholder="대표자명" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/></div>
-              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">본사 주소</label><input id="companyAddressInput" placeholder="본사 주소" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F] transition-all"/></div>
+              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">건설사명</label><input id="companyNameInput" placeholder="건설사명" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/></div>
+              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">사업자등록번호</label><input id="companyBizNoInput" placeholder="예) 123-45-67890" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/></div>
+              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">대표자명</label><input id="companyCeoInput" placeholder="대표자명" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/></div>
+              <div><label class="block text-xs font-semibold text-gray-500 mb-1.5">본사 주소</label><input id="companyAddressInput" placeholder="본사 주소" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] transition-all"/></div>
             </div>
-            <p id="companySaveMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+            <p id="companySaveMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
             <div class="flex flex-wrap gap-3 pt-1">
-              <button id="kisconSearchBtn" type="button" class="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1B3A5F] text-[#1B3A5F] rounded-xl text-sm font-semibold hover:bg-[#1B3A5F]/5 transition-colors">
+              <button id="kisconSearchBtn" type="button" class="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1A2E44] text-[#1A2E44] rounded text-sm font-semibold hover:bg-[#1A2E44]/5 transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>KISCON 조회
               </button>
-              <button id="saveCompanyBtn" type="button" class="px-5 py-2.5 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
+              <button id="saveCompanyBtn" type="button" class="px-5 py-2.5 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
             </div>
-            <div id="kisconResultsWrap" class="hidden border border-gray-200 rounded-xl divide-y divide-gray-100 max-h-56 overflow-y-auto"></div>
-            <p id="kisconMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+            <div id="kisconResultsWrap" class="hidden border border-gray-200 rounded divide-y divide-gray-100 max-h-56 overflow-y-auto"></div>
+            <p id="kisconMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
             <p class="text-[11px] text-gray-400">※ 건설사명으로 검색하면 국토교통부 KISCON 공시 자료에서 일치하는 업체를 찾아드립니다. 목록에서 선택하면 정보가 자동으로 채워집니다.</p>
           </div>
 
           <!-- 원청 전용: §2 현장 등록/선택 -->
-          <div id="ownerSiteSection" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <div id="ownerSiteSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-5">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-start gap-3">
-                <div class="w-9 h-9 rounded-xl bg-[#1B3A5F]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1B3A5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
+                <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
                 <div>
-                  <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">진행 중인 현장</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1B3A5F]/10 text-[#1B3A5F]">원청</span></div>
+                  <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">진행 중인 현장</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
                   <p class="text-xs text-gray-500 mt-0.5">현장을 선택하면 공유 코드를 발급할 수 있습니다.</p>
                 </div>
               </div>
-              <button id="showAddSiteFormBtn" type="button" class="text-sm text-[#FF6B35] font-semibold hover:underline whitespace-nowrap">+ 새 현장 등록</button>
+              <button id="showAddSiteFormBtn" type="button" class="text-sm text-[#1A2E44] font-semibold hover:underline whitespace-nowrap">+ 새 현장 등록</button>
             </div>
 
-            <div id="addSiteForm" class="hidden border-2 border-dashed border-gray-200 rounded-xl p-4 space-y-3">
+            <div id="addSiteForm" class="hidden border-2 border-dashed border-gray-200 rounded p-4 space-y-3">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input id="newSiteNameInput" placeholder="현장명" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F]"/>
-                <input id="newSiteAddressInput" placeholder="현장 주소" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F]"/>
-                <input id="newSiteWorkTypeInput" placeholder="공사 구분 (예: 건축공사)" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F]"/>
+                <input id="newSiteNameInput" placeholder="현장명" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
+                <input id="newSiteAddressInput" placeholder="현장 주소" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
+                <input id="newSiteWorkTypeInput" placeholder="공사 구분 (예: 건축공사)" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
                 <div class="flex gap-2">
-                  <input id="newSitePeriodStartInput" type="date" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F]"/>
-                  <input id="newSitePeriodEndInput" type="date" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#1B3A5F]"/>
+                  <input id="newSitePeriodStartInput" type="date" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
+                  <input id="newSitePeriodEndInput" type="date" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
                 </div>
               </div>
               <div class="flex justify-end gap-2">
-                <button id="cancelAddSiteBtn" type="button" class="px-4 py-2 border border-gray-300 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
-                <button id="addSiteBtn" type="button" class="px-4 py-2 bg-[#FF6B35] text-white rounded-xl text-sm font-semibold hover:bg-[#E55A2A] transition-colors">등록</button>
+                <button id="cancelAddSiteBtn" type="button" class="px-4 py-2 border border-gray-300 text-gray-600 rounded text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
+                <button id="addSiteBtn" type="button" class="px-4 py-2 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#0F2233] transition-colors">등록</button>
               </div>
             </div>
 
             <div class="relative max-w-sm">
-              <select id="siteSelect" onchange="onSiteSelected(this.value)" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm appearance-none outline-none focus:border-[#1B3A5F] bg-white pr-10 transition-colors">
+              <select id="siteSelect" onchange="onSiteSelected(this.value)" class="w-full px-4 py-3 border-2 border-gray-200 rounded text-sm appearance-none outline-none focus:border-[#1A2E44] bg-white pr-10 transition-colors">
                 <option value="">현장을 선택하세요</option>
               </select>
               <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
 
-            <div id="siteEmptyHint" class="flex flex-col items-center justify-center py-10 text-gray-300 border-2 border-dashed border-gray-200 rounded-2xl">
+            <div id="siteEmptyHint" class="flex flex-col items-center justify-center py-10 text-gray-300 border-2 border-dashed border-gray-200 rounded">
               <svg class="w-8 h-8 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
               <p class="text-sm text-gray-400">위에서 현장을 선택하면 상세 정보가 표시됩니다</p>
             </div>
 
-            <div id="siteDetailCard" class="hidden border-2 border-[#1B3A5F]/20 rounded-2xl overflow-hidden">
-              <div class="bg-[#1B3A5F] px-5 py-4 flex items-center justify-between">
+            <div id="siteDetailCard" class="hidden border-2 border-[#1A2E44]/20 rounded overflow-hidden">
+              <div class="bg-[#1A2E44] px-5 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 20a6 6 0 0 1 12 0"/><circle cx="8" cy="9" r="4"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></div>
+                  <div class="w-9 h-9 bg-white/10 rounded flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 20a6 6 0 0 1 12 0"/><circle cx="8" cy="9" r="4"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg></div>
                   <div><p id="siteDetailName" class="text-white font-bold"></p><p class="text-white/60 text-xs">등록한 현장</p></div>
                 </div>
               </div>
@@ -213,27 +212,27 @@
           </div>
 
           <!-- 원청 전용: §3 하청 공유 코드 -->
-          <div id="ownerCodeSection" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+          <div id="ownerCodeSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-4">
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-xl bg-[#1B3A5F]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1B3A5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">하청 공유 코드</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1B3A5F]/10 text-[#1B3A5F]">원청</span></div>
+              <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">하청 공유 코드</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">선택한 현장의 공유 코드를 하청 업체에 전달하세요.</p></div>
             </div>
             <div id="codeSectionHint" class="text-sm text-gray-400">먼저 위에서 현장을 선택해주세요.</div>
             <div id="codeSectionBody" class="hidden space-y-4">
-              <div class="relative rounded-2xl overflow-hidden border-2 border-[#1B3A5F]/20">
-                <div class="bg-[#1B3A5F]/5 border-b border-[#1B3A5F]/10 px-4 py-2.5 flex items-center gap-2">
+              <div class="relative rounded overflow-hidden border-2 border-[#1A2E44]/20">
+                <div class="bg-[#1A2E44]/5 border-b border-[#1A2E44]/10 px-4 py-2.5 flex items-center gap-2">
                   <div class="w-2 h-2 rounded-full bg-green-400"></div><span class="text-xs font-semibold text-gray-600">현장 공유 코드</span>
                 </div>
                 <div class="bg-white px-6 py-6 flex items-center justify-between flex-wrap gap-3">
-                  <p id="siteCodeValue" class="text-3xl font-bold tracking-widest text-[#1B3A5F] font-mono"></p>
+                  <p id="siteCodeValue" class="text-3xl font-bold tracking-widest text-[#1A2E44] font-mono"></p>
                   <div class="flex items-center gap-2">
-                    <button id="copySiteCodeBtn" type="button" class="flex items-center gap-2 px-4 py-2.5 border-2 border-[#1B3A5F] text-[#1B3A5F] rounded-xl text-sm font-semibold hover:bg-[#1B3A5F]/5 transition-colors">복사</button>
-                    <button id="regenSiteCodeBtn" type="button" class="flex items-center gap-2 px-4 py-2.5 border-2 border-gray-200 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">재발급</button>
+                    <button id="copySiteCodeBtn" type="button" class="flex items-center gap-2 px-4 py-2.5 border-2 border-[#1A2E44] text-[#1A2E44] rounded text-sm font-semibold hover:bg-[#1A2E44]/5 transition-colors">복사</button>
+                    <button id="regenSiteCodeBtn" type="button" class="flex items-center gap-2 px-4 py-2.5 border-2 border-gray-200 text-gray-600 rounded text-sm font-semibold hover:bg-gray-50 transition-colors">재발급</button>
                   </div>
                 </div>
               </div>
-              <div class="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div class="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded">
                 <svg class="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 <p class="text-xs text-blue-800 leading-relaxed">이 코드를 하청 업체 담당자에게 전달하면 해당 현장과 원청 정보가 자동 연결됩니다.</p>
               </div>
@@ -241,13 +240,13 @@
           </div>
 
           <!-- 원청 전용: §4 연결된 하청 업체 -->
-          <div id="ownerSubcontractorsSection" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+          <div id="ownerSubcontractorsSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-4">
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-xl bg-[#1B3A5F]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1B3A5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">연결된 하청 업체</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1B3A5F]/10 text-[#1B3A5F]">원청</span></div>
+              <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">연결된 하청 업체</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">내 현장들에 공유 코드로 연결된 하청 업체 목록입니다.</p></div>
             </div>
-            <div id="subcontractorsTableWrap" class="overflow-x-auto rounded-xl border border-gray-200">
+            <div id="subcontractorsTableWrap" class="overflow-x-auto rounded border border-gray-200">
               <table class="w-full text-sm min-w-[560px]">
                 <thead class="bg-gray-50 border-b border-gray-200">
                   <tr>
@@ -263,21 +262,21 @@
           </div>
 
           <!-- 하청 전용: §5 코드 입력 -->
-          <div id="subJoinSection" class="hidden bg-gradient-to-br from-green-50/80 to-white rounded-2xl shadow-sm border border-green-200 p-6 space-y-4">
+          <div id="subJoinSection" class="hidden bg-gradient-to-br from-green-50/80 to-white rounded shadow-sm border border-green-200 p-6 space-y-4">
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+              <div class="w-9 h-9 rounded bg-green-100 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
               <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">원청 현장 연결</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">하청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">원청에게 받은 현장 공유 코드를 입력하면 자동으로 연결됩니다.</p></div>
             </div>
-            <p id="joinSiteMessage" class="hidden text-sm px-4 py-2.5 rounded-xl"></p>
+            <p id="joinSiteMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
             <div class="flex gap-3 max-w-md">
-              <input id="inviteCodeInput" placeholder="예) SITE-8F3K2Q" maxlength="12" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl text-sm font-mono tracking-widest outline-none focus:border-[#1B3A5F] transition-all uppercase"/>
-              <button id="joinSiteBtn" type="button" class="px-5 py-3 bg-[#1B3A5F] text-white rounded-xl text-sm font-semibold hover:bg-[#003b5c] transition-colors whitespace-nowrap">연결하기</button>
+              <input id="inviteCodeInput" placeholder="예) SITE-8F3K2Q" maxlength="12" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded text-sm font-mono tracking-widest outline-none focus:border-[#1A2E44] transition-all uppercase"/>
+              <button id="joinSiteBtn" type="button" class="px-5 py-3 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#003b5c] transition-colors whitespace-nowrap">연결하기</button>
             </div>
           </div>
 
           <!-- 하청 전용: 참여한 현장 목록 -->
-          <div id="subJoinedSection" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+          <div id="subJoinedSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-4">
             <h2 class="text-base font-bold text-gray-900">참여한 현장</h2>
             <div id="joinedSitesList" class="space-y-3"></div>
           </div>
@@ -285,30 +284,30 @@
         </div>
 
         <!-- panel: 활동 통계 -->
-        <div id="panel-stats" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div id="panel-stats" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="text-center p-4 bg-gray-50 rounded-xl"><p id="statTotalUploads" class="text-2xl font-bold text-gray-900">-</p><p class="text-xs text-gray-500 mt-1">총 업로드</p></div>
-            <div class="text-center p-4 bg-gray-50 rounded-xl"><p id="statRiskDetected" class="text-2xl font-bold text-[#FF6B35]">-</p><p class="text-xs text-gray-500 mt-1">위험 감지</p></div>
-            <div class="text-center p-4 bg-gray-50 rounded-xl"><p id="statActionsCompleted" class="text-2xl font-bold text-green-600">-</p><p class="text-xs text-gray-500 mt-1">조치 완료</p></div>
-            <div class="text-center p-4 bg-gray-50 rounded-xl"><p id="statSafetyScore" class="text-2xl font-bold text-purple-600">-</p><p class="text-xs text-gray-500 mt-1">안전 점수</p></div>
+            <div class="text-center p-4 bg-gray-50 rounded"><p id="statTotalUploads" class="text-2xl font-bold text-gray-900">-</p><p class="text-xs text-gray-500 mt-1">총 업로드</p></div>
+            <div class="text-center p-4 bg-gray-50 rounded"><p id="statRiskDetected" class="text-2xl font-bold text-[#1A2E44]">-</p><p class="text-xs text-gray-500 mt-1">위험 감지</p></div>
+            <div class="text-center p-4 bg-gray-50 rounded"><p id="statActionsCompleted" class="text-2xl font-bold text-green-600">-</p><p class="text-xs text-gray-500 mt-1">조치 완료</p></div>
+            <div class="text-center p-4 bg-gray-50 rounded"><p id="statSafetyScore" class="text-2xl font-bold text-purple-600">-</p><p class="text-xs text-gray-500 mt-1">안전 점수</p></div>
           </div>
           <h3 class="text-sm font-semibold text-gray-700 mb-3">월별 업로드 현황</h3>
-          <div id="monthlyUploadChart" class="flex items-end gap-1.5 h-32 bg-gray-50 rounded-xl p-4"></div>
+          <div id="monthlyUploadChart" class="flex items-end gap-1.5 h-32 bg-gray-50 rounded p-4"></div>
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div class="bg-green-50 rounded-xl p-3 border border-green-100"><p class="text-xs text-gray-500 mb-1">이번 달 업로드</p><p id="statThisMonth" class="text-xl font-bold text-gray-900">-</p></div>
-            <div class="bg-blue-50 rounded-xl p-3 border border-blue-100"><p class="text-xs text-gray-500 mb-1">조치 완료율</p><p id="statCompletionRate" class="text-xl font-bold text-gray-900">-</p></div>
+            <div class="bg-green-50 rounded p-3 border border-green-100"><p class="text-xs text-gray-500 mb-1">이번 달 업로드</p><p id="statThisMonth" class="text-xl font-bold text-gray-900">-</p></div>
+            <div class="bg-blue-50 rounded p-3 border border-blue-100"><p class="text-xs text-gray-500 mb-1">조치 완료율</p><p id="statCompletionRate" class="text-xl font-bold text-gray-900">-</p></div>
           </div>
         </div>
 
         <!-- panel: 알림 설정 -->
-        <div id="panel-settings" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div id="panel-settings" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6">
           <div class="space-y-4">
             <% String[] notiLabels={"고위험 감지 즉시 알림","조치 마감 D-1 알림","조치 완료 알림","일일 안전 요약 리포트","AI 인사이트 알림"}; boolean[] notiDefaults={true,true,true,false,true}; %>
-            <% for(int i=0;i<notiLabels.length;i++){ String checked=notiDefaults[i]?"checked":""; String bg=notiDefaults[i]?"bg-[#FF6B35]":"bg-gray-300"; %>
-            <div class="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-gray-200 transition-colors">
+            <% for(int i=0;i<notiLabels.length;i++){ String checked=notiDefaults[i]?"checked":""; String bg=notiDefaults[i]?"bg-[#1A2E44]":"bg-gray-300"; %>
+            <div class="flex items-center justify-between p-4 border border-gray-100 rounded hover:border-gray-200 transition-colors">
               <div><p class="text-sm font-semibold text-gray-900"><%=notiLabels[i]%></p></div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" <%=checked%> class="sr-only peer" onchange="this.parentElement.querySelector('div').className='w-11 h-6 rounded-full peer peer-checked:bg-[#FF6B35] bg-gray-300 after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full'"/>
+                <input type="checkbox" <%=checked%> class="sr-only peer" onchange="this.parentElement.querySelector('div').className='w-11 h-6 rounded-full peer peer-checked:bg-[#1A2E44] bg-gray-300 after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full'"/>
                 <div class="w-11 h-6 <%=bg%> rounded-full transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all <%=notiDefaults[i]?"after:translate-x-full":""%>"></div>
               </label>
             </div>
@@ -316,40 +315,40 @@
             <div class="mt-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">알림 수신 방법</label>
               <div class="flex gap-3">
-                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="accent-[#FF6B35]"/><span class="text-sm text-gray-700">앱 푸시</span></label>
-                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="accent-[#FF6B35]"/><span class="text-sm text-gray-700">이메일</span></label>
-                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="accent-[#FF6B35]"/><span class="text-sm text-gray-700">문자 SMS</span></label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="accent-[#1A2E44]"/><span class="text-sm text-gray-700">앱 푸시</span></label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked class="accent-[#1A2E44]"/><span class="text-sm text-gray-700">이메일</span></label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="accent-[#1A2E44]"/><span class="text-sm text-gray-700">문자 SMS</span></label>
               </div>
             </div>
-            <div class="flex justify-end pt-2"><button class="px-6 py-2.5 bg-[#FF6B35] text-white rounded-xl font-semibold hover:bg-[#E55A2A] transition-colors shadow-md">저장</button></div>
+            <div class="flex justify-end pt-2"><button class="px-6 py-2.5 bg-[#1A2E44] text-white rounded font-semibold hover:bg-[#0F2233] transition-colors shadow-md">저장</button></div>
           </div>
         </div>
 
         <!-- panel: 보안 설정 -->
         <div id="panel-security" class="hidden space-y-5">
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div class="bg-white rounded shadow-sm border border-gray-100 p-5">
             <h3 class="text-sm font-semibold text-gray-900 mb-4">비밀번호 변경은 "계정 설정" 메뉴에서 하실 수 있습니다.</h3>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div class="bg-white rounded shadow-sm border border-gray-100 p-5">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-sm font-semibold text-gray-900">2단계 인증</h3>
               <span id="twoFactorStatusBadge" class="text-xs px-2 py-0.5 bg-red-100 text-red-600 rounded-full font-medium">미설정</span>
             </div>
             <p class="text-xs text-gray-500 mb-3">로그인 시 이메일로 전송되는 인증 코드를 추가로 입력해 계정을 더 안전하게 보호하세요.</p>
-            <p id="twoFactorMessage" class="hidden text-sm mb-3 px-4 py-2.5 rounded-xl"></p>
-            <button id="twoFactorToggleBtn" type="button" class="px-4 py-2 border border-[#FF6B35] text-[#FF6B35] rounded-xl text-sm font-semibold hover:bg-[#FF6B35] hover:text-white transition-colors">2단계 인증 켜기</button>
+            <p id="twoFactorMessage" class="hidden text-sm mb-3 px-4 py-2.5 rounded"></p>
+            <button id="twoFactorToggleBtn" type="button" class="px-4 py-2 border border-[#1A2E44] text-[#1A2E44] rounded text-sm font-semibold hover:bg-[#1A2E44] hover:text-white transition-colors">2단계 인증 켜기</button>
           </div>
-          <div class="bg-red-50 rounded-2xl border border-red-100 p-5">
+          <div class="bg-red-50 rounded border border-red-100 p-5">
             <h3 class="text-sm font-semibold text-red-800 mb-2">위험 구역</h3>
             <p class="text-xs text-red-600 mb-3">아래 작업은 되돌릴 수 없습니다.</p>
-            <p id="withdrawMessage" class="hidden text-sm mb-3 px-4 py-2.5 rounded-xl"></p>
-            <button id="showWithdrawFormBtn" type="button" class="px-4 py-2 border border-red-400 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors">계정 탈퇴</button>
+            <p id="withdrawMessage" class="hidden text-sm mb-3 px-4 py-2.5 rounded"></p>
+            <button id="showWithdrawFormBtn" type="button" class="px-4 py-2 border border-red-400 text-red-600 rounded text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors">계정 탈퇴</button>
             <form id="withdrawForm" class="hidden mt-4 space-y-3">
               <p class="text-xs text-red-700 font-medium">탈퇴하면 로그아웃되며 계정을 다시 사용할 수 없습니다. 비밀번호를 입력해 확인해주세요.</p>
-              <input id="withdrawPasswordInput" type="password" required placeholder="현재 비밀번호" class="w-full px-4 py-2.5 border border-red-300 rounded-xl text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none"/>
+              <input id="withdrawPasswordInput" type="password" required placeholder="현재 비밀번호" class="w-full px-4 py-2.5 border border-red-300 rounded text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none"/>
               <div class="flex justify-end gap-2">
-                <button type="button" id="cancelWithdrawBtn" class="px-4 py-2 border border-gray-300 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors">탈퇴하기</button>
+                <button type="button" id="cancelWithdrawBtn" class="px-4 py-2 border border-gray-300 text-gray-600 rounded text-sm font-semibold hover:bg-gray-50 transition-colors">취소</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded text-sm font-semibold hover:bg-red-700 transition-colors">탈퇴하기</button>
               </div>
             </form>
           </div>
@@ -375,10 +374,10 @@ function switchMenu(name, btn) {
   document.getElementById('mobileMenuSelect').value = name;
 
   document.querySelectorAll('.menu-btn').forEach(function (b) {
-    b.className = b.className.replace('bg-[#1B3A5F]/8 text-[#1B3A5F] border-r-2 border-[#1B3A5F] font-semibold', 'text-gray-600 hover:bg-gray-50 hover:text-gray-900');
+    b.className = b.className.replace('bg-[#1A2E44]/8 text-[#1A2E44] border-r-2 border-[#1A2E44] font-semibold', 'text-gray-600 hover:bg-gray-50 hover:text-gray-900');
   });
   var target = btn || document.querySelector('.menu-btn[data-menu="' + name + '"]');
-  if (target) target.className = target.className.replace('text-gray-600 hover:bg-gray-50 hover:text-gray-900', 'bg-[#1B3A5F]/8 text-[#1B3A5F] border-r-2 border-[#1B3A5F] font-semibold');
+  if (target) target.className = target.className.replace('text-gray-600 hover:bg-gray-50 hover:text-gray-900', 'bg-[#1A2E44]/8 text-[#1A2E44] border-r-2 border-[#1A2E44] font-semibold');
 
   if (name === 'stats') loadStats();
   if (name === 'sites') loadSitesPanel();
@@ -386,7 +385,7 @@ function switchMenu(name, btn) {
 
 function showMessage(el, text, ok) {
   el.textContent = text;
-  el.className = 'text-sm px-4 py-2.5 rounded-xl ' + (ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200');
+  el.className = 'text-sm px-4 py-2.5 rounded ' + (ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200');
 }
 
 function loadProfile() {
@@ -397,6 +396,9 @@ function loadProfile() {
       document.querySelector('#profileInitial span').textContent = u.username ? u.username.charAt(0) : '?';
       document.getElementById('profileName').textContent = u.username || '';
       document.getElementById('profileRoleBadge').textContent = ROLE_LABELS[u.role] || u.role;
+      var isSub = u.role === '하청';
+      document.getElementById('profileInitial').className = 'w-11 h-11 rounded-full flex items-center justify-center mb-3 ' + (isSub ? 'bg-green-500' : 'bg-[#1A2E44]');
+      document.getElementById('profileRoleBadge').className = 'inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ' + (isSub ? 'bg-green-500/30 text-green-200' : 'bg-[#1A2E44]/30 text-orange-200');
       document.getElementById('profileUsernameInput').value = u.username || '';
       document.getElementById('profileRoleInput').value = ROLE_LABELS[u.role] || u.role;
       document.getElementById('profileEmailInput').value = u.email || '';
@@ -445,7 +447,7 @@ function loadStats() {
       chart.innerHTML = s.monthlyUploads.map(function (count, i) {
         var pct = Math.round(count * 100 / max);
         return '<div class="flex-1 flex flex-col items-center gap-1">' +
-          '<div class="w-full bg-[#FF6B35] rounded-t" style="height:' + pct + '%;min-height:3px;max-height:80px"></div>' +
+          '<div class="w-full bg-[#1A2E44] rounded-t" style="height:' + pct + '%;min-height:3px;max-height:80px"></div>' +
           '<span class="text-[10px] text-gray-400">' + (i + 1) + '</span></div>';
       }).join('');
     })
@@ -457,14 +459,14 @@ function loadStats() {
 function renderSiteRoleUi(role) {
   var banner = document.getElementById('siteRoleBanner');
   if (role === '하청') {
-    banner.className = 'flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium bg-green-50 border-green-200 text-green-800';
+    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-green-50 border-green-200 text-green-800';
     banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">하</span></div>하청 사용자 — 원청에게 받은 공유 코드를 입력해 현장에 연결할 수 있습니다.';
     document.getElementById('subJoinSection').classList.remove('hidden');
     document.getElementById('subJoinedSection').classList.remove('hidden');
     loadJoinedSites();
   } else {
-    banner.className = 'flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-medium bg-[#1B3A5F]/5 border-[#1B3A5F]/20 text-[#1B3A5F]';
-    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-[#1B3A5F] flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">원</span></div>원청 사용자 — 건설사 및 현장을 등록하고 하청 공유 코드를 생성할 수 있습니다.';
+    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-[#1A2E44]/5 border-[#1A2E44]/20 text-[#1A2E44]';
+    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-[#1A2E44] flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">원</span></div>원청 사용자 — 건설사 및 현장을 등록하고 하청 공유 코드를 생성할 수 있습니다.';
     document.getElementById('ownerCompanySection').classList.remove('hidden');
     document.getElementById('ownerSiteSection').classList.remove('hidden');
     document.getElementById('ownerCodeSection').classList.remove('hidden');
@@ -519,7 +521,7 @@ function onSiteSelected(siteId, siteObj) {
     ['공사 기간', (site.periodStart || '-') + ' ~ ' + (site.periodEnd || '-')]
   ];
   document.getElementById('siteDetailBody').innerHTML = rows.map(function (r) {
-    return '<div class="p-3 bg-gray-50 rounded-xl"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">' + r[0] + '</p>' +
+    return '<div class="p-3 bg-gray-50 rounded"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">' + r[0] + '</p>' +
       '<p class="text-sm font-semibold text-gray-900 mt-0.5">' + r[1] + '</p></div>';
   }).join('');
 
@@ -642,7 +644,7 @@ function loadJoinedSites() {
         return;
       }
       list.innerHTML = sites.map(function (s) {
-        return '<div class="border border-green-200 rounded-xl p-4 bg-green-50/40">' +
+        return '<div class="border border-green-200 rounded p-4 bg-green-50/40">' +
           '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' +
           '<span class="text-sm font-semibold text-gray-900">' + s.name + '</span></div>' +
           '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600">' +

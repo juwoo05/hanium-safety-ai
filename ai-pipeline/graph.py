@@ -38,7 +38,7 @@ RISK_ASSEMBLY_PROMPT = """당신은 건설현장 안전 점검 보고서를 작�
 
 
 class AnalysisState(TypedDict):
-    site_id: str
+    site_id: str | None
     image_s3_key: str
     work_info: str
     image_bytes: bytes

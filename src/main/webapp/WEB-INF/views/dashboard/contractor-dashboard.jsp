@@ -7,365 +7,286 @@
   <title>원청 대시보드 - SafeMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-[#F5F7FA] flex">
-
+<body class="min-h-screen bg-[#F3F5F7] flex">
 <%@ include file="../common/_sidebar.jsp" %>
-<%@ include file="../common/_topnav.jsp" %>
-
-<div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
-  <!-- Top Bar -->
+<div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-    <div class="flex-1 max-w-xl">
-      <div class="relative">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
-      </div>
-    </div>
+    <div class="flex-1 max-w-xl"><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/></div></div>
     <div class="flex items-center gap-4 ml-4">
-      <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
-        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-      </a>
-      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div>
-        <span id="headerUserName" class="text-sm font-medium text-gray-700 hidden sm:block">-</span>
-      </a>
+      <a href="/notifications" class="relative p-2 hover:bg-gray-100 rounded-lg"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></a>
+      <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"><div class="w-8 h-8 bg-[#1A2E44] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div><span id="headerUserName" class="text-sm font-medium text-gray-700 hidden sm:block">-</span></a>
     </div>
   </header>
 
-  <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="space-y-5">
+  <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
 
-      <!-- Welcome Banner -->
-      <div class="bg-gradient-to-r from-[#1B3A5F] to-[#2C5282] rounded-2xl p-6 text-white">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex-1">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="bg-[#FF6B35] text-white text-xs font-bold px-3 py-1 rounded-full">원청</span>
-              <span id="bannerCompany" class="text-white/60 text-sm"></span>
-            </div>
-            <h1 id="bannerGreeting" class="text-2xl font-bold mb-1">안녕하세요!</h1>
-            <p id="bannerSubtitle" class="text-white/70 text-sm mb-4">전체 현장 안전 현황을 불러오는 중...</p>
-            <div class="grid grid-cols-3 gap-3">
-              <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
-                <svg class="w-4 h-4 text-white/60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                <div><p class="text-xs text-white/60">현장 수</p><p id="bannerSiteCount" class="text-base font-bold">-</p></div>
-              </div>
-              <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
-                <svg class="w-4 h-4 text-white/60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-                <div><p class="text-xs text-white/60">긴급 조치</p><p id="bannerUrgentCount" class="text-base font-bold">-</p></div>
-              </div>
-              <div class="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
-                <svg class="w-4 h-4 text-white/60 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <div><p class="text-xs text-white/60">협력사</p><p id="bannerCompanyCount" class="text-base font-bold">-</p></div>
-              </div>
-            </div>
+    <!-- Page header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p style="font-size:11px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:5px">현황 개요</p>
+        <h1 id="bannerGreeting" style="font-size:22px;font-weight:600;color:#0F172A;letter-spacing:-0.02em;line-height:1">대시보드</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/upload" style="padding:7px 14px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E2E6EA;border-radius:4px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04);text-decoration:none">사진 등록</a>
+        <a href="/actions" style="padding:7px 16px;font-size:12px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer;text-decoration:none">조치 등록</a>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="grid gap-3 mb-6" style="grid-template-columns:repeat(5, 1fr)">
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">전체 현장</p>
+        <div class="flex items-end gap-1.5"><span id="kpiSites" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">개</span></div>
+      </div>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">미조치 위험요소</p>
+        <div class="flex items-end gap-1.5"><span id="kpiPending" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
+      </div>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">진행중 조치</p>
+        <div class="flex items-end gap-1.5"><span id="kpiInProgress" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
+      </div>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">기한 초과</p>
+        <div class="flex items-end gap-1.5"><span id="kpiOverdue" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
+      </div>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">완료율</p>
+        <div class="flex items-end gap-1.5"><span id="kpiCompletionRate" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">%</span></div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="grid gap-5" style="grid-template-columns:1fr 300px">
+
+      <!-- Issues table -->
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px">
+        <div class="flex items-center justify-between flex-wrap gap-2" style="padding:14px 20px;border-bottom:1px solid #F3F4F6">
+          <span style="font-size:14px;font-weight:600;color:#0F172A">위험요소 현황</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div id="gradeFilterBtns" class="flex items-center gap-1"></div>
+            <div style="width:1px;height:16px;background:#E5E7EB"></div>
+            <div id="statusFilterBtns" class="flex items-center gap-1"></div>
           </div>
-          <div class="hidden md:flex flex-col items-center gap-1 bg-white/10 rounded-2xl px-5 py-4 flex-shrink-0">
-            <svg id="safetyGaugeSvg" width="140" height="80" viewBox="0 0 140 80"></svg>
-            <span id="safetyGaugeLabel" class="text-xs font-bold px-3 py-1 rounded-full mt-1"></span>
-            <p class="text-xs text-white/60 mt-1">협력사 평균 완료율</p>
-          </div>
-          <div id="weatherWidget" class="hidden lg:flex flex-col justify-center gap-1 bg-white/10 rounded-2xl px-5 py-4 flex-shrink-0 min-w-[150px]">
-            <p class="text-xs text-white/60">서울 현재 날씨</p>
-            <div class="flex items-center gap-2">
-              <p id="weatherTemp" class="text-2xl font-bold">-</p>
-              <p id="weatherSky" class="text-sm text-white/80">-</p>
-            </div>
-            <p id="weatherDetail" class="text-xs text-white/60">강수량 -</p>
-          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:#F9FAFB">
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">위험등급</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">위치</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">위험유형</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">담당자</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">조치상태</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">마감기한</th>
+                <th style="padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid #F3F4F6;white-space:nowrap">최근 업데이트</th>
+                <th style="padding:9px 16px;border-bottom:1px solid #F3F4F6"></th>
+              </tr>
+            </thead>
+            <tbody id="issuesTableBody">
+              <tr><td colspan="8" style="padding:32px;text-align:center;font-size:13px;color:#9CA3AF">불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex items-center justify-between" style="padding:10px 20px;border-top:1px solid #F3F4F6">
+          <span id="issuesFooterCount" style="font-size:12px;color:#9CA3AF"></span>
+          <a href="/actions" class="flex items-center gap-1" style="font-size:12px;color:#1A2E44;font-weight:500;text-decoration:none">전체 보기
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
         </div>
       </div>
 
-      <!-- KPI -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#FF6B35]/30 transition-all cursor-pointer">
-          <div class="flex items-start justify-between mb-3">
-            <div class="bg-blue-500 w-11 h-11 rounded-xl flex items-center justify-center shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <!-- Right sidebar -->
+      <div class="flex flex-col gap-4">
+        <div id="overdueAlertBox" class="hidden" style="background:#FEF2F2;border:1px solid #FECACA;border-radius:4px;padding:14px 16px">
+          <div class="flex items-center gap-2 mb-2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#991B1B" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <span style="font-size:12px;font-weight:600;color:#991B1B">기한 초과 항목</span>
           </div>
-          <p class="text-gray-400 text-xs mb-0.5">전체 리포트 수</p>
-          <p id="kpiTotalReports" class="text-2xl font-bold text-gray-900">-</p>
+          <div id="overdueList" class="flex flex-col gap-2"></div>
         </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#FF6B35]/30 transition-all cursor-pointer">
-          <div class="flex items-start justify-between mb-3">
-            <div class="bg-red-500 w-11 h-11 rounded-xl flex items-center justify-center shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
-          </div>
-          <p class="text-gray-400 text-xs mb-0.5">고위험 항목</p>
-          <p id="kpiHighRisk" class="text-2xl font-bold text-gray-900">-</p>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#FF6B35]/30 transition-all cursor-pointer">
-          <div class="flex items-start justify-between mb-3">
-            <div class="bg-orange-500 w-11 h-11 rounded-xl flex items-center justify-center shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          </div>
-          <p class="text-gray-400 text-xs mb-0.5">조치 진행 중</p>
-          <p id="kpiInProgress" class="text-2xl font-bold text-gray-900">-</p>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#FF6B35]/30 transition-all cursor-pointer">
-          <div class="flex items-start justify-between mb-3">
-            <div class="bg-purple-500 w-11 h-11 rounded-xl flex items-center justify-center shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-          </div>
-          <p class="text-gray-400 text-xs mb-0.5">협력사 수</p>
-          <p id="kpiCompanyCount" class="text-2xl font-bold text-gray-900">-</p>
-        </div>
-      </div>
 
-      <!-- AI Tip -->
-      <div id="mascotTipCard" class="hidden bg-gradient-to-r from-[#FF6B35]/10 to-[#FF6B35]/5 rounded-2xl p-4 border border-[#FF6B35]/20 flex items-start gap-3">
-        <img src="/images/mascot.png" alt="마스코트" class="w-10 h-10 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
-        <div class="flex-1">
-          <p class="text-sm font-semibold text-[#1B3A5F]">AI 안전 현황 요약</p>
-          <p id="mascotTipText" class="text-xs text-gray-600 mt-0.5 leading-relaxed"></p>
-        </div>
-        <a href="/analytics" class="flex-shrink-0 text-xs text-[#FF6B35] font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-          상세 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div class="lg:col-span-2 space-y-5">
-
-          <!-- Quick Actions -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-base font-semibold text-gray-900 mb-4">빠른 실행</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <a href="/upload" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group text-center">
-                <div class="bg-blue-500 w-11 h-11 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-                <div><p class="text-xs font-semibold text-gray-700">사진 업로드</p><p class="text-[10px] text-gray-400">AI 분석 시작</p></div>
-              </a>
-              <a href="/upload" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group text-center">
-                <div class="bg-[#FF6B35] w-11 h-11 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                <div><p class="text-xs font-semibold text-gray-700">AI 분석</p><p class="text-[10px] text-gray-400">위험요소 탐지</p></div>
-              </a>
-              <a href="/actions/new" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group text-center">
-                <div class="bg-green-500 w-11 h-11 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
-                <div><p class="text-xs font-semibold text-gray-700">조치 등록</p><p class="text-[10px] text-gray-400">신규 조치 추가</p></div>
-              </a>
-              <a href="/actions/detail" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group text-center">
-                <div class="bg-purple-500 w-11 h-11 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm"><svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                <div><p class="text-xs font-semibold text-gray-700">리포트 보기</p><p class="text-[10px] text-gray-400">상세 분석 조회</p></div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Monthly Chart -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-base font-semibold text-gray-900">월별 위험 발생 현황</h3>
-              <div class="flex items-center gap-3 text-xs text-gray-500">
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-[#FF6B35] inline-block"></span>고위험</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-orange-400 inline-block"></span>중위험</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-yellow-400 inline-block"></span>안전</span>
-              </div>
-            </div>
-            <div id="monthlyChart" class="flex items-end justify-between gap-1.5" style="height:140px"></div>
-          </div>
-
-          <!-- Subcontractor Status -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <svg class="w-4 h-4 text-[#1B3A5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              협력사 안전 현황
-            </h3>
-            <div id="companyStatusList" class="space-y-3">
-              <p class="text-sm text-gray-400">불러오는 중...</p>
-            </div>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:4px">
+          <div style="padding:12px 16px;border-bottom:1px solid #F3F4F6"><span style="font-size:13px;font-weight:600;color:#0F172A">협력사 조치 현황</span></div>
+          <div id="companyStatusList" style="padding:4px 0">
+            <p style="padding:16px;font-size:13px;color:#9CA3AF">불러오는 중...</p>
           </div>
         </div>
 
-        <!-- Right Sidebar -->
-        <div class="space-y-5">
-          <!-- Urgent Actions -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-              긴급 조치 필요
-              <span id="urgentBadge" class="ml-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold"></span>
-            </h3>
-            <div id="urgentActionsList" class="space-y-2">
-              <p class="text-sm text-gray-400">불러오는 중...</p>
-            </div>
-            <a href="/actions" class="block w-full mt-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs font-semibold text-center">전체 긴급 조치 보기</a>
-          </div>
-
-          <!-- Risk Distribution -->
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 class="text-sm font-semibold text-gray-900 mb-4">위험 등급 분포</h3>
-            <div class="flex items-center gap-4">
-              <svg id="riskPieSvg" width="110" height="110" viewBox="0 0 120 120" class="flex-shrink-0"></svg>
-              <div id="riskLegend" class="flex-1 space-y-2"></div>
-            </div>
-          </div>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:4px">
+          <div style="padding:12px 16px;border-bottom:1px solid #F3F4F6"><span style="font-size:13px;font-weight:600;color:#0F172A">바로가기</span></div>
+          <a href="/upload" class="w-full flex items-center justify-between quick-link" style="padding:10px 16px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB;text-decoration:none">위험요소 사진 분석
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
+          <a href="/actions" class="w-full flex items-center justify-between quick-link" style="padding:10px 16px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB;text-decoration:none">조치관리 전체 보기
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
+          <a href="/analytics" class="w-full flex items-center justify-between quick-link" style="padding:10px 16px;font-size:13px;color:#374151;border-bottom:1px solid #F9FAFB;text-decoration:none">분석 리포트
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
+          <a href="/actions/detail" class="w-full flex items-center justify-between quick-link" style="padding:10px 16px;font-size:13px;color:#374151;text-decoration:none">보고서
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></a>
         </div>
       </div>
     </div>
   </main>
 </div>
 
+<style>.quick-link:hover{background:#FAFAFA}</style>
 <script>
 (function () {
-  var RISK_COLORS = { '고위험': '#ef4444', '중위험': '#f97316', '안전': '#22c55e' };
+  var RISK_LABEL = { HIGH: '고위험', MEDIUM: '중위험', SAFE: '안전' };
+  var RISK_COLOR = { HIGH: '#991B1B', MEDIUM: '#B45309', SAFE: '#166534' };
+  var RISK_BG    = { HIGH: '#FEF2F2', MEDIUM: '#FFFBEB', SAFE: '#F0FDF4' };
+  var STATUSES = ['REQUESTED', 'IN_PROGRESS', 'PENDING_APPROVAL', 'COMPLETED'];
+  var STATUS_LABEL = { REQUESTED: '조치 전', IN_PROGRESS: '조치 중', PENDING_APPROVAL: '승인 대기', COMPLETED: '완료' };
+  var STATUS_COLOR = { REQUESTED: '#B45309', IN_PROGRESS: '#1D4ED8', PENDING_APPROVAL: '#6D28D9', COMPLETED: '#166534' };
+  var STATUS_BG    = { REQUESTED: '#FFFBEB', IN_PROGRESS: '#EFF6FF', PENDING_APPROVAL: '#F5F3FF', COMPLETED: '#F0FDF4' };
+
+  var gradeFilter = 'ALL';
+  var statusFilter = 'ALL';
+  var allActions = [];
+
   function qs(sel) { return document.querySelector(sel); }
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function isOverdue(a) { return a.status !== 'COMPLETED' && a.dueDate && a.dueDate < todayStr(); }
+  function detailLinkFor(a) { return a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions/detail?actionId=' + a.id; }
+  function esc(s) { return (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function relativeTime(iso) {
+    if (!iso) return '-';
+    var diffMs = new Date() - new Date(iso);
+    var mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return '방금 전';
+    if (mins < 60) return mins + '분 전';
+    var hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + '시간 전';
+    var days = Math.floor(hours / 24);
+    return days + '일 전';
+  }
 
   function loadCurrentUser() {
-    return fetch('/api/users/me')
+    fetch('/api/users/me')
       .then(function (res) { if (res.status === 401) { window.location.href = '/login'; throw new Error(); } if (!res.ok) throw new Error(); return res.json(); })
       .then(function (user) {
         qs('#headerUserName').textContent = user.username;
         qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
-        qs('#bannerGreeting').textContent = '안녕하세요, ' + user.username + '님!';
-        qs('#bannerCompany').textContent = user.companyName || '';
-        qs('#bannerSubtitle').textContent = '전체 현장 안전 현황';
-        return user;
-      });
+        qs('#bannerGreeting').textContent = user.username + '님의 대시보드';
+      })
+      .catch(function () {});
   }
 
   function loadSiteCount() {
-    return fetch('/api/sites').then(function (res) { return res.ok ? res.json() : []; }).then(function (sites) {
-      qs('#bannerSiteCount').textContent = sites.length + '개';
+    fetch('/api/sites').then(function (res) { return res.ok ? res.json() : []; }).then(function (sites) {
+      qs('#kpiSites').textContent = sites.length;
+    }).catch(function () {});
+  }
+
+  function renderFilterButtons() {
+    var grades = [{ key: 'ALL', label: '전체' }, { key: 'HIGH', label: '고위험' }, { key: 'MEDIUM', label: '중위험' }, { key: 'SAFE', label: '안전' }];
+    qs('#gradeFilterBtns').innerHTML = grades.map(function (g) {
+      var active = gradeFilter === g.key;
+      return '<button type="button" class="grade-filter-btn" data-key="' + g.key + '" style="padding:3px 10px;font-size:12px;border-radius:3px;cursor:pointer;border:1px solid ' + (active ? '#1A2E44' : '#E5E7EB') + ';background:' + (active ? '#1A2E44' : 'white') + ';color:' + (active ? 'white' : '#6B7280') + ';font-weight:' + (active ? 500 : 400) + '">' + g.label + '</button>';
+    }).join('');
+    var statuses = [{ key: 'ALL', label: '전체' }].concat(STATUSES.map(function (s) { return { key: s, label: STATUS_LABEL[s] }; }));
+    qs('#statusFilterBtns').innerHTML = statuses.map(function (s) {
+      var active = statusFilter === s.key;
+      return '<button type="button" class="status-filter-btn" data-key="' + s.key + '" style="padding:3px 10px;font-size:12px;border-radius:3px;cursor:pointer;border:1px solid ' + (active ? '#1A2E44' : '#E5E7EB') + ';background:' + (active ? '#1A2E44' : 'white') + ';color:' + (active ? 'white' : '#6B7280') + ';font-weight:' + (active ? 500 : 400) + '">' + s.label + '</button>';
+    }).join('');
+    document.querySelectorAll('.grade-filter-btn').forEach(function (b) { b.addEventListener('click', function () { gradeFilter = b.dataset.key; renderFilterButtons(); renderIssuesTable(); }); });
+    document.querySelectorAll('.status-filter-btn').forEach(function (b) { b.addEventListener('click', function () { statusFilter = b.dataset.key; renderFilterButtons(); renderIssuesTable(); }); });
+  }
+
+  function renderIssuesTable() {
+    var filtered = allActions.filter(function (a) {
+      return (gradeFilter === 'ALL' || a.riskLevel === gradeFilter) && (statusFilter === 'ALL' || a.status === statusFilter);
+    });
+    qs('#issuesTableBody').innerHTML = filtered.length ? filtered.map(function (a) {
+      var overdue = isOverdue(a);
+      return '<tr class="issue-row" data-id="' + a.id + '" style="border-bottom:1px solid #F9FAFB;cursor:pointer">' +
+        '<td style="padding:11px 16px"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:' + RISK_BG[a.riskLevel] + ';color:' + RISK_COLOR[a.riskLevel] + '">' + RISK_LABEL[a.riskLevel] + '</span></td>' +
+        '<td style="padding:11px 16px;color:#374151;font-weight:500">' + esc(a.location || '-') + '</td>' +
+        '<td style="padding:11px 16px;color:#0F172A;font-weight:500">' + esc(a.title) + '</td>' +
+        '<td style="padding:11px 16px;color:#6B7280">' + esc(a.reporterName || '미배정') + '</td>' +
+        '<td style="padding:11px 16px"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:500;background:' + STATUS_BG[a.status] + ';color:' + STATUS_COLOR[a.status] + '">' + STATUS_LABEL[a.status] + '</span></td>' +
+        '<td style="padding:11px 16px"><span style="color:' + (overdue ? '#991B1B' : '#6B7280') + ';font-weight:' + (overdue ? 600 : 400) + '">' + (a.dueDate || '-') +
+          (overdue ? '<span style="margin-left:4px;font-size:10px;padding:1px 5px;background:#FEF2F2;color:#991B1B;border-radius:3px">초과</span>' : '') + '</span></td>' +
+        '<td style="padding:11px 16px;color:#9CA3AF;font-size:12px">' + relativeTime(a.updatedAt) + '</td>' +
+        '<td style="padding:11px 16px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></td></tr>';
+    }).join('') : '<tr><td colspan="8" style="padding:48px;text-align:center;color:#9CA3AF;font-size:13px">해당 조건의 위험요소가 없습니다.</td></tr>';
+    qs('#issuesFooterCount').textContent = filtered.length + '건 표시 / 전체 ' + allActions.length + '건';
+    document.querySelectorAll('.issue-row').forEach(function (row) {
+      row.addEventListener('click', function () {
+        var a = allActions.find(function (x) { return String(x.id) === String(row.dataset.id); });
+        if (a) window.location.href = detailLinkFor(a);
+      });
     });
   }
 
-  function renderSafetyGauge(score) {
-    var r = 52, cx = 70, cy = 70, strokeW = 10;
-    var circ = Math.PI * r;
-    var dash = (score / 100) * circ;
-    var color = score >= 80 ? '#22c55e' : score >= 60 ? '#f97316' : '#ef4444';
-    var label = score >= 80 ? '양호' : score >= 60 ? '주의' : '위험';
-    var path = 'M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy;
-    qs('#safetyGaugeSvg').innerHTML =
-      '<path d="' + path + '" fill="none" stroke="#ffffff33" stroke-width="' + strokeW + '" stroke-linecap="round"/>' +
-      '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="' + strokeW + '" stroke-linecap="round" stroke-dasharray="' + dash + ' ' + circ + '"/>' +
-      '<text x="' + cx + '" y="' + (cy - 8) + '" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">' + score + '</text>' +
-      '<text x="' + cx + '" y="' + (cy + 8) + '" text-anchor="middle" font-size="11" fill="#ffffffb3">안전점수</text>';
-    var labelEl = qs('#safetyGaugeLabel');
-    labelEl.textContent = label;
-    labelEl.style.background = color + '33';
-    labelEl.style.color = '#fff';
-  }
+  function renderKpisAndSidebar(actions) {
+    allActions = actions;
+    qs('#kpiPending').textContent = actions.filter(function (a) { return a.status === 'REQUESTED'; }).length;
+    qs('#kpiInProgress').textContent = actions.filter(function (a) { return a.status === 'IN_PROGRESS'; }).length;
+    var overdueActions = actions.filter(isOverdue);
+    qs('#kpiOverdue').textContent = overdueActions.length;
+    var completed = actions.filter(function (a) { return a.status === 'COMPLETED'; }).length;
+    qs('#kpiCompletionRate').textContent = actions.length ? Math.round(completed * 100 / actions.length) : 0;
 
-  function renderMonthlyChart(monthlyTrend) {
-    var max = 1;
-    monthlyTrend.forEach(function (m) { max = Math.max(max, m.high + m.medium + m.safe); });
-    qs('#monthlyChart').innerHTML = monthlyTrend.map(function (m) {
-      var hp = m.high * 100 / max, mp = m.medium * 100 / max, sp = m.safe * 100 / max;
-      return '<div class="flex-1 flex flex-col items-center gap-1">' +
-        '<div class="w-full flex flex-col items-stretch gap-0.5" style="height:110px;justify-content:flex-end">' +
-        '<div class="w-full bg-[#FF6B35] rounded-t" style="height:' + hp + '%;min-height:2px"></div>' +
-        '<div class="w-full bg-orange-400" style="height:' + mp + '%;min-height:2px"></div>' +
-        '<div class="w-full bg-yellow-400 rounded-b" style="height:' + sp + '%;min-height:2px"></div>' +
-        '</div><span class="text-xs text-gray-400">' + m.month + '월</span></div>';
-    }).join('');
-  }
+    if (overdueActions.length) {
+      qs('#overdueAlertBox').classList.remove('hidden');
+      qs('#overdueList').innerHTML = overdueActions.slice(0, 5).map(function (a) {
+        return '<div class="overdue-item" data-id="' + a.id + '" style="cursor:pointer"><p style="font-size:12px;font-weight:500;color:#0F172A">' + esc(a.title) + '</p><p style="font-size:11px;color:#9CA3AF;margin-top:1px">' + esc(a.location || '-') + (a.reporterName ? ' · ' + esc(a.reporterName) : '') + '</p></div>';
+      }).join('');
+      document.querySelectorAll('.overdue-item').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var a = actions.find(function (x) { return String(x.id) === String(el.dataset.id); });
+          if (a) window.location.href = detailLinkFor(a);
+        });
+      });
+    }
 
-  function renderRiskPie(distribution) {
-    var total = Object.values(distribution).reduce(function (a, b) { return a + b; }, 0);
-    var circumference = 2 * Math.PI * 40;
-    var offset = 0;
-    var circles = '<circle cx="60" cy="60" r="40" fill="none" stroke="#f3f4f6" stroke-width="20"/>';
-    Object.keys(distribution).forEach(function (label) {
-      var count = distribution[label];
-      if (total === 0 || count === 0) return;
-      var len = count / total * circumference;
-      circles += '<circle cx="60" cy="60" r="40" fill="none" stroke="' + RISK_COLORS[label] + '" stroke-width="20" ' +
-        'stroke-dasharray="' + len + ' ' + (circumference - len) + '" stroke-dashoffset="-' + offset + '" transform="rotate(-90 60 60)"/>';
-      offset += len;
-    });
-    circles += '<text x="60" y="54" text-anchor="middle" fill="#374151" font-size="11" font-weight="600">' + total + '</text>' +
-      '<text x="60" y="68" text-anchor="middle" fill="#9CA3AF" font-size="9">전체</text>';
-    qs('#riskPieSvg').innerHTML = circles;
-
-    qs('#riskLegend').innerHTML = Object.keys(distribution).map(function (label) {
-      return '<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-1.5">' +
-        '<span class="w-2.5 h-2.5 rounded-full" style="background:' + RISK_COLORS[label] + '"></span><span class="text-xs">' + label + '</span></span>' +
-        '<span class="font-semibold text-xs">' + distribution[label] + '건</span></div>';
-    }).join('');
+    renderFilterButtons();
+    renderIssuesTable();
   }
 
   function renderCompanyStatus(companyRanking) {
     if (!companyRanking.length) {
-      qs('#companyStatusList').innerHTML = '<p class="text-sm text-gray-400">아직 등록된 조치 데이터가 없습니다.</p>';
+      qs('#companyStatusList').innerHTML = '<p style="padding:16px;font-size:13px;color:#9CA3AF">아직 등록된 조치 데이터가 없습니다.</p>';
       return;
     }
     qs('#companyStatusList').innerHTML = companyRanking.slice(0, 5).map(function (c) {
       var pct = Math.round(c.completionRate);
-      var caution = pct < 70;
-      return '<div class="p-4 rounded-xl border ' + (caution ? 'border-orange-200 bg-orange-50' : 'border-gray-100 bg-gray-50') + '">' +
-        '<div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2">' +
-        '<svg class="w-4 h-4 ' + (caution ? 'text-orange-500' : 'text-green-600') + '" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M4 20V10l8-6 8 6v10"/></svg>' +
-        '<span class="font-semibold text-gray-900 text-sm">' + c.companyName + '</span>' +
-        (caution ? '<span class="text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full">주의</span>' : '') + '</div>' +
-        '<span class="text-sm font-bold ' + (caution ? 'text-orange-500' : 'text-green-600') + '">' + pct + '%</span></div>' +
-        '<div class="flex items-center gap-4 text-xs text-gray-500 mb-2"><span>조치 ' + c.total + '건</span><span class="text-gray-600">완료 ' + c.completed + '건</span></div>' +
-        '<div class="w-full bg-gray-200 rounded-full h-1.5"><div class="h-1.5 rounded-full ' + (caution ? 'bg-orange-500' : 'bg-green-500') + '" style="width:' + pct + '%"></div></div></div>';
+      var good = pct >= 80;
+      return '<div style="padding:10px 16px;border-bottom:1px solid #F9FAFB">' +
+        '<div class="flex items-center justify-between mb-1.5"><span style="font-size:12px;font-weight:500;color:#0F172A">' + esc(c.companyName) + '</span>' +
+        '<span style="font-size:12px;font-weight:600;color:' + (good ? '#166534' : '#B45309') + '">' + pct + '%</span></div>' +
+        '<div style="height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden"><div style="height:100%;border-radius:2px;width:' + pct + '%;background:' + (good ? '#166534' : '#B45309') + '"></div></div>' +
+        '<div class="flex items-center justify-between mt-1"><span style="font-size:11px;color:#9CA3AF">전체 ' + c.total + '건</span>' +
+        (c.total - c.completed > 0 ? '<span style="font-size:11px;color:#991B1B">미조치 ' + (c.total - c.completed) + '건</span>' : '') + '</div></div>';
     }).join('');
   }
 
   function loadAnalytics() {
-    return fetch('/api/analytics/summary')
+    fetch('/api/analytics/summary')
       .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
-      .then(function (data) {
-        qs('#kpiTotalReports').textContent = data.totalUploads.toLocaleString();
-        qs('#kpiHighRisk').textContent = data.riskDistribution['고위험'] || 0;
-        qs('#kpiCompanyCount').textContent = data.companyRanking.length;
-        qs('#bannerCompanyCount').textContent = data.companyRanking.length + '개';
-        renderMonthlyChart(data.monthlyTrend);
-        renderRiskPie(data.riskDistribution);
-        renderCompanyStatus(data.companyRanking);
-
-        var ranking = data.companyRanking;
-        var avgCompletion = ranking.length
-          ? Math.round(ranking.reduce(function (sum, c) { return sum + c.completionRate; }, 0) / ranking.length)
-          : 0;
-        renderSafetyGauge(avgCompletion);
-
-        var topCompany = ranking.slice().sort(function (a, b) { return b.total - a.total; })[0];
-        if (topCompany) {
-          qs('#mascotTipCard').classList.remove('hidden');
-          qs('#mascotTipText').textContent = topCompany.companyName + '의 조치 건수가 ' + topCompany.total + '건으로 가장 많습니다. 완료율 ' + topCompany.completionRate.toFixed(0) + '%.';
-        }
-      })
-      .catch(function () { renderSafetyGauge(0); });
-  }
-
-  function loadUrgentActions() {
-    fetch('/api/actions/search?status=REQUESTED')
-      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
-      .then(function (actions) {
-        var sorted = actions.slice().sort(function (a, b) { return (a.dueDate || '') < (b.dueDate || '') ? -1 : 1; }).slice(0, 4);
-        qs('#bannerUrgentCount').textContent = actions.length + '건';
-        qs('#urgentBadge').textContent = actions.length + '건';
-        qs('#urgentActionsList').innerHTML = sorted.length
-          ? sorted.map(function (a) {
-              var link = a.inspectionId ? '/actions/detail?inspectionId=' + a.inspectionId : '/actions/detail?actionId=' + a.id;
-              return '<a href="' + link + '" class="block p-3 bg-red-50 rounded-xl border border-red-100 hover:border-red-300 transition-colors group">' +
-                '<p class="text-sm font-semibold text-gray-900 mb-0.5">' + a.title + '</p>' +
-                '<p class="text-xs text-gray-500">' + (a.location || '현장 미지정') + (a.reporterName ? ' · ' + a.reporterName : '') + '</p>' +
-                '<div class="flex items-center justify-between mt-2"><span class="text-xs text-red-600 font-medium">마감: ' + (a.dueDate || '-') + '</span>' +
-                '<svg class="w-3.5 h-3.5 text-red-400 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>';
-            }).join('')
-          : '<p class="text-sm text-gray-400">긴급 조치가 없습니다.</p>';
-      })
-      .catch(function () {
-        qs('#urgentActionsList').innerHTML = '<p class="text-sm text-red-400">조치 목록을 불러오지 못했습니다.</p>';
-      });
-  }
-
-  function loadWeather() {
-    fetch('/api/weather/today')
-      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
-      .then(function (w) {
-        qs('#weatherTemp').textContent = (w.temperature != null ? w.temperature : '-') + '°';
-        qs('#weatherSky').textContent = w.skyCondition + (w.precipitationType && w.precipitationType !== '없음' ? ' · ' + w.precipitationType : '');
-        qs('#weatherDetail').textContent = '강수량 ' + (w.precipitationAmount || '-');
-      })
+      .then(function (data) { renderCompanyStatus(data.companyRanking); })
       .catch(function () {});
+  }
+
+  function loadActions() {
+    fetch('/api/actions/search')
+      .then(function (res) {
+        if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(renderKpisAndSidebar)
+      .catch(function () {
+        qs('#issuesTableBody').innerHTML = '<tr><td colspan="8" style="padding:32px;text-align:center;font-size:13px;color:#991B1B">위험요소 목록을 불러오지 못했습니다.</td></tr>';
+      });
   }
 
   loadCurrentUser();
   loadSiteCount();
   loadAnalytics();
-  loadUrgentActions();
-  loadWeather();
+  loadActions();
 })();
 </script>
 </body>

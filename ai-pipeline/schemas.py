@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 
 class AnalyzeRequest(BaseModel):
-    site_id: str
+    # 현장 비교(조치 검증) 재분석처럼 특정 site에 속하지 않는 임시 재평가 요청은 site_id 없이 들어온다.
+    site_id: str | None = None
     image_s3_key: str
     work_info: str
 

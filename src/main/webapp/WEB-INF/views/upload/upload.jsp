@@ -9,15 +9,14 @@
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
 <%@ include file="../common/_sidebar.jsp" %>
-<%@ include file="../common/_topnav.jsp" %>
 
-<div id="mainContent" class="flex-1 flex flex-col min-h-screen transition-all duration-300 ml-16">
+<div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <!-- Top Bar -->
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
     <div class="flex-1 max-w-xl">
       <div class="relative">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+        <input type="text" placeholder="검색..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/>
       </div>
     </div>
     <div class="flex items-center gap-4 ml-4">
@@ -26,7 +25,7 @@
         <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
       </a>
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-        <div class="w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div>
+        <div class="w-8 h-8 bg-[#1A2E44] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div>
         <span id="headerUserName" class="text-sm font-medium text-gray-700 hidden sm:block">-</span>
       </a>
     </div>
@@ -42,14 +41,14 @@
       </div>
 
       <!-- Step indicator -->
-      <div class="bg-white rounded-2xl px-6 py-5 shadow-sm border border-gray-100">
+      <div class="bg-white rounded px-6 py-5 shadow-sm border border-gray-100">
         <div class="flex items-center" id="stepIndicator">
           <!-- Steps rendered by JS -->
         </div>
       </div>
 
       <!-- Step content -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 min-h-[420px] flex flex-col" id="stepContent">
+      <div class="bg-white rounded p-6 shadow-sm border border-gray-100 min-h-[420px] flex flex-col" id="stepContent">
       </div>
 
     </div>
@@ -116,8 +115,8 @@ function renderStepIndicator() {
   el.innerHTML = STEPS.map((s, i) => {
     const done = currentStep > s.number;
     const active = currentStep === s.number;
-    const circleClass = done ? 'bg-green-500 text-white' : active ? 'bg-[#FF6B35] text-white shadow-md scale-110' : 'bg-gray-100 text-gray-400';
-    const labelClass = active ? 'text-[#FF6B35]' : done ? 'text-green-600' : 'text-gray-400';
+    const circleClass = done ? 'bg-green-500 text-white' : active ? 'bg-[#1A2E44] text-white shadow-md scale-110' : 'bg-gray-100 text-gray-400';
+    const labelClass = active ? 'text-[#1A2E44]' : done ? 'text-green-600' : 'text-gray-400';
     const iconHtml = done
       ? '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>'
       : `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="${s.icon}"/></svg>`;
@@ -141,8 +140,8 @@ function renderStep1() {
       ? `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${riskBadge[site.riskBadgeKey]}">${riskLabel[site.riskBadgeKey]}</span>`
       : `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-gray-50 text-gray-400 border-gray-200">점검 이력 없음</span>`;
     return `
-      <button onclick="selectSite(${site.id})" class="flex items-start gap-3 p-4 rounded-xl border-2 text-left transition-all ${sel ? 'border-[#FF6B35] bg-[#FF6B35]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${sel ? 'bg-[#FF6B35] text-white' : 'bg-gray-100 text-gray-500'}">
+      <button onclick="selectSite(${site.id})" class="flex items-start gap-3 p-4 rounded border-2 text-left transition-all ${sel ? 'border-[#1A2E44] bg-[#1A2E44]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${sel ? 'bg-[#1A2E44] text-white' : 'bg-gray-100 text-gray-500'}">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         </div>
         <div class="flex-1 min-w-0">
@@ -150,14 +149,14 @@ function renderStep1() {
           <p class="text-xs text-gray-500 mt-0.5">${site.zone || '구역 미지정'}</p>
           ${badge}
         </div>
-        ${sel ? '<svg class="w-5 h-5 text-[#FF6B35] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+        ${sel ? '<svg class="w-5 h-5 text-[#1A2E44] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
       </button>`;
   }).join('');
 
   const selectedInfo = selectedSite ? `
-    <div class="mt-4 p-3 bg-[#FF6B35]/5 rounded-xl border border-[#FF6B35]/20 flex items-center gap-3">
-      <svg class="w-4 h-4 text-[#FF6B35] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#FF6B35]">${selectedSite.name}</span> <span class="text-gray-500">(${selectedSite.zone || '구역 미지정'})</span></p>
+    <div class="mt-4 p-3 bg-[#1A2E44]/5 rounded border border-[#1A2E44]/20 flex items-center gap-3">
+      <svg class="w-4 h-4 text-[#1A2E44] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#1A2E44]">${selectedSite.name}</span> <span class="text-gray-500">(${selectedSite.zone || '구역 미지정'})</span></p>
     </div>` : '';
 
   const listArea = sitesLoading
@@ -169,8 +168,8 @@ function renderStep1() {
   return `
     <div class="flex-1 flex flex-col">
       <div class="flex items-center gap-3 mb-5">
-        <div class="w-9 h-9 bg-[#FF6B35]/10 rounded-xl flex items-center justify-center">
-          <svg class="w-5 h-5 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <div class="w-9 h-9 bg-[#1A2E44]/10 rounded flex items-center justify-center">
+          <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         </div>
         <div>
           <h2 class="text-lg font-bold text-gray-900">위치 선택</h2>
@@ -182,8 +181,8 @@ function renderStep1() {
       <div class="mt-4 pt-4 border-t border-gray-100">
         <p class="text-xs font-semibold text-gray-500 mb-2">목록에 없는 현장인가요?</p>
         <div class="flex gap-2">
-          <input id="newSiteName" type="text" placeholder="현장명 (예: 3동 건물 외벽)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
-          <input id="newSiteZone" type="text" placeholder="구역 (선택)" class="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
+          <input id="newSiteName" type="text" placeholder="현장명 (예: 3동 건물 외벽)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
+          <input id="newSiteZone" type="text" placeholder="구역 (선택)" class="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
           <button onclick="addSite()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-900">추가</button>
         </div>
       </div>
@@ -202,7 +201,7 @@ function renderStep2() {
       </div>
       <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
         ${uploadedFiles.map((f, i) => `
-          <div class="relative group rounded-xl overflow-hidden border border-gray-200 aspect-square bg-gray-50">
+          <div class="relative group rounded overflow-hidden border border-gray-200 aspect-square bg-gray-50">
             <img src="${f.preview}" alt="${f.name}" class="w-full h-full object-cover"/>
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors"></div>
             ${f.uploading ? '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><svg class="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></div>' : ''}
@@ -211,7 +210,7 @@ function renderStep2() {
               <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>`).join('')}
-        <button onclick="document.getElementById('fileInput').click()" class="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-blue-400 hover:bg-blue-50 transition-colors">
+        <button onclick="document.getElementById('fileInput').click()" class="aspect-square rounded border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-blue-400 hover:bg-blue-50 transition-colors">
           <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
@@ -220,22 +219,22 @@ function renderStep2() {
   return `
     <div class="flex-1 flex flex-col">
       <div class="flex items-center gap-3 mb-5">
-        <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
+        <div class="w-9 h-9 bg-blue-50 rounded flex items-center justify-center">
           <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
         <div>
           <h2 class="text-lg font-bold text-gray-900">이미지 업로드</h2>
-          <p class="text-sm text-gray-500"><span class="font-medium text-[#FF6B35]">${selectedSite ? selectedSite.name : ''}</span>의 현장 사진을 업로드하세요</p>
+          <p class="text-sm text-gray-500"><span class="font-medium text-[#1A2E44]">${selectedSite ? selectedSite.name : ''}</span>의 현장 사진을 업로드하세요</p>
         </div>
       </div>
       <div id="dropZone" onclick="document.getElementById('fileInput').click()"
            ondragover="event.preventDefault(); this.classList.add('border-blue-500','bg-blue-50','scale-[1.01]')"
            ondragleave="this.classList.remove('border-blue-500','bg-blue-50','scale-[1.01]')"
            ondrop="event.preventDefault(); this.classList.remove('border-blue-500','bg-blue-50','scale-[1.01]'); handleDropFiles(event.dataTransfer.files)"
-           class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gray-50 transition-all mb-4">
+           class="border-2 border-dashed border-gray-200 rounded p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-gray-50 transition-all mb-4">
         <input id="fileInput" type="file" multiple accept="image/*" class="hidden" onchange="handleFiles(this.files)"/>
         <div class="flex flex-col items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-500">
+          <div class="w-14 h-14 rounded flex items-center justify-center bg-blue-50 text-blue-500">
             <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <div>
@@ -255,7 +254,7 @@ function renderStep3() {
   `).join('');
 
   const preview = question.trim() ? `
-    <div class="mt-4 p-3 bg-purple-50 rounded-xl border border-purple-100 flex items-start gap-2">
+    <div class="mt-4 p-3 bg-purple-50 rounded border border-purple-100 flex items-start gap-2">
       <svg class="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <p class="text-sm text-gray-700 italic">"${question}"</p>
     </div>` : '';
@@ -263,7 +262,7 @@ function renderStep3() {
   return `
     <div class="flex-1 flex flex-col">
       <div class="flex items-center gap-3 mb-5">
-        <div class="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center">
+        <div class="w-9 h-9 bg-purple-50 rounded flex items-center justify-center">
           <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
         <div>
@@ -272,7 +271,7 @@ function renderStep3() {
         </div>
       </div>
       <textarea id="questionInput" oninput="question=this.value; renderStep3Content()" placeholder="예: 이 사진에서 안전난간이 제대로 설치되어 있나요? 추락 위험 요소가 있는지 확인해주세요." rows="4"
-        class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none resize-none mb-4">${question}</textarea>
+        class="w-full px-4 py-3 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none resize-none mb-4">${question}</textarea>
       <div>
         <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">자주 쓰는 질문</p>
         <div class="flex flex-wrap gap-2">${presets}</div>
@@ -283,7 +282,7 @@ function renderStep3() {
 
 function renderStep3Content() {
   const preview = question.trim() ? `
-    <div class="mt-4 p-3 bg-purple-50 rounded-xl border border-purple-100 flex items-start gap-2">
+    <div class="mt-4 p-3 bg-purple-50 rounded border border-purple-100 flex items-start gap-2">
       <svg class="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <p class="text-sm text-gray-700 italic">"${question}"</p>
     </div>` : '';
@@ -298,19 +297,19 @@ function renderStep4() {
     return `
       <div class="flex-1 flex flex-col">
         <div class="flex items-center gap-3 mb-5">
-          <div class="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
+          <div class="w-9 h-9 bg-green-50 rounded flex items-center justify-center">
             <svg class="w-5 h-5 text-green-600 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           </div>
           <h2 class="text-lg font-bold text-gray-900">AI 분석 중...</h2>
         </div>
-        <div class="bg-gradient-to-br from-[#1B3A5F]/5 to-[#FF6B35]/5 rounded-xl p-5 border border-[#FF6B35]/20">
+        <div class="bg-gradient-to-br from-[#1A2E44]/5 to-[#1A2E44]/5 rounded p-5 border border-[#1A2E44]/20">
           <div class="flex items-center gap-3 mb-3">
-            <svg class="w-5 h-5 text-[#FF6B35] animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg class="w-5 h-5 text-[#1A2E44] animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <p class="text-sm font-semibold text-gray-800 flex-1" id="progressLabel">이미지 전처리 중...</p>
-            <span class="text-lg font-bold text-[#FF6B35]" id="progressPct">0%</span>
+            <span class="text-lg font-bold text-[#1A2E44]" id="progressPct">0%</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-            <div id="progressBar" class="bg-gradient-to-r from-[#1B3A5F] to-[#FF6B35] h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+            <div id="progressBar" class="bg-gradient-to-r from-[#1A2E44] to-[#1A2E44] h-2 rounded-full transition-all duration-300" style="width:0%"></div>
           </div>
         </div>
       </div>`;
@@ -324,13 +323,13 @@ function renderStep4() {
           <p class="font-semibold text-red-700">AI 분석에 실패했습니다</p>
         </div>
         <p class="text-sm text-gray-600 mb-4">${analysisError}</p>
-        <button onclick="startAnalysis()" class="w-full py-3.5 bg-[#FF6B35] text-white rounded-xl font-bold hover:bg-[#E55A2A] transition-colors shadow-lg">다시 시도</button>
+        <button onclick="startAnalysis()" class="w-full py-3.5 bg-[#1A2E44] text-white rounded font-bold hover:bg-[#0F2233] transition-colors shadow-lg">다시 시도</button>
       </div>`;
   }
 
   if (results.length > 0) {
     const resultCards = results.map((r, i) => `
-      <div class="flex gap-3 p-3 rounded-xl border ${r.risk === 'high' ? 'bg-red-50 border-red-100' : 'bg-orange-50 border-orange-100'}">
+      <div class="flex gap-3 p-3 rounded border ${r.risk === 'high' ? 'bg-red-50 border-red-100' : 'bg-orange-50 border-orange-100'}">
         <svg class="w-4 h-4 flex-shrink-0 mt-0.5 ${r.risk === 'high' ? 'text-red-500' : 'text-orange-500'}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <div class="flex-1">
           <p class="text-sm font-semibold text-gray-900">${r.title}</p>
@@ -346,11 +345,11 @@ function renderStep4() {
           <p class="font-semibold text-green-800">분석 완료 — ${results.length}건 위험 항목 감지</p>
         </div>
         <div class="space-y-3 mb-4 flex-1">${resultCards}</div>
-        <button onclick="goToStep(5)" class="w-full py-3.5 bg-[#FF6B35] text-white rounded-xl font-bold hover:bg-[#E55A2A] transition-colors shadow-lg flex items-center justify-center gap-2 mt-2">
+        <button onclick="goToStep(5)" class="w-full py-3.5 bg-[#1A2E44] text-white rounded font-bold hover:bg-[#0F2233] transition-colors shadow-lg flex items-center justify-center gap-2 mt-2">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2"/></svg>
           조치 등록하러 가기
         </button>
-        <a href="/actions/detail?inspectionId=${currentInspectionId}" class="w-full py-3 mt-2 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+        <a href="/actions/detail?inspectionId=${currentInspectionId}" class="w-full py-3 mt-2 border border-gray-200 text-gray-700 rounded font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           리포트 작성하기
         </a>
@@ -361,7 +360,7 @@ function renderStep4() {
   return `
     <div class="flex-1 flex flex-col">
       <div class="flex items-center gap-3 mb-5">
-        <div class="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
+        <div class="w-9 h-9 bg-green-50 rounded flex items-center justify-center">
           <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
         </div>
         <div>
@@ -370,33 +369,33 @@ function renderStep4() {
         </div>
       </div>
       <div class="space-y-3 mb-6">
-        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-          <div class="w-8 h-8 bg-[#FF6B35]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg class="w-4 h-4 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-100">
+          <div class="w-8 h-8 bg-[#1A2E44]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
           </div>
           <div class="flex-1"><p class="text-xs text-gray-400">위치</p><p class="text-sm font-semibold text-gray-800">${selectedSite ? selectedSite.name + ' (' + selectedSite.zone + ')' : '-'}</p></div>
-          <button onclick="goToStep(1)" class="text-xs text-gray-400 hover:text-[#FF6B35]">수정</button>
+          <button onclick="goToStep(1)" class="text-xs text-gray-400 hover:text-[#1A2E44]">수정</button>
         </div>
-        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-100">
           <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           </div>
           <div class="flex-1"><p class="text-xs text-gray-400">업로드 사진</p><p class="text-sm font-semibold text-gray-800">${uploadedFiles.length}장</p></div>
-          <button onclick="goToStep(2)" class="text-xs text-gray-400 hover:text-[#FF6B35]">수정</button>
+          <button onclick="goToStep(2)" class="text-xs text-gray-400 hover:text-[#1A2E44]">수정</button>
         </div>
-        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-100">
           <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <div class="flex-1 min-w-0"><p class="text-xs text-gray-400">검사 질문</p><p class="text-sm font-semibold text-gray-800 truncate">${question || '-'}</p></div>
-          <button onclick="goToStep(3)" class="text-xs text-gray-400 hover:text-[#FF6B35]">수정</button>
+          <button onclick="goToStep(3)" class="text-xs text-gray-400 hover:text-[#1A2E44]">수정</button>
         </div>
       </div>
-      <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-[#1B3A5F]/5 to-[#FF6B35]/5 rounded-xl border border-[#FF6B35]/20 mb-4">
+      <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-[#1A2E44]/5 to-[#1A2E44]/5 rounded border border-[#1A2E44]/20 mb-4">
         <img src="/images/mascot.png" alt="마스코트" class="w-12 h-12 object-contain flex-shrink-0" style="filter:drop-shadow(0 6px 14px rgba(15,32,56,0.22))"/>
         <p class="text-sm text-gray-700">모든 내용이 입력됐어요! AI 분석을 시작하면 약 30초 내에 결과를 알려드릴게요</p>
       </div>
-      <button onclick="startAnalysis()" class="w-full py-4 bg-[#FF6B35] text-white rounded-xl font-bold text-base hover:bg-[#E55A2A] transition-colors shadow-lg flex items-center justify-center gap-2 mt-auto">
+      <button onclick="startAnalysis()" class="w-full py-4 bg-[#1A2E44] text-white rounded font-bold text-base hover:bg-[#0F2233] transition-colors shadow-lg flex items-center justify-center gap-2 mt-auto">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z"/></svg>
         AI 분석 시작
       </button>
@@ -406,26 +405,26 @@ function renderStep4() {
 // ─── Step 5: 조치 등록 ───
 function renderStep5() {
   const catBtns = CATEGORIES.map(c => `
-    <button onclick="regForm.category='${c}'; renderStep()" class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${regForm.category === c ? 'bg-[#1B3A5F] text-white border-[#1B3A5F]' : 'border-gray-200 text-gray-600 hover:border-gray-400'}">${c}</button>`).join('');
+    <button onclick="regForm.category='${c}'; renderStep()" class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${regForm.category === c ? 'bg-[#1A2E44] text-white border-[#1A2E44]' : 'border-gray-200 text-gray-600 hover:border-gray-400'}">${c}</button>`).join('');
 
   const aiBadges = results.map((r, i) => `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${riskBadge[r.risk]}">${r.title}</span>`).join('');
 
   const regBtns = REGULATION_REFS.map(r => `
-    <button onclick="regForm.regulation=\`${r}\`; document.getElementById('regInput').value=\`${r}\`" class="text-xs px-3 py-1.5 rounded-full border transition-all ${regForm.regulation === r ? 'bg-[#1B3A5F] text-white border-[#1B3A5F]' : 'border-gray-200 text-gray-600 hover:border-gray-400'}">${r}</button>`).join('');
+    <button onclick="regForm.regulation=\`${r}\`; document.getElementById('regInput').value=\`${r}\`" class="text-xs px-3 py-1.5 rounded-full border transition-all ${regForm.regulation === r ? 'bg-[#1A2E44] text-white border-[#1A2E44]' : 'border-gray-200 text-gray-600 hover:border-gray-400'}">${r}</button>`).join('');
 
   return `
     <div class="flex-1 flex flex-col space-y-5">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-[#FF6B35]/10 rounded-xl flex items-center justify-center">
-          <svg class="w-5 h-5 text-[#FF6B35]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2"/></svg>
+        <div class="w-9 h-9 bg-[#1A2E44]/10 rounded flex items-center justify-center">
+          <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2"/></svg>
         </div>
         <div><h2 class="text-lg font-bold text-gray-900">조치 등록</h2><p class="text-sm text-gray-500">AI 분석 결과를 바탕으로 조치 사항을 등록합니다</p></div>
       </div>
-      ${results.length > 0 ? `<div class="flex flex-wrap gap-2 p-3 bg-orange-50 rounded-xl border border-orange-100"><span class="text-xs font-semibold text-orange-700">AI 감지 항목:</span>${aiBadges}</div>` : ''}
+      ${results.length > 0 ? `<div class="flex flex-wrap gap-2 p-3 bg-orange-50 rounded border border-orange-100"><span class="text-xs font-semibold text-orange-700">AI 감지 항목:</span>${aiBadges}</div>` : ''}
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">제목 <span class="text-red-500">*</span></label>
         <input type="text" id="regTitle" value="${regForm.title}" oninput="regForm.title=this.value" placeholder="조치 사항을 간략히 입력하세요"
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+          class="w-full px-4 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/>
       </div>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">위험 분류 <span class="text-red-500">*</span></label>
@@ -435,7 +434,7 @@ function renderStep5() {
         <label class="block text-sm font-semibold text-gray-700 mb-2">위험도 <span class="text-red-500">*</span></label>
         <div class="grid grid-cols-3 gap-3">
           ${['high','medium','low'].map(r => `
-          <button onclick="regForm.risk='${r}'; renderStep()" class="flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 font-semibold text-sm transition-all ${regForm.risk === r ? (r==='high'?'border-red-400 bg-red-50 text-red-700':r==='medium'?'border-orange-400 bg-orange-50 text-orange-700':'border-yellow-400 bg-yellow-50 text-yellow-700') : 'border-gray-200 text-gray-500 hover:border-gray-300'}">
+          <button onclick="regForm.risk='${r}'; renderStep()" class="flex flex-col items-center gap-1.5 py-3 rounded border-2 font-semibold text-sm transition-all ${regForm.risk === r ? (r==='high'?'border-red-400 bg-red-50 text-red-700':r==='medium'?'border-orange-400 bg-orange-50 text-orange-700':'border-yellow-400 bg-yellow-50 text-yellow-700') : 'border-gray-200 text-gray-500 hover:border-gray-300'}">
             <div class="w-3 h-3 rounded-full ${r==='high'?'bg-red-500':r==='medium'?'bg-orange-500':'bg-yellow-400'}"></div>
             ${riskLabel[r]}
           </button>`).join('')}
@@ -444,43 +443,43 @@ function renderStep5() {
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">담당자 <span class="text-red-500">*</span></label>
-          <select id="regAssignee" onchange="regForm.assigneeId=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none bg-white">
+          <select id="regAssignee" onchange="regForm.assigneeId=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none bg-white">
             <option value="">${ASSIGNEES.length ? '선택' : '등록된 하청 담당자가 없습니다'}</option>
             ${ASSIGNEES.map(a => `<option value="${a.id}" ${String(regForm.assigneeId)===String(a.id)?'selected':''}>${a.username}${a.companyName ? ' (' + a.companyName + ')' : ''}</option>`).join('')}
           </select>
         </div>
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">발견 일시</label>
-          <input type="date" value="${regForm.discoveredDate}" oninput="regForm.discoveredDate=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
+          <input type="date" value="${regForm.discoveredDate}" oninput="regForm.discoveredDate=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
         </div>
         <div class="col-span-2">
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">조치 기한 <span class="text-red-500">*</span></label>
-          <input type="date" id="regDeadline" value="${regForm.deadline}" oninput="regForm.deadline=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] outline-none"/>
+          <input type="date" id="regDeadline" value="${regForm.deadline}" oninput="regForm.deadline=this.value" class="w-full px-3 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
         </div>
       </div>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">위험 상황 설명 <span class="text-red-500">*</span></label>
         <textarea id="regDesc" oninput="regForm.description=this.value" rows="4" placeholder="발견된 위험 상황을 구체적으로 설명해주세요..."
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none resize-none">${regForm.description}</textarea>
+          class="w-full px-4 py-3 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none resize-none">${regForm.description}</textarea>
       </div>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">권장 조치 사항</label>
         <textarea oninput="regForm.recommendation=this.value" rows="2" placeholder="어떤 조치가 필요한지 설명해주세요..."
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none resize-none">${regForm.recommendation}</textarea>
+          class="w-full px-4 py-3 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none resize-none">${regForm.recommendation}</textarea>
       </div>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">관련 법규</label>
         <div class="flex flex-wrap gap-2 mb-2">${regBtns}</div>
         <input type="text" id="regInput" value="${regForm.regulation}" oninput="regForm.regulation=this.value" placeholder="직접 입력하거나 위에서 선택"
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none"/>
+          class="w-full px-4 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/>
       </div>
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">비고</label>
         <textarea oninput="regForm.note=this.value" rows="2" placeholder="추가 메모사항이 있으면 입력하세요"
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent outline-none resize-none">${regForm.note}</textarea>
+          class="w-full px-4 py-2.5 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none resize-none">${regForm.note}</textarea>
       </div>
-      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100 text-xs text-blue-700">등록 후 담당자에게 즉시 알림이 발송됩니다.</div>
-      <button onclick="submitRegistration()" class="w-full py-4 bg-[#FF6B35] text-white rounded-xl font-bold text-base hover:bg-[#E55A2A] transition-colors shadow-lg flex items-center justify-center gap-2">
+      <div class="bg-blue-50 rounded p-3 border border-blue-100 text-xs text-blue-700">등록 후 담당자에게 즉시 알림이 발송됩니다.</div>
+      <button onclick="submitRegistration()" class="w-full py-4 bg-[#1A2E44] text-white rounded font-bold text-base hover:bg-[#0F2233] transition-colors shadow-lg flex items-center justify-center gap-2">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
         조치관리에 등록 완료
       </button>
@@ -506,12 +505,12 @@ function renderNavButtons() {
 
   return `
     <div class="flex items-center justify-between mt-6 pt-5 border-t border-gray-100">
-      <button onclick="prevStep()" ${currentStep === 1 ? 'disabled' : ''} class="flex items-center gap-2 px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+      <button onclick="prevStep()" ${currentStep === 1 ? 'disabled' : ''} class="flex items-center gap-2 px-5 py-2.5 border border-gray-200 rounded text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> 이전
       </button>
       <span class="text-xs text-gray-400">${currentStep} / ${STEPS.length}</span>
       ${currentStep < 4 ? `
-      <button onclick="nextStep()" ${!canNext ? 'disabled' : ''} class="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B35] text-white rounded-xl text-sm font-semibold hover:bg-[#E55A2A] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm">
+      <button onclick="nextStep()" ${!canNext ? 'disabled' : ''} class="flex items-center gap-2 px-5 py-2.5 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#0F2233] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm">
         다음 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>` : '<div class="w-20"></div>'}
     </div>`;
