@@ -45,3 +45,10 @@ ai-pipeline/.venv/
 ai-pipeline/__pycache__/
 ai-pipeline/**/__pycache__/
 ai-pipeline/.env
+
+### Frontend (frontend/) ###
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+# Vite 빌드 산출물 — 팀원은 `cd frontend && npm i && npm run build` 로 생성
+src/main/resources/static/app/

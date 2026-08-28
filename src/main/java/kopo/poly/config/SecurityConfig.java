@@ -33,6 +33,8 @@ public class SecurityConfig {
                         // 로그인 페이지 렌더링조차 거부되어 /login 무한 리다이렉트가 발생한다.
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        // Figma export SafeMate React 프론트엔드(정적 SPA)는 자체 화면 흐름/인증 상태를 갖는다.
+                        .requestMatchers("/app", "/app/**").permitAll()
                         .requestMatchers("/", "/landing", "/login", "/login/verify-2fa", "/signup").permitAll()
                         .requestMatchers("/find-id", "/find-password/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
