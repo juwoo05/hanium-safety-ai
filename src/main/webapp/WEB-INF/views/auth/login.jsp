@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>로그인 - SafeMate</title>
+  <title>로그인 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body style="min-height:100vh;background:#F7F8FA;display:flex;align-items:center;justify-content:center;padding:24px">
@@ -13,8 +13,8 @@
 
   <!-- Logo -->
   <div class="flex items-center justify-center" style="gap:8px;margin-bottom:32px">
-    <div style="width:28px;height:28px;background:#1A2E44;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700">S</div>
-    <span style="font-size:18px;font-weight:700;color:#0F172A;letter-spacing:-0.01em">안전고리</span>
+    <div style="width:28px;height:28px;background:#F8FAFC;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="/images/yeongyeol-gori-logo.png" alt="연결고리 로고" style="width:26px;height:26px;object-fit:contain"/></div>
+    <span style="font-size:18px;font-weight:700;color:#0F172A;letter-spacing:0">연결고리</span>
   </div>
 
   <!-- Card -->
@@ -84,7 +84,7 @@
     </p>
   </div>
 
-  <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:20px">건설현장 안전관리 AI 플랫폼 · 안전고리</p>
+  <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:20px">건설현장 안전관리 AI 플랫폼 · 연결고리</p>
 </div>
 
 <script>

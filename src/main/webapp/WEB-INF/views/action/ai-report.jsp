@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI 결과보고서 생성 - SafeMate</title>
+  <title>AI 결과보고서 생성 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @media print { .no-print { display: none !important; } }
@@ -425,7 +425,7 @@
       '<span class="text-[#1A2E44] font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동생성</span>' +
       '</div>' +
       '<h2 class="text-xl font-bold text-gray-900 text-center mb-1">' + template.name + '</h2>' +
-      '<p class="text-xs text-gray-400 text-center mb-6">건설현장 안전관리 플랫폼 SafeMate · ' + dateStr + '</p>' +
+      '<p class="text-xs text-gray-400 text-center mb-6">건설현장 안전관리 플랫폼 연결고리 · ' + dateStr + '</p>' +
       '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2">현장 기본정보</h3>' +
       '<table class="w-full text-sm mb-6 border border-gray-200 rounded-lg overflow-hidden"><tbody>' +
       '<tr class="border-b border-gray-100"><td class="py-2 px-3 bg-gray-50 font-semibold text-gray-600 w-28">현장명</td><td class="py-2 px-3 text-gray-800">' + esc(siteName) + '</td></tr>' +

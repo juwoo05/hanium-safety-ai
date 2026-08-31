@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>비밀번호 찾기 - SafeMate</title>
+  <title>비밀번호 찾기 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#1A2E44] to-[#2C5282] flex items-center justify-center px-6">
@@ -18,7 +18,7 @@
 
   <div class="flex items-center gap-2 mb-6">
     <div class="w-12 h-12 bg-[#1A2E44] rounded flex items-center justify-center">
-      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <img src="/images/yeongyeol-gori-logo.png" alt="연결고리 로고" class="w-11 h-11 object-contain"/>
     </div>
     <div>
       <span class="font-bold text-2xl text-[#1A2E44]">비밀번호 찾기</span>

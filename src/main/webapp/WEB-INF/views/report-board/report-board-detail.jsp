@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>신고 상세 - SafeMate</title>
+  <title>신고 상세 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">

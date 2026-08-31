@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>아이디 찾기 - SafeMate</title>
+  <title>아이디 찾기 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-[#1A2E44] to-[#2C5282] flex items-center justify-center px-6">
@@ -16,11 +16,11 @@
   </a>
   <div class="flex items-center gap-2 mb-8">
     <div class="w-12 h-12 bg-[#1A2E44] rounded flex items-center justify-center">
-      <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <img src="/images/yeongyeol-gori-logo.png" alt="연결고리 로고" class="w-11 h-11 object-contain"/>
     </div>
     <div>
       <span class="font-bold text-2xl text-[#1A2E44]">아이디 찾기</span>
-      <p class="text-xs text-gray-500">SafeMate 계정 아이디를 찾아드립니다</p>
+      <p class="text-xs text-gray-500">연결고리 계정 아이디를 찾아드립니다</p>
     </div>
   </div>
 
