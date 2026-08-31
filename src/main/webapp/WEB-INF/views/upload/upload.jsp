@@ -7,7 +7,7 @@
   <title>AI 안전관리 검사 - SafeMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-[#F5F7FA] flex">
+<body class="min-h-screen bg-[#F3F5F7] flex">
 <%@ include file="../common/_sidebar.jsp" %>
 
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
@@ -31,8 +31,8 @@
     </div>
   </header>
 
-  <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="max-w-3xl mx-auto space-y-6">
+  <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px">
+    <div style="max-width:720px;margin:0 auto" class="space-y-6">
 
       <!-- Page title -->
       <div>

@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>통계 분석 - SafeMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"
+          integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt"
+          crossorigin="anonymous"></script>
 </head>
-<body class="min-h-screen bg-[#F5F7FA] flex">
+<body class="min-h-screen bg-[#F3F5F7] flex">
 <%@ include file="../common/_sidebar.jsp" %>
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
@@ -17,8 +20,8 @@
       <a href="/mypage" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded"><div class="w-8 h-8 bg-[#1A2E44] rounded-full flex items-center justify-center"><span id="headerUserInitial" class="text-white font-semibold text-sm">-</span></div></a>
     </div>
   </header>
-  <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="space-y-5">
+  <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
+    <div style="display:flex;flex-direction:column;gap:20px">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
           <p style="font-size:11px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:5px">통계 현황</p>
@@ -55,6 +58,7 @@
       <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 20px">
         <div class="flex items-center justify-between mb-3">
           <h3 style="font-size:14px;font-weight:600;color:#0F172A">주요 지표 분석</h3>
+          <span id="insightPeriodLabel" style="font-size:11px;color:#9CA3AF"></span>
         </div>
         <div id="insightGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <p class="text-sm text-gray-400 col-span-2">데이터를 불러오는 중...</p>
@@ -65,13 +69,11 @@
       <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
         <div class="flex items-center justify-between mb-5">
           <h3 style="font-size:14px;font-weight:600;color:#0F172A">월별 위험도 추이</h3>
-          <div class="flex items-center gap-4 text-xs text-gray-500">
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>고위험</span>
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-400 inline-block"></span>중위험</span>
-            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>안전</span>
+          <div class="flex items-center gap-3">
+            <div id="metricToggle" class="flex items-center" style="background:#F3F4F6;border-radius:4px;padding:3px;gap:1px"></div>
           </div>
         </div>
-        <svg id="trendLineChart" viewBox="0 0 600 220" class="w-full" style="height:220px" preserveAspectRatio="none"></svg>
+        <div style="height:240px"><canvas id="trendLineChart"></canvas></div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -125,6 +127,8 @@
   var PERIODS = [{ key: '3개월', months: 3 }, { key: '6개월', months: 6 }, { key: '1년', months: 12 }];
   var fullMonthlyTrend = [];
   var currentPeriod = '6개월';
+  var activeMetric = 'risk';
+  var allActionsGlobal = [];
 
   function renderPeriodToggle() {
     qs('#periodToggle').innerHTML = PERIODS.map(function (p) {
@@ -133,6 +137,7 @@
         ';border-radius:3px;background:' + (active ? 'white' : 'transparent') + ';color:' + (active ? '#0F172A' : '#9CA3AF') +
         ';border:none;cursor:pointer;box-shadow:' + (active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none') + '">' + p.key + '</button>';
     }).join('');
+    qs('#insightPeriodLabel').textContent = currentPeriod + ' 기준 자동 분석';
     document.querySelectorAll('.period-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         currentPeriod = btn.dataset.key;
@@ -141,6 +146,36 @@
         renderTrendLine(fullMonthlyTrend.slice(-months));
       });
     });
+  }
+
+  function renderMetricToggle() {
+    var options = [['risk', '위험도별'], ['completed', '완료 건수']];
+    qs('#metricToggle').innerHTML = options.map(function (o) {
+      var active = activeMetric === o[0];
+      return '<button type="button" class="metric-btn" data-key="' + o[0] + '" style="padding:4px 10px;font-size:11px;font-weight:' + (active ? 600 : 400) +
+        ';border-radius:3px;background:' + (active ? 'white' : 'transparent') + ';color:' + (active ? '#0F172A' : '#9CA3AF') +
+        ';border:none;cursor:pointer;box-shadow:' + (active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none') + '">' + o[1] + '</button>';
+    }).join('');
+    document.querySelectorAll('.metric-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeMetric = btn.dataset.key;
+        renderMetricToggle();
+        var months = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
+        renderTrendLine(fullMonthlyTrend.slice(-months));
+      });
+    });
+  }
+
+  // 실제 조치 완료 건을 updatedAt 기준 월별로 묶어 "완료 건수" 뷰에 쓴다 (React mock의 completed 필드에 대응).
+  function withCompletedCounts(monthlyTrend) {
+    var counts = {};
+    monthlyTrend.forEach(function (m) { counts[m.month] = 0; });
+    allActionsGlobal.forEach(function (a) {
+      if (a.status !== 'COMPLETED' || !a.updatedAt) return;
+      var m = new Date(a.updatedAt).getMonth() + 1;
+      if (counts.hasOwnProperty(m)) counts[m]++;
+    });
+    return monthlyTrend.map(function (m) { return { month: m.month, completed: counts[m.month] }; });
   }
 
   fetch('/api/users/me')
@@ -163,7 +198,14 @@
 
   fetch('/api/actions/search')
     .then(function (res) { return res.ok ? res.json() : []; })
-    .then(renderActionDerived)
+    .then(function (actions) {
+      allActionsGlobal = actions;
+      renderActionDerived(actions);
+      if (activeMetric === 'completed' && fullMonthlyTrend.length) {
+        var months = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
+        renderTrendLine(fullMonthlyTrend.slice(-months));
+      }
+    })
     .catch(function () {
       qs('#statusDonut').innerHTML = '<p class="text-sm text-red-400">불러오지 못했습니다.</p>';
       qs('#managerLeaderboard').innerHTML = '<p class="text-sm text-red-400">불러오지 못했습니다.</p>';
@@ -177,6 +219,7 @@
 
     fullMonthlyTrend = data.monthlyTrend;
     renderPeriodToggle();
+    renderMetricToggle();
     var initMonths = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
     renderTrendLine(fullMonthlyTrend.slice(-initMonths));
     renderDonut('#riskDonut', Object.keys(data.riskDistribution).map(function (k) {
@@ -187,47 +230,70 @@
     renderInsights(data);
   }
 
+  var trendChartInstance = null;
+
   function renderTrendLine(monthlyTrend) {
-    var svg = qs('#trendLineChart');
-    var W = 600, H = 220, padL = 30, padR = 10, padT = 15, padB = 25;
+    var canvas = qs('#trendLineChart');
     var n = monthlyTrend.length;
-    if (!n) { svg.innerHTML = '<text x="300" y="110" text-anchor="middle" fill="#9ca3af" font-size="12">데이터가 없습니다</text>'; return; }
-    var max = 1;
-    monthlyTrend.forEach(function (m) { max = Math.max(max, m.high, m.medium, m.safe); });
-    var stepX = n > 1 ? (W - padL - padR) / (n - 1) : 0;
+    if (trendChartInstance) { trendChartInstance.destroy(); trendChartInstance = null; }
+    if (!n) return;
 
-    function points(key) {
-      return monthlyTrend.map(function (m, i) {
-        var x = padL + stepX * i;
-        var y = padT + (1 - m[key] / max) * (H - padT - padB);
-        return x + ',' + y;
-      }).join(' ');
-    }
+    var series = activeMetric === 'risk' ? monthlyTrend : withCompletedCounts(monthlyTrend);
+    var labels = series.map(function (m) { return m.month + '월'; });
 
-    var gridLines = '';
-    for (var g = 0; g <= 4; g++) {
-      var gy = padT + (H - padT - padB) * g / 4;
-      gridLines += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="#f0f0f0" stroke-width="1"/>';
-    }
+    var datasets = activeMetric === 'risk'
+      ? [
+          { key: 'high',   label: '고위험', color: '#ef4444' },
+          { key: 'medium', label: '중위험', color: '#f97316' },
+          { key: 'safe',   label: '안전',   color: '#eab308' }
+        ].map(function (s) {
+          return {
+            label: s.label,
+            data: series.map(function (m) { return m[s.key]; }),
+            borderColor: s.color,
+            backgroundColor: s.color,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 4,
+          };
+        })
+      : [{
+          label: '완료 건수',
+          data: series.map(function (m) { return m.completed; }),
+          borderColor: '#1A2E44',
+          backgroundColor: '#1A2E44',
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 4,
+        }];
 
-    var labels = monthlyTrend.map(function (m, i) {
-      var x = padL + stepX * i;
-      return '<text x="' + x + '" y="' + (H - 6) + '" text-anchor="middle" fill="#9ca3af" font-size="10">' + m.month + '월</text>';
-    }).join('');
-
-    function dots(key, color) {
-      return monthlyTrend.map(function (m, i) {
-        var x = padL + stepX * i;
-        var y = padT + (1 - m[key] / max) * (H - padT - padB);
-        return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="' + color + '"><title>' + m.month + '월 ' + m[key] + '건</title></circle>';
-      }).join('');
-    }
-
-    svg.innerHTML = gridLines +
-      '<polyline points="' + points('high') + '" fill="none" stroke="#ef4444" stroke-width="2.5"/>' + dots('high', '#ef4444') +
-      '<polyline points="' + points('medium') + '" fill="none" stroke="#f97316" stroke-width="2.5"/>' + dots('medium', '#f97316') +
-      '<polyline points="' + points('safe') + '" fill="none" stroke="#eab308" stroke-width="2.5"/>' + dots('safe', '#eab308') +
-      labels;
+    trendChartInstance = new Chart(canvas, {
+      type: 'line',
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', align: 'end', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 7, font: { size: 11 }, color: '#6B7280' } },
+          tooltip: {
+            backgroundColor: 'white', titleColor: '#0F172A', bodyColor: '#374151',
+            borderColor: '#E5E7EB', borderWidth: 1, cornerRadius: 4, padding: 8,
+            titleFont: { size: 12 }, bodyFont: { size: 12 },
+          },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#9CA3AF' } },
+          y: {
+            beginAtZero: true,
+            grid: { color: '#f0f0f0', borderDash: [3, 3] },
+            ticks: { font: { size: 11 }, color: '#9CA3AF', precision: 0 },
+          },
+        },
+      },
+    });
   }
 
   function renderDonut(selector, data) {

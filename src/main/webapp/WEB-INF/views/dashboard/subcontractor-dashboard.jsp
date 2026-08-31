@@ -94,6 +94,17 @@
 
       <!-- Right -->
       <div class="flex flex-col" style="gap:14px">
+        <div id="weatherBox" style="background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:4px;padding:16px 18px;color:white">
+          <p style="font-size:11px;color:#BAE6FD;margin-bottom:6px">서울 · 현재 날씨</p>
+          <div class="flex items-end justify-between">
+            <div class="flex items-end gap-2">
+              <span id="weatherTemp" style="font-size:30px;font-weight:700;line-height:1">-</span>
+              <span id="weatherCondition" style="font-size:13px;color:#E0F2FE;margin-bottom:3px">불러오는 중...</span>
+            </div>
+          </div>
+          <div id="weatherPrecip" style="margin-top:8px;font-size:11px;color:#BAE6FD"></div>
+        </div>
+
         <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 18px">
           <h3 style="font-size:13px;font-weight:600;color:#0F172A;margin-bottom:12px">빠른 실행</h3>
           <div class="grid grid-cols-2 gap-2">
@@ -259,6 +270,22 @@
       });
   }
 
+  function loadWeather() {
+    fetch('/api/weather/today')
+      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
+      .then(function (w) {
+        qs('#weatherTemp').textContent = (w.temperature != null ? w.temperature : '-') + '°';
+        qs('#weatherCondition').textContent = w.skyCondition || '-';
+        var precip = (w.precipitationType && w.precipitationType !== '없음')
+          ? w.precipitationType + (w.precipitationAmount && w.precipitationAmount !== '-' ? ' · ' + w.precipitationAmount : '')
+          : '강수 없음';
+        qs('#weatherPrecip').textContent = precip;
+      })
+      .catch(function () {
+        qs('#weatherBox').classList.add('hidden');
+      });
+  }
+
   fetch('/api/users/me')
     .then(function (res) { if (res.status === 401) { window.location.href = '/login'; throw new Error(); } if (!res.ok) throw new Error(); return res.json(); })
     .then(function (user) {
@@ -267,6 +294,7 @@
       qs('#headerUserInitial').textContent = user.username ? user.username.charAt(0) : '?';
       qs('#bannerGreeting').textContent = user.username + '님의 대시보드';
       loadMyActions();
+      loadWeather();
     })
     .catch(function () {});
 })();

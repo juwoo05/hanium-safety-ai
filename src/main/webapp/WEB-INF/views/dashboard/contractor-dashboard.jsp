@@ -98,6 +98,17 @@
 
       <!-- Right sidebar -->
       <div class="flex flex-col gap-4">
+        <div id="weatherBox" style="background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:4px;padding:16px 18px;color:white">
+          <p style="font-size:11px;color:#BAE6FD;margin-bottom:6px">서울 · 현재 날씨</p>
+          <div class="flex items-end justify-between">
+            <div class="flex items-end gap-2">
+              <span id="weatherTemp" style="font-size:30px;font-weight:700;line-height:1">-</span>
+              <span id="weatherCondition" style="font-size:13px;color:#E0F2FE;margin-bottom:3px">불러오는 중...</span>
+            </div>
+          </div>
+          <div id="weatherPrecip" style="margin-top:8px;font-size:11px;color:#BAE6FD"></div>
+        </div>
+
         <div id="overdueAlertBox" class="hidden" style="background:#FEF2F2;border:1px solid #FECACA;border-radius:4px;padding:14px 16px">
           <div class="flex items-center gap-2 mb-2">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#991B1B" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
@@ -283,10 +294,27 @@
       });
   }
 
+  function loadWeather() {
+    fetch('/api/weather/today')
+      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
+      .then(function (w) {
+        qs('#weatherTemp').textContent = (w.temperature != null ? w.temperature : '-') + '°';
+        qs('#weatherCondition').textContent = w.skyCondition || '-';
+        var precip = (w.precipitationType && w.precipitationType !== '없음')
+          ? w.precipitationType + (w.precipitationAmount && w.precipitationAmount !== '-' ? ' · ' + w.precipitationAmount : '')
+          : '강수 없음';
+        qs('#weatherPrecip').textContent = precip;
+      })
+      .catch(function () {
+        qs('#weatherBox').classList.add('hidden');
+      });
+  }
+
   loadCurrentUser();
   loadSiteCount();
   loadAnalytics();
   loadActions();
+  loadWeather();
 })();
 </script>
 </body>

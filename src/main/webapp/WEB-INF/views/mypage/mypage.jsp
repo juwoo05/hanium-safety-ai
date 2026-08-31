@@ -150,7 +150,7 @@
             <p id="companySaveMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
             <div class="flex flex-wrap gap-3 pt-1">
               <button id="kisconSearchBtn" type="button" class="flex items-center gap-2 px-5 py-2.5 border-2 border-[#1A2E44] text-[#1A2E44] rounded text-sm font-semibold hover:bg-[#1A2E44]/5 transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>KISCON 조회
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>조회
               </button>
               <button id="saveCompanyBtn" type="button" class="px-5 py-2.5 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#003b5c] transition-colors">저장</button>
             </div>

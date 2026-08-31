@@ -8,7 +8,7 @@
   <title>신고 게시판 - SafeMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-[#F5F7FA] flex">
+<body class="min-h-screen bg-[#F3F5F7] flex">
 <%@ include file="../common/_sidebar.jsp" %>
 
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
@@ -32,8 +32,8 @@
     </div>
   </header>
 
-  <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="max-w-4xl mx-auto space-y-5">
+  <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
+    <div class="space-y-5">
 
       <!-- Page Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -139,42 +139,39 @@
 </div>
 
 <!-- New Report Modal -->
-<div id="reportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-    <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-        <h2 class="font-bold text-gray-900">신고하기</h2>
-      </div>
-      <button onclick="closeModal()" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+<div id="reportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,0.35)">
+  <div style="background:white;border-radius:6px;width:100%;max-width:480px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
+    <div style="padding:16px 24px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between">
+      <h2 style="font-size:15px;font-weight:600;color:#0F172A">신고하기</h2>
+      <button type="button" onclick="closeModal()" aria-label="닫기" style="background:none;border:none;cursor:pointer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <form id="reportForm" method="post" action="${pageContext.request.contextPath}/report-board" class="p-6 space-y-4">
+    <form id="reportForm" method="post" action="${pageContext.request.contextPath}/report-board" style="padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px">
       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <input type="hidden" name="anonymous" id="anonymousInput" value="true"/>
       <!-- Anonymous toggle -->
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-        <div class="flex items-center gap-3">
-          <svg id="anonIcon" class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg id="anonIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           <div>
-            <p class="text-sm font-semibold text-gray-800" id="anonLabel">익명으로 신고</p>
-            <p class="text-xs text-gray-500">신고자 정보는 관리자만 확인 가능합니다</p>
+            <p style="font-size:13px;font-weight:500;color:#374151" id="anonLabel">익명 신고</p>
+            <p style="font-size:11px;color:#9CA3AF">신고자 정보는 관리자만 확인 가능</p>
           </div>
         </div>
-        <button type="button" onclick="toggleAnon()" id="anonToggle" class="relative w-11 h-6 rounded-full transition-colors bg-[#1A2E44]">
-          <div id="anonThumb" class="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></div>
+        <button type="button" onclick="toggleAnon()" id="anonToggle" style="width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;background:#1A2E44;position:relative;flex-shrink:0">
+          <div id="anonThumb" style="position:absolute;top:2px;width:18px;height:18px;background:white;border-radius:50%;transition:left .15s;left:20px"></div>
         </button>
       </div>
       <!-- Fields -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1.5">제목 <span class="text-red-500">*</span></label>
-        <input type="text" name="title" id="fTitle" placeholder="신고 내용을 간략히 입력하세요" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/>
+        <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">제목 <span style="color:#991B1B">*</span></label>
+        <input type="text" name="title" id="fTitle" placeholder="신고 내용을 간략히 입력하세요" style="width:100%;padding:8px 12px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:#F9FAFB;color:#0F172A;box-sizing:border-box"/>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">분류</label>
-          <select name="category" id="fCategory" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none bg-white">
+          <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">분류</label>
+          <select name="category" id="fCategory" style="width:100%;padding:8px 12px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:#F9FAFB;color:#0F172A;box-sizing:border-box;appearance:none">
             <option value="SAFETY_VIOLATION">안전 위반</option>
             <option value="DEFECTIVE_MATERIAL">불량 자재</option>
             <option value="WORK_ENVIRONMENT">작업 환경</option>
@@ -183,29 +180,29 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">위험도</label>
-          <select name="riskLevel" id="fRisk" class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none bg-white">
-            <option value="HIGH">고위험</option><option value="MEDIUM">중위험</option><option value="LOW">저위험</option>
+          <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">위험도</label>
+          <select name="riskLevel" id="fRisk" style="width:100%;padding:8px 12px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:#F9FAFB;color:#0F172A;box-sizing:border-box;appearance:none">
+            <option value="HIGH">높음</option><option value="MEDIUM">중간</option><option value="LOW">낮음</option>
           </select>
         </div>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1.5">위치 <span class="text-red-500">*</span></label>
-        <div class="relative">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-          <input type="text" name="location" id="fLocation" placeholder="예: 3동 옥상, 지하 주차장" class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none"/>
+        <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">위치 <span style="color:#991B1B">*</span></label>
+        <div style="position:relative;display:flex;align-items:center">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="position:absolute;left:10px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          <input type="text" name="location" id="fLocation" placeholder="예: 3동 옥상, 지하 주차장" style="width:100%;padding:8px 12px 8px 28px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:#F9FAFB;color:#0F172A;box-sizing:border-box"/>
         </div>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1.5">상세 내용 <span class="text-red-500">*</span></label>
-        <textarea name="description" id="fDesc" rows="4" placeholder="발견한 위험 상황이나 안전 위반 사항을 구체적으로 설명해주세요." class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1A2E44] focus:border-transparent outline-none resize-none"></textarea>
+        <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">상세 내용 <span style="color:#991B1B">*</span></label>
+        <textarea name="description" id="fDesc" rows="4" placeholder="발견한 위험 상황이나 안전 위반 사항을 구체적으로 설명해주세요." style="width:100%;padding:8px 12px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:#F9FAFB;color:#0F172A;box-sizing:border-box;resize:none"></textarea>
       </div>
-      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100 text-xs text-blue-700">
-        신고 내용은 현장 안전 관리자와 담당 부서에 전달되며, 익명 신고 시 신고자 정보는 보호됩니다.
+      <div style="padding:10px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:4px;font-size:12px;color:#1E40AF">
+        신고 내용은 현장 안전 관리자 및 담당 부서에 전달됩니다. 익명 신고 시 신고자 정보는 보호됩니다.
       </div>
-      <div class="flex gap-3 pt-1">
-        <button type="button" onclick="closeModal()" class="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">취소</button>
-        <button type="button" onclick="submitReport()" class="flex-1 py-3 bg-[#1A2E44] text-white rounded-xl text-sm font-bold hover:bg-[#0F2233] transition-colors shadow-md">신고 접수하기</button>
+      <div class="flex gap-2">
+        <button type="button" onclick="closeModal()" style="flex:1;padding:9px;font-size:13px;background:white;color:#374151;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer">취소</button>
+        <button type="button" onclick="submitReport()" style="flex:1;padding:9px;font-size:13px;font-weight:600;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer">신고 접수</button>
       </div>
     </form>
   </div>
@@ -250,18 +247,12 @@ function toggleAnon() {
 
 function updateAnonUI() {
   var isAnon = document.getElementById('anonymousInput').value === 'true';
-  const btn = document.getElementById('anonToggle');
-  const thumb = document.getElementById('anonThumb');
-  const label = document.getElementById('anonLabel');
-  if (isAnon) {
-    btn.classList.remove('bg-gray-300'); btn.classList.add('bg-[#1A2E44]');
-    thumb.classList.remove('translate-x-0.5'); thumb.classList.add('translate-x-5');
-    label.textContent='익명으로 신고';
-  } else {
-    btn.classList.remove('bg-[#1A2E44]'); btn.classList.add('bg-gray-300');
-    thumb.classList.remove('translate-x-5'); thumb.classList.add('translate-x-0.5');
-    label.textContent='실명으로 신고';
-  }
+  var btn = document.getElementById('anonToggle');
+  var thumb = document.getElementById('anonThumb');
+  var label = document.getElementById('anonLabel');
+  btn.style.background = isAnon ? '#1A2E44' : '#D1D5DB';
+  thumb.style.left = isAnon ? '20px' : '2px';
+  label.textContent = isAnon ? '익명 신고' : '실명 신고';
 }
 
 function submitReport() {
