@@ -28,6 +28,10 @@
         <p id="summaryLine" style="font-size:12px;color:#6B7280">전체 0건 · 완료율 0%</p>
       </div>
       <div class="flex items-center gap-2">
+        <button type="button" onclick="alert('Excel 다운로드 완료')" style="display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          내보내기
+        </button>
         <a href="/upload" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer;text-decoration:none">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           조치 등록
@@ -51,6 +55,7 @@
           <select id="filterSite" onchange="applyFilters()" style="padding:6px 10px;font-size:12px;border:1px solid #E5E7EB;border-radius:4px;background:#F9FAFB;color:#374151;outline:none;cursor:pointer">
             <option value="">전체 현장</option>
           </select>
+          <button type="button" id="resetFiltersBtn" onclick="resetFilters()" class="hidden" style="padding:6px 10px;font-size:12px;color:#991B1B;background:#FEF2F2;border:1px solid #FECACA;border-radius:4px;cursor:pointer">초기화</button>
         </div>
       </div>
     </div>
@@ -61,6 +66,7 @@
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
             <tr style="background:#F9FAFB;border-bottom:1px solid #F3F4F6">
+              <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap"></th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap">항목 ID</th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap">위험유형</th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap">현장</th>
@@ -72,7 +78,7 @@
             </tr>
           </thead>
           <tbody id="actionTableBody">
-            <tr><td colspan="8" style="padding:32px;text-align:center;font-size:13px;color:#9CA3AF">불러오는 중...</td></tr>
+            <tr><td colspan="9" style="padding:32px;text-align:center;font-size:13px;color:#9CA3AF">불러오는 중...</td></tr>
           </tbody>
         </table>
       </div>
@@ -85,6 +91,21 @@
 
 <script>
 (function () {
+  // 조치 항목 썸네일: 실제 업로드 사진은 현재 원본 S3 키만 저장돼 접근 가능한 URL이 아니라
+  // (presigned URL 발급 인프라 미구현) 항상 깨진 이미지가 뜬다. 붙을 때까지는 목업(5173 React)과
+  // 동일한 스톡 이미지를 항목 ID 기준으로 순환시켜 보여준다.
+  var MOCK_THUMBS = [
+    'https://images.unsplash.com/photo-1626885930974-4b69aa21bbf9?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1777262095520-9805f225fb63?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1625958936686-a9343dc35b5b?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1561715608-5659baeccfb4?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1567954970774-58d6aa6c50dc?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1713593930871-e21d7f9ef4a1?w=80&h=60&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=80&h=60&fit=crop&auto=format'
+  ];
+  function mockThumbFor(id) { return MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
+
   var RISK_LABEL = { HIGH: '고위험', MEDIUM: '중위험', SAFE: '안전' };
   var RISK_COLOR = { HIGH: '#991B1B', MEDIUM: '#B45309', SAFE: '#166534' };
   var RISK_BG    = { HIGH: '#FEF2F2', MEDIUM: '#FFFBEB', SAFE: '#F0FDF4' };
@@ -175,7 +196,11 @@
     actionsHtml += '<button type="button" class="expand-btn" data-id="' + a.id + '" aria-label="상세 보기" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid #E5E7EB;border-radius:3px;cursor:pointer;margin-left:4px;transform:' + (isExpanded ? 'rotate(180deg)' : 'none') + ';transition:transform .2s;vertical-align:middle">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>';
 
+    var thumbSrc = (a.thumbnailUrl && /^https?:\/\//.test(a.thumbnailUrl)) ? a.thumbnailUrl : mockThumbFor(a.id);
+    var thumbHtml = '<img src="' + thumbSrc + '" alt="' + esc(a.title) + '" style="width:40px;height:30px;border-radius:3px;object-fit:cover;display:block"/>';
+
     var row = '<tr class="action-row" data-id="' + a.id + '" style="border-bottom:1px solid #F9FAFB;cursor:pointer;background:' + (isExpanded ? '#FAFAFA' : 'transparent') + '">' +
+      '<td style="padding:10px 14px">' + thumbHtml + '</td>' +
       '<td style="padding:10px 14px;color:#9CA3AF;font-family:monospace;font-size:12px">AC-' + a.id + '</td>' +
       '<td style="padding:10px 14px"><span style="font-weight:500;color:#0F172A">' + esc(a.title) + '</span></td>' +
       '<td style="padding:10px 14px;color:#6B7280">' + esc(a.location || '-') + '</td>' +
@@ -187,7 +212,7 @@
       '<td style="padding:10px 14px;white-space:nowrap">' + actionsHtml + '</td></tr>';
 
     if (isExpanded) {
-      row += '<tr style="background:#FAFAFA;border-bottom:1px solid #F3F4F6"><td colspan="8" style="padding:12px 14px 14px 14px">' +
+      row += '<tr style="background:#FAFAFA;border-bottom:1px solid #F3F4F6"><td colspan="9" style="padding:12px 14px 14px 14px">' +
         '<div class="grid gap-4" style="display:grid;grid-template-columns:1fr 1fr 1fr;font-size:12px">' +
         '<div><p style="color:#9CA3AF;margin-bottom:4px">공종/분류</p><p style="color:#374151;font-weight:500">' + esc(a.category || '-') + '</p></div>' +
         '<div><p style="color:#9CA3AF;margin-bottom:4px">발견일시</p><p style="color:#374151;font-weight:500">' + (a.discoveredAt ? a.discoveredAt.replace('T', ' ').slice(0, 16) : '-') + '</p></div>' +
@@ -203,7 +228,7 @@
   function renderTable() {
     var filtered = statusTab === 'ALL' ? currentActions : currentActions.filter(function (a) { return a.status === statusTab; });
     qs('#actionTableBody').innerHTML = filtered.length ? filtered.map(rowHtml).join('') :
-      '<tr><td colspan="8" style="padding:64px;text-align:center;color:#9CA3AF;font-size:13px">해당 조건의 조치 항목이 없습니다.</td></tr>';
+      '<tr><td colspan="9" style="padding:64px;text-align:center;color:#9CA3AF;font-size:13px">해당 조건의 조치 항목이 없습니다.</td></tr>';
     qs('#footerCount').textContent = filtered.length + '건 표시 / 전체 ' + currentActions.length + '건';
     attachRowHandlers();
   }
@@ -274,11 +299,24 @@
       .catch(function () {});
   }
 
+  function updateResetBtn() {
+    var show = qs('#filterKeyword').value.trim() || qs('#filterRisk').value || qs('#filterSite').value;
+    qs('#resetFiltersBtn').classList.toggle('hidden', !show);
+  }
+
+  window.resetFilters = function () {
+    qs('#filterKeyword').value = '';
+    qs('#filterRisk').value = '';
+    qs('#filterSite').value = '';
+    loadActions();
+  };
+
   function loadActions() {
     var params = new URLSearchParams();
     var keyword = qs('#filterKeyword').value.trim();
     var risk = qs('#filterRisk').value;
     var site = qs('#filterSite').value;
+    updateResetBtn();
     if (keyword) params.set('keyword', keyword);
     if (risk) params.set('riskLevel', risk);
     if (site) params.set('siteName', site);
@@ -296,7 +334,7 @@
         renderTable();
       })
       .catch(function () {
-        qs('#actionTableBody').innerHTML = '<tr><td colspan="8" style="padding:32px;text-align:center;font-size:13px;color:#991B1B">조치 목록을 불러오지 못했습니다.</td></tr>';
+        qs('#actionTableBody').innerHTML = '<tr><td colspan="9" style="padding:32px;text-align:center;font-size:13px;color:#991B1B">조치 목록을 불러오지 못했습니다.</td></tr>';
       });
   }
 

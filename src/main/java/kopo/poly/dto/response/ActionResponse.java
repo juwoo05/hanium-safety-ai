@@ -22,7 +22,8 @@ public record ActionResponse(
         String location,
         Long reporterId,
         String reporterName,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String thumbnailUrl
 ) {
     public static ActionResponse from(SafetyAction action) {
         return from(action, null);
@@ -44,7 +45,16 @@ public record ActionResponse(
                 action.getInspection() != null ? action.getInspection().getLocation() : action.getLocation(),
                 action.getReporterId(),
                 reporterName,
-                action.getUpdatedAt()
+                action.getUpdatedAt(),
+                firstImageUrl(action)
         );
+    }
+
+    private static String firstImageUrl(SafetyAction action) {
+        if (action.getInspection() == null || action.getInspection().getImageUrls() == null
+                || action.getInspection().getImageUrls().isEmpty()) {
+            return null;
+        }
+        return action.getInspection().getImageUrls().get(0);
     }
 }

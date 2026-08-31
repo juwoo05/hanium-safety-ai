@@ -13,7 +13,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-[#F5F7FA] flex">
+<body class="min-h-screen bg-[#F3F5F7] flex">
 <%@ include file="../common/_sidebar.jsp" %>
 <div id="mainContent" class="flex-1 flex flex-col min-h-screen ml-[220px]">
   <header class="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between no-print">
@@ -30,11 +30,11 @@
     </div>
   </header>
 
-  <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-    <div class="max-w-6xl mx-auto space-y-6">
+  <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
+    <div class="space-y-6">
 
       <!-- Report Header -->
-      <div class="bg-white rounded-2xl p-6 shadow-md">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <a href="/actions" class="p-2 hover:bg-gray-100 rounded-lg no-print"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
@@ -84,7 +84,7 @@
       <!-- 분석결과 탭 -->
       <div id="tab-result" class="tab-panel grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="lg:col-span-2 space-y-4">
-      <div class="bg-white rounded-2xl p-6 shadow-md">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-base font-semibold text-gray-900">감지 항목</h3>
           <div class="flex items-center gap-1.5" id="issueFilterTabs">
@@ -181,7 +181,7 @@
       <!-- 안전양식 탭 -->
       <div id="tab-form" class="tab-panel hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-1 space-y-5">
-          <div id="formTypeCard" class="bg-white rounded-2xl p-4 shadow-md">
+          <div id="formTypeCard" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
             <h3 class="text-sm font-semibold text-gray-500 px-2 mb-2">양식 종류</h3>
             <div class="space-y-1" id="formTypeList">
               <button class="form-type-btn w-full text-left px-4 py-3 rounded-xl border-2 border-[#1A2E44] bg-orange-50 flex items-start gap-3" data-type="INSPECTION_LOG">
@@ -212,10 +212,19 @@
             <button id="aiAutoFillBtn" class="w-full py-2.5 bg-[#1A2E44] hover:bg-[#0F2233] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>자동 작성하기
             </button>
+            <div id="aiGenProgressWrap" class="hidden mt-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs text-white/80">AI 양식 생성 중...</span>
+                <span id="aiGenProgressPct" class="text-xs font-bold">0%</span>
+              </div>
+              <div class="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div id="aiGenProgressBar" class="h-full bg-white rounded-full transition-all duration-300" style="width:0%"></div>
+              </div>
+            </div>
             <p id="aiAssistStatus" class="hidden text-xs text-green-300 mt-2 text-center">✓ 자동 작성 완료 — 내용을 검토하세요</p>
           </div>
 
-          <div id="formFileCard" class="bg-white rounded-2xl p-4 shadow-md">
+          <div id="formFileCard" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
             <h3 class="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>양식 파일 읽기</h3>
             <p class="text-xs text-gray-500 mb-3">PDF·이미지·Excel·Word 형식의 안전양식을 업로드하면 AI가 내용을 읽어 자동 입력합니다.</p>
             <label class="block border-2 border-dashed border-gray-200 rounded-xl py-6 text-center cursor-pointer hover:border-[#1A2E44] transition-colors">
@@ -228,7 +237,7 @@
         </div>
 
         <div class="lg:col-span-3">
-          <div class="bg-white rounded-2xl p-6 shadow-md">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center justify-between mb-1">
               <h2 id="formTitle" class="text-lg font-bold text-gray-900">안전점검일지</h2>
               <div class="flex items-center gap-2 no-print">
@@ -337,7 +346,7 @@
       </div>
 
       <!-- 증거자료 탭 -->
-      <div id="tab-evidence" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-md">
+      <div id="tab-evidence" class="tab-panel hidden bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex gap-2 mb-5">
           <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-[#1A2E44] text-white" data-evidence="law">법규</button>
           <button class="evidence-tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200" data-evidence="case">사고사례</button>
@@ -419,6 +428,20 @@
   var ACTION_ID = new URLSearchParams(window.location.search).get('actionId');
   var CURRENT_USER_ID = null;
   var CURRENT_INSPECTION = null;
+
+  // 조치관리(action-management.jsp)와 동일한 목업 사진 폴백 — 실제 imageUrls 값이 접근 불가능한
+  // S3 키일 때 대신 보여준다. (presigned URL 발급 인프라 미구현)
+  var MOCK_THUMBS = [
+    'https://images.unsplash.com/photo-1626885930974-4b69aa21bbf9?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1777262095520-9805f225fb63?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1621294465978-6b4198a5f2f7?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1625958936686-a9343dc35b5b?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1561715608-5659baeccfb4?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1567954970774-58d6aa6c50dc?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1713593930871-e21d7f9ef4a1?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&h=300&fit=crop&auto=format'
+  ];
+  function mockThumbFor(id) { return MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
   var VERIFY_AFTER_S3KEY = null;
 
   var FORM_META = {
@@ -649,7 +672,27 @@
 
     var btn = qs('#aiAutoFillBtn');
     btn.disabled = true;
-    btn.classList.add('opacity-60');
+    btn.classList.add('hidden');
+    qs('#aiAssistStatus').classList.add('hidden');
+
+    var progressWrap = qs('#aiGenProgressWrap');
+    var progressBar = qs('#aiGenProgressBar');
+    var progressPct = qs('#aiGenProgressPct');
+    progressWrap.classList.remove('hidden');
+    var pct = 0;
+    // 실제 응답이 올 때까지 90%까지만 서서히 채우고(체감 대기), 응답이 오면 100%로 마무리한다.
+    var progressTimer = setInterval(function () {
+      pct = Math.min(pct + Math.random() * 12, 90);
+      progressBar.style.width = pct + '%';
+      progressPct.textContent = Math.round(pct) + '%';
+    }, 250);
+
+    function finishProgress() {
+      clearInterval(progressTimer);
+      progressBar.style.width = '100%';
+      progressPct.textContent = '100%';
+      setTimeout(function () { progressWrap.classList.add('hidden'); }, 400);
+    }
 
     fetch('/api/documents/draft?inspectionId=' + encodeURIComponent(INSPECTION_ID) + '&docType=' + type)
       .then(function (res) {
@@ -660,14 +703,17 @@
       .then(function (draft) {
         state.documents[type] = { formData: draft, aiGenerated: true };
         renderForm(type, draft, true);
+        finishProgress();
         qs('#aiAssistStatus').classList.remove('hidden');
       })
       .catch(function (err) {
+        clearInterval(progressTimer);
+        progressWrap.classList.add('hidden');
         alert(err.message);
       })
       .finally(function () {
         btn.disabled = false;
-        btn.classList.remove('opacity-60');
+        btn.classList.remove('hidden');
       });
   });
 
@@ -788,7 +834,11 @@
   }
 
   qs('#goToFormBtn').addEventListener('click', function () {
-    qs('.tab-btn[data-tab="form"]').click();
+    if (INSPECTION_ID) {
+      window.location.href = '/actions/detail/report?inspectionId=' + encodeURIComponent(INSPECTION_ID);
+    } else {
+      qs('.tab-btn[data-tab="form"]').click();
+    }
   });
 
   qsa('.issue-filter-btn').forEach(function (btn) {
@@ -817,10 +867,12 @@
     qs('#verificationPanel').classList.remove('hidden');
     qs('#verifyIssueLabel').textContent = '조치 항목: ' + action.title;
 
-    var beforeImg = CURRENT_INSPECTION && CURRENT_INSPECTION.imageUrls && CURRENT_INSPECTION.imageUrls[0];
-    qs('#verifyBeforeImageWrap').innerHTML = beforeImg
-      ? '<img src="' + beforeImg + '" alt="조치 전 현장" class="w-full h-full object-cover"/>'
-      : '<p class="text-xs text-gray-400">등록된 현장 사진이 없습니다.</p>';
+    var rawBeforeImg = CURRENT_INSPECTION && CURRENT_INSPECTION.imageUrls && CURRENT_INSPECTION.imageUrls[0];
+    // 실제 값은 대부분 접근 불가능한 S3 키(예: site-photos/uuid.png)라 URL 형태일 때만 그대로 쓰고,
+    // 아니면 조치관리(action-management.jsp)와 동일한 패턴으로 목업 사진을 대신 보여준다.
+    var beforeImg = (rawBeforeImg && /^https?:\/\//.test(rawBeforeImg)) ? rawBeforeImg : mockThumbFor(action.id);
+    qs('#verifyBeforeImageWrap').innerHTML =
+      '<img src="' + beforeImg + '" alt="조치 전 현장" class="w-full h-full object-cover"/>';
 
     var context = '';
     if (action.recommendation) context += '<div><p class="text-[#003b5c] font-bold mb-1">권장 조치사항</p><p class="text-gray-600">' + action.recommendation + '</p></div>';
