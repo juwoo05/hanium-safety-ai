@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Layout from './Layout';
 import { ArrowUpRight, ArrowDownRight, Minus, ChevronRight, AlertTriangle } from 'lucide-react';
+import WeatherWidget from './WeatherWidget';
 
 interface ContractorDashboardProps {
   onNavigate: (page: string) => void;
@@ -304,6 +305,9 @@ export default function ContractorDashboard({ onNavigate }: ContractorDashboardP
 
         {/* Right sidebar */}
         <div className="flex flex-col gap-4">
+
+          {/* Weather */}
+          <WeatherWidget compact />
 
           {/* Overdue alert */}
           {ISSUES.filter(i => isOverdue(i.deadline) && i.status !== 'completed').length > 0 && (

@@ -4,9 +4,13 @@ import {
   User, Mail, Phone, Building, Shield, Bell, Lock, LogOut,
   HardHat, MapPin, ChevronDown, CheckCircle2, Copy, RefreshCw,
   Loader2, AlertCircle, Link2, Link2Off, Search, Sparkles,
-  Users, ExternalLink, Calendar, ClipboardList, Building2,
+  Users, ExternalLink, Calendar, ClipboardList, Building2, UserX,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from './ui/alert-dialog';
 
 interface MyPageProps {
   onNavigate: (page: string) => void;
@@ -161,6 +165,22 @@ export default function MyPage({ onNavigate, userType }: MyPageProps) {
     toast.success('현장 연결이 완료되었습니다.');
   };
 
+  // ── Section 6: account withdrawal ──
+  const [withdrawOpen, setWithdrawOpen]     = useState(false);
+  const [withdrawConfirm, setWithdrawConfirm] = useState('');
+  const [withdrawing, setWithdrawing]       = useState(false);
+
+  const handleWithdraw = () => {
+    setWithdrawing(true);
+    setTimeout(() => {
+      setWithdrawing(false);
+      setWithdrawOpen(false);
+      setWithdrawConfirm('');
+      toast.success('회원 탈퇴가 완료되었습니다.');
+      onNavigate('landing');
+    }, 1000);
+  };
+
   return (
     <Layout currentPath="mypage" onNavigate={onNavigate} userType={userType}>
       <div className="flex gap-6 min-h-[calc(100vh-120px)]">
@@ -266,6 +286,53 @@ export default function MyPage({ onNavigate, userType }: MyPageProps) {
                 </button>
               </div>
             </Section>
+          )}
+
+          {/* ════════════════════════════════════════════ */}
+          {/* MENU: 계정 설정 › 회원 탈퇴 (Danger Zone)     */}
+          {/* ════════════════════════════════════════════ */}
+          {activeMenu === 'account' && (
+            <div className="rounded shadow-sm border border-red-200 bg-red-50/40 p-6 space-y-4">
+              <SectionHeader
+                icon={UserX}
+                title="회원 탈퇴"
+                desc="계정을 삭제하면 현장·조치·보고서 등 모든 데이터가 영구적으로 삭제되며 복구할 수 없습니다."
+              />
+              <button
+                onClick={() => setWithdrawOpen(true)}
+                className="px-6 py-2.5 border-2 border-red-500 text-red-600 rounded text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors"
+              >
+                회원 탈퇴
+              </button>
+
+              <AlertDialog open={withdrawOpen} onOpenChange={(open) => { setWithdrawOpen(open); if (!open) setWithdrawConfirm(''); }}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>정말 탈퇴하시겠습니까?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      탈퇴 시 현장 정보, 조치 이력, 보고서 등 모든 데이터가 즉시 삭제되며 이 작업은 되돌릴 수 없습니다.
+                      계속하려면 아래에 <span className="font-semibold text-gray-700">탈퇴</span>를 입력해주세요.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <input
+                    value={withdrawConfirm}
+                    onChange={e => setWithdrawConfirm(e.target.value)}
+                    placeholder="탈퇴"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded text-sm outline-none focus:ring-2 focus:ring-red-400 transition-all"
+                  />
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>취소</AlertDialogCancel>
+                    <AlertDialogAction
+                      disabled={withdrawConfirm !== '탈퇴' || withdrawing}
+                      onClick={(e) => { e.preventDefault(); handleWithdraw(); }}
+                      className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {withdrawing ? <><Loader2 className="w-4 h-4 animate-spin mr-1.5 inline" />탈퇴 처리 중...</> : '탈퇴하기'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           )}
 
           {/* ════════════════════════════════════════════ */}

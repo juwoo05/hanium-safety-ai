@@ -116,7 +116,8 @@ export default function App() {
     }
   };
 
-  const showQuickNav = !publicPages.has(currentPage);
+  const SHOW_QUICK_NAV = false; // 영상 촬영용으로 숨김 — 개발 중 다시 필요하면 true로
+  const showQuickNav = SHOW_QUICK_NAV && !publicPages.has(currentPage);
 
   return (
     <div className="min-h-screen">

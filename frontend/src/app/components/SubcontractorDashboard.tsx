@@ -3,6 +3,7 @@ import {
   AlertTriangle, Clock, FileText, Upload, FileSearch, Eye, CheckCircle2,
   ArrowRight, TrendingUp, TrendingDown, ArrowUpRight,
 } from 'lucide-react';
+import WeatherWidget from './WeatherWidget';
 
 interface SubcontractorDashboardProps {
   onNavigate: (page: string) => void;
@@ -171,6 +172,9 @@ export default function SubcontractorDashboard({ onNavigate }: SubcontractorDash
 
         {/* Right column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Weather */}
+          <WeatherWidget compact />
+
           {/* Quick actions */}
           <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 4, padding: '16px 18px' }}>
             <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 12 }}>빠른 실행</h3>
