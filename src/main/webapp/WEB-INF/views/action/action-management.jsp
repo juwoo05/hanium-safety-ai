@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>조치 관리 - SafeMate</title>
+  <title>조치 관리 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-[#F3F5F7] flex">
@@ -206,7 +206,7 @@
       '<td style="padding:10px 14px;color:#6B7280">' + esc(a.location || '-') + '</td>' +
       '<td style="padding:10px 14px;color:#6B7280">' + esc(a.reporterName || '미배정') + '</td>' +
       '<td style="padding:10px 14px"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:' + RISK_BG[a.riskLevel] + ';color:' + RISK_COLOR[a.riskLevel] + '">' + RISK_LABEL[a.riskLevel] + '</span></td>' +
-      '<td style="padding:10px 14px"><span style="color:' + (overdue ? '#991B1B' : '#6B7280') + ';font-weight:' + (overdue ? 600 : 400) + ';font-size:12px">' + (a.dueDate || '-') +
+      '<td style="padding:10px 14px"><span style="white-space:nowrap;color:' + (overdue ? '#991B1B' : '#6B7280') + ';font-weight:' + (overdue ? 600 : 400) + ';font-size:12px">' + (a.dueDate || '-') +
         (overdue ? '<span style="margin-left:4px;font-size:10px;padding:1px 5px;background:#FEF2F2;color:#991B1B;border-radius:3px">초과</span>' : '') + '</span></td>' +
       '<td style="padding:10px 14px"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:500;background:' + STATUS_BG[a.status] + ';color:' + STATUS_COLOR[a.status] + '">' + STATUS_LABEL[a.status] + '</span></td>' +
       '<td style="padding:10px 14px;white-space:nowrap">' + actionsHtml + '</td></tr>';

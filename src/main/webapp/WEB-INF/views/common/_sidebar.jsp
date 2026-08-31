@@ -1,13 +1,27 @@
 <%@ page pageEncoding="UTF-8" %>
 <%-- 공통 사이드바: 각 페이지에서 <%@ include file="../common/_sidebar.jsp" %> 로 포함 --%>
 
+<%-- 공통 보정: 표 머리글, 상태·위험 배지(pill), 버튼·필터·탭 라벨, 셀렉트 옵션이
+     좁은 칸에서 "중위\n험"처럼 중간에 줄바꿈되어 잘리는 현상을 전역으로 막는다.
+     긴 본문(제목·설명 등 셀 텍스트)은 기존 줄바꿈 동작을 유지한다. --%>
+<style>
+  table th { white-space: nowrap; }
+  span[style*="border-radius"],
+  span[style*="border-radius"] *,
+  span[class*="rounded-full"],
+  span[class*="rounded"][class*="px-2"] { white-space: nowrap; }
+  button { white-space: nowrap; }
+  select,
+  select option { white-space: nowrap; }
+</style>
+
 <aside id="sidebar" class="fixed top-0 left-0 h-screen z-40 w-[220px] bg-[#0F172A] text-white flex flex-col flex-shrink-0">
   <!-- Logo -->
   <a href="/dashboard" class="flex items-center gap-2.5 h-14 px-[18px] border-b border-white/5 flex-shrink-0 hover:opacity-90 transition-opacity">
-    <div class="w-7 h-7 rounded-md bg-[#4A90D9]/[0.18] border border-[#4A90D9]/25 flex items-center justify-center flex-shrink-0">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[#5CA8E8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div class="w-7 h-7 rounded-md bg-[#4A90D9]/[0.18] border border-[#4A90D9]/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <img src="/images/yeongyeol-gori-logo.png" alt="연결고리 로고" class="w-6 h-6 object-contain"/>
     </div>
-    <span class="text-sm font-semibold text-slate-200">안전고리</span>
+    <span class="text-sm font-semibold text-slate-200">연결고리</span>
   </a>
 
   <!-- Project context -->

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>원청 대시보드 - SafeMate</title>
+  <title>원청 대시보드 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-[#F3F5F7] flex">
@@ -217,7 +217,7 @@
         '<td style="padding:11px 16px;color:#0F172A;font-weight:500">' + esc(a.title) + '</td>' +
         '<td style="padding:11px 16px;color:#6B7280">' + esc(a.reporterName || '미배정') + '</td>' +
         '<td style="padding:11px 16px"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:500;background:' + STATUS_BG[a.status] + ';color:' + STATUS_COLOR[a.status] + '">' + STATUS_LABEL[a.status] + '</span></td>' +
-        '<td style="padding:11px 16px"><span style="color:' + (overdue ? '#991B1B' : '#6B7280') + ';font-weight:' + (overdue ? 600 : 400) + '">' + (a.dueDate || '-') +
+        '<td style="padding:11px 16px"><span style="white-space:nowrap;color:' + (overdue ? '#991B1B' : '#6B7280') + ';font-weight:' + (overdue ? 600 : 400) + '">' + (a.dueDate || '-') +
           (overdue ? '<span style="margin-left:4px;font-size:10px;padding:1px 5px;background:#FEF2F2;color:#991B1B;border-radius:3px">초과</span>' : '') + '</span></td>' +
         '<td style="padding:11px 16px;color:#9CA3AF;font-size:12px">' + relativeTime(a.updatedAt) + '</td>' +
         '<td style="padding:11px 16px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></td></tr>';
