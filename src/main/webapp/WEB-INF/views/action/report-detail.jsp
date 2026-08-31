@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI 서류 작성 - SafeMate</title>
+  <title>AI 서류 작성 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @media print {
@@ -959,20 +959,32 @@
 
   qs('#verifyCompleteBtn').addEventListener('click', function () {
     if (!verifyingAction) return;
+    // 연타로 같은 조치를 두 번 승인 요청하면 두 번째 요청은 이미 "승인 대기" 상태라 서버에서
+    // 거부된다(진행중인 조치만 승인 요청 가능). 응답이 오기 전까지 버튼을 잠가 중복 클릭을 막는다.
+    var btn = qs('#verifyCompleteBtn');
+    if (btn.disabled) return;
+    btn.disabled = true;
+
     var ensureInProgress = verifyingAction.status === 'REQUESTED'
       ? fetch('/api/actions/' + verifyingAction.id + '/status', {
           method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'IN_PROGRESS' })
-        })
+        }).then(function (res) { if (!res.ok) throw new Error(); return res; })
       : Promise.resolve();
 
     ensureInProgress
       .then(function () { return fetch('/api/actions/' + verifyingAction.id + '/submit-approval', { method: 'POST' }); })
-      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
+      .then(function (res) {
+        if (res.ok) return res.json();
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          throw new Error(body.error || '승인 요청에 실패했습니다.');
+        });
+      })
       .then(function () {
         qs('#verificationPanel').classList.add('hidden');
         refreshReport();
       })
-      .catch(function () { alert('승인 요청에 실패했습니다.'); });
+      .catch(function (err) { alert(err.message || '승인 요청에 실패했습니다.'); })
+      .finally(function () { btn.disabled = false; });
   });
 
   function refreshReport() {

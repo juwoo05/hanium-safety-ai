@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>마이페이지 - SafeMate</title>
+  <title>마이페이지 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-[#F5F7FA] flex">
@@ -339,8 +339,6 @@
             <button id="twoFactorToggleBtn" type="button" class="px-4 py-2 border border-[#1A2E44] text-[#1A2E44] rounded text-sm font-semibold hover:bg-[#1A2E44] hover:text-white transition-colors">2단계 인증 켜기</button>
           </div>
           <div class="bg-red-50 rounded border border-red-100 p-5">
-            <h3 class="text-sm font-semibold text-red-800 mb-2">위험 구역</h3>
-            <p class="text-xs text-red-600 mb-3">아래 작업은 되돌릴 수 없습니다.</p>
             <p id="withdrawMessage" class="hidden text-sm mb-3 px-4 py-2.5 rounded"></p>
             <button id="showWithdrawFormBtn" type="button" class="px-4 py-2 border border-red-400 text-red-600 rounded text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors">계정 탈퇴</button>
             <form id="withdrawForm" class="hidden mt-4 space-y-3">
