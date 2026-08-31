@@ -231,10 +231,9 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
               <div
                 style={{
                   width: 26, height: 26, borderRadius: '50%',
-                  background: '#1E3A5F',
-                  border: '1px solid rgba(74,144,217,0.2)',
+                  background: userType === 'subcontractor' ? '#FF7A00' : '#086CF0',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 600, color: '#7BBDE8',
+                  fontSize: 10, fontWeight: 600, color: '#fff',
                   flexShrink: 0,
                 }}
               >

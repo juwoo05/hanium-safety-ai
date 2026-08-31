@@ -32,22 +32,25 @@
       <div style="background:#F0FDF4;border:1px solid #BBF7D0;color:#166534;font-size:12px;border-radius:4px;padding:10px 12px;margin-bottom:16px">회원가입이 완료되었습니다. 로그인해주세요.</div>
     </c:if>
 
-    <!-- Demo accounts -->
-    <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;padding:12px 14px;margin-bottom:20px">
-      <p style="font-size:11px;color:#6B7280;font-weight:500;margin-bottom:8px">테스트 계정</p>
+    <!-- 계정 유형 선택 -->
+    <div style="margin-bottom:20px">
+      <p style="font-size:12px;color:#374151;font-weight:500;margin-bottom:6px">계정 유형</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button type="button" onclick="fillContractor()" style="padding:7px 12px;font-size:12px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer">원청 계정</button>
-        <button type="button" onclick="fillSubcontractor()" style="padding:7px 12px;font-size:12px;font-weight:500;background:#065F46;color:white;border:none;border-radius:4px;cursor:pointer">하청 계정</button>
+        <button type="button" class="role-btn" data-role="원청" data-color="#086CF0" aria-pressed="false"
+                style="padding:9px 12px;font-size:12px;font-weight:600;background:white;color:#6B7280;border:1.5px solid #E5E7EB;border-radius:4px;cursor:pointer;transition:background .15s,color .15s,border-color .15s,box-shadow .15s">원청 계정</button>
+        <button type="button" class="role-btn" data-role="하청" data-color="#FF7A00" aria-pressed="false"
+                style="padding:9px 12px;font-size:12px;font-weight:600;background:white;color:#6B7280;border:1.5px solid #E5E7EB;border-radius:4px;cursor:pointer;transition:background .15s,color .15s,border-color .15s,box-shadow .15s">하청 계정</button>
       </div>
     </div>
 
     <form action="/login" method="post" style="display:flex;flex-direction:column;gap:14px">
       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+      <input type="hidden" name="loginRole" id="loginRoleInput"/>
       <div>
         <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">이메일</label>
         <div class="relative flex items-center">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="position:absolute;left:12px"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <input id="emailInput" type="email" name="email" value="demo@safemate.com" placeholder="your@email.com"
+          <input id="emailInput" type="email" name="email" placeholder="your@email.com"
                  style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:white;color:#0F172A;box-sizing:border-box" required/>
         </div>
       </div>
@@ -56,7 +59,7 @@
         <label style="font-size:12px;color:#374151;font-weight:500;display:block;margin-bottom:5px">비밀번호</label>
         <div class="relative flex items-center">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="position:absolute;left:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <input id="passwordInput" type="password" name="password" value="demo1234" placeholder="••••••••"
+          <input id="passwordInput" type="password" name="password" placeholder="••••••••"
                  style="width:100%;padding:9px 12px 9px 36px;font-size:13px;border:1px solid #E5E7EB;border-radius:4px;outline:none;background:white;color:#0F172A;box-sizing:border-box" required/>
         </div>
       </div>
@@ -88,14 +91,34 @@
 </div>
 
 <script>
-function fillContractor() {
-  document.getElementById('emailInput').value = 'demo@safemate.com';
-  document.getElementById('passwordInput').value = 'demo1234';
-}
-function fillSubcontractor() {
-  document.getElementById('emailInput').value = 'sub@safemate.com';
-  document.getElementById('passwordInput').value = 'demo1234';
-}
+(function () {
+  var btns = document.querySelectorAll('.role-btn');
+  var hidden = document.getElementById('loginRoleInput');
+  function reset(b) {
+    b.setAttribute('aria-pressed', 'false');
+    b.style.background = 'white';
+    b.style.color = '#6B7280';
+    b.style.borderColor = '#E5E7EB';
+    b.style.boxShadow = 'none';
+  }
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var wasSelected = b.getAttribute('aria-pressed') === 'true';
+      btns.forEach(reset);
+      if (wasSelected) {
+        if (hidden) hidden.value = '';
+        return;
+      }
+      var c = b.getAttribute('data-color');
+      b.setAttribute('aria-pressed', 'true');
+      b.style.background = c;
+      b.style.color = 'white';
+      b.style.borderColor = c;
+      b.style.boxShadow = '0 0 0 3px ' + c + '40';
+      if (hidden) hidden.value = b.getAttribute('data-role');
+    });
+  });
+})();
 </script>
 </body>
 </html>

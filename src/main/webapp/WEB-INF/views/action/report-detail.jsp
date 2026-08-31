@@ -256,7 +256,7 @@
             <div class="mb-6">
               <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">기본 정보</h4>
               <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-xs text-gray-500 mb-1">건설사명</label><input type="text" data-field="companyName" placeholder="예) (주)세이프메이트 건설" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
+                <div><label class="block text-xs text-gray-500 mb-1">건설사명</label><input type="text" data-field="companyName" placeholder="예) (주)연결고리 건설" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
                 <div><label class="block text-xs text-gray-500 mb-1">현장명</label><input type="text" data-field="siteName" placeholder="예) 3동 건물 외벽 공사현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
                 <div><label class="block text-xs text-gray-500 mb-1">점검일시</label><input type="datetime-local" data-field="inspectedAt" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>
                 <div><label class="block text-xs text-gray-500 mb-1">점검자</label><input type="text" data-field="inspector" placeholder="예) 김현장" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/></div>

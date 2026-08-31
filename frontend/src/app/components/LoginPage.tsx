@@ -7,8 +7,9 @@ interface LoginPageProps {
 }
 
 export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
-  const [email, setEmail] = useState('demo@safemate.com');
-  const [password, setPassword] = useState('demo1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accountType, setAccountType] = useState<'원청' | '하청' | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,28 +40,29 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
           <h2 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginBottom: 6, textAlign: 'center' }}>로그인</h2>
           <p style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', marginBottom: 24 }}>건설현장 안전관리 플랫폼</p>
 
-          {/* Demo accounts */}
-          <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 4, padding: '12px 14px', marginBottom: 20 }}>
-            <p style={{ fontSize: 11, color: '#6B7280', fontWeight: 500, marginBottom: 8 }}>테스트 계정</p>
+          {/* 계정 유형 선택 */}
+          <div style={{ marginBottom: 20 }}>
+            <p style={{ fontSize: 12, color: '#374151', fontWeight: 500, marginBottom: 6 }}>계정 유형</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <button type="button"
-                onClick={() => { setEmail('demo@safemate.com'); setPassword('demo1234'); }}
-                style={{
-                  padding: '7px 12px', fontSize: 12, fontWeight: 500,
-                  background: '#1A2E44', color: 'white', border: 'none',
-                  borderRadius: 4, cursor: 'pointer',
-                }}>
-                원청 계정
-              </button>
-              <button type="button"
-                onClick={() => { setEmail('sub@safemate.com'); setPassword('demo1234'); }}
-                style={{
-                  padding: '7px 12px', fontSize: 12, fontWeight: 500,
-                  background: '#065F46', color: 'white', border: 'none',
-                  borderRadius: 4, cursor: 'pointer',
-                }}>
-                하청 계정
-              </button>
+              {([['원청', '#086CF0'], ['하청', '#FF7A00']] as const).map(([role, color]) => {
+                const selected = accountType === role;
+                return (
+                  <button key={role} type="button"
+                    aria-pressed={selected}
+                    onClick={() => setAccountType(selected ? null : role)}
+                    style={{
+                      padding: '9px 12px', fontSize: 12, fontWeight: 600,
+                      background: selected ? color : 'white',
+                      color: selected ? 'white' : '#6B7280',
+                      border: `1.5px solid ${selected ? color : '#E5E7EB'}`,
+                      borderRadius: 4, cursor: 'pointer',
+                      boxShadow: selected ? `0 0 0 3px ${color}40` : 'none',
+                      transition: 'background .15s, color .15s, border-color .15s, box-shadow .15s',
+                    }}>
+                    {role} 계정
+                  </button>
+                );
+              })}
             </div>
           </div>
 

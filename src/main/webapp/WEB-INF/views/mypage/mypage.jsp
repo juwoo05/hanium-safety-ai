@@ -23,9 +23,9 @@
       <aside class="w-56 flex-shrink-0 hidden lg:block">
         <div class="bg-white rounded shadow-sm border border-gray-100 overflow-hidden sticky top-4">
           <div class="px-5 py-5 bg-gradient-to-br from-[#1A2E44] to-[#003b5c]">
-            <div id="profileInitial" class="w-11 h-11 rounded-full bg-[#1A2E44] flex items-center justify-center mb-3"><span class="text-white font-bold text-lg">-</span></div>
+            <div id="profileInitial" class="w-11 h-11 rounded-full bg-[#086CF0] flex items-center justify-center mb-3"><span class="text-white font-bold text-lg">-</span></div>
             <p id="profileName" class="text-white font-semibold text-sm">불러오는 중...</p>
-            <span id="profileRoleBadge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/30 text-orange-200"></span>
+            <span id="profileRoleBadge" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#086CF0]/30 text-blue-100"></span>
           </div>
 
           <nav class="py-2" id="menuNav">
@@ -137,7 +137,7 @@
             <div class="flex items-start gap-3">
               <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg></div>
               <div class="flex-1">
-                <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">내 건설사 정보</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
+                <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">내 건설사 정보</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#086CF0]/10 text-[#086CF0]">원청</span></div>
                 <p class="text-xs text-gray-500 mt-0.5">건설사 정보를 등록합니다.</p>
               </div>
             </div>
@@ -165,7 +165,7 @@
               <div class="flex items-start gap-3">
                 <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
                 <div>
-                  <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">진행 중인 현장</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
+                  <div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">진행 중인 현장</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#086CF0]/10 text-[#086CF0]">원청</span></div>
                   <p class="text-xs text-gray-500 mt-0.5">현장을 선택하면 공유 코드를 발급할 수 있습니다.</p>
                 </div>
               </div>
@@ -215,7 +215,7 @@
           <div id="ownerCodeSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-4">
             <div class="flex items-start gap-3">
               <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">하청 공유 코드</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
+              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">하청 공유 코드</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#086CF0]/10 text-[#086CF0]">원청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">선택한 현장의 공유 코드를 하청 업체에 전달하세요.</p></div>
             </div>
             <div id="codeSectionHint" class="text-sm text-gray-400">먼저 위에서 현장을 선택해주세요.</div>
@@ -243,7 +243,7 @@
           <div id="ownerSubcontractorsSection" class="hidden bg-white rounded shadow-sm border border-gray-100 p-6 space-y-4">
             <div class="flex items-start gap-3">
               <div class="w-9 h-9 rounded bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">연결된 하청 업체</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1A2E44]/10 text-[#1A2E44]">원청</span></div>
+              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">연결된 하청 업체</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#086CF0]/10 text-[#086CF0]">원청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">내 현장들에 공유 코드로 연결된 하청 업체 목록입니다.</p></div>
             </div>
             <div id="subcontractorsTableWrap" class="overflow-x-auto rounded border border-gray-200">
@@ -262,10 +262,10 @@
           </div>
 
           <!-- 하청 전용: §5 코드 입력 -->
-          <div id="subJoinSection" class="hidden bg-gradient-to-br from-green-50/80 to-white rounded shadow-sm border border-green-200 p-6 space-y-4">
+          <div id="subJoinSection" class="hidden bg-gradient-to-br from-orange-50/80 to-white rounded shadow-sm border border-orange-200 p-6 space-y-4">
             <div class="flex items-start gap-3">
-              <div class="w-9 h-9 rounded bg-green-100 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">원청 현장 연결</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">하청</span></div>
+              <div class="w-9 h-9 rounded bg-orange-100 flex items-center justify-center flex-shrink-0"><svg class="w-5 h-5 text-[#FF7A00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+              <div><div class="flex items-center gap-2"><h2 class="text-base font-bold text-gray-900">원청 현장 연결</h2><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF7A00]/10 text-[#FF7A00]">하청</span></div>
               <p class="text-xs text-gray-500 mt-0.5">원청에게 받은 현장 공유 코드를 입력하면 자동으로 연결됩니다.</p></div>
             </div>
             <p id="joinSiteMessage" class="hidden text-sm px-4 py-2.5 rounded"></p>
@@ -395,8 +395,8 @@ function loadProfile() {
       document.getElementById('profileName').textContent = u.username || '';
       document.getElementById('profileRoleBadge').textContent = ROLE_LABELS[u.role] || u.role;
       var isSub = u.role === '하청';
-      document.getElementById('profileInitial').className = 'w-11 h-11 rounded-full flex items-center justify-center mb-3 ' + (isSub ? 'bg-green-500' : 'bg-[#1A2E44]');
-      document.getElementById('profileRoleBadge').className = 'inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ' + (isSub ? 'bg-green-500/30 text-green-200' : 'bg-[#1A2E44]/30 text-orange-200');
+      document.getElementById('profileInitial').className = 'w-11 h-11 rounded-full flex items-center justify-center mb-3 ' + (isSub ? 'bg-[#FF7A00]' : 'bg-[#086CF0]');
+      document.getElementById('profileRoleBadge').className = 'inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ' + (isSub ? 'bg-[#FF7A00]/30 text-orange-100' : 'bg-[#086CF0]/30 text-blue-100');
       document.getElementById('profileUsernameInput').value = u.username || '';
       document.getElementById('profileRoleInput').value = ROLE_LABELS[u.role] || u.role;
       document.getElementById('profileEmailInput').value = u.email || '';
@@ -457,14 +457,14 @@ function loadStats() {
 function renderSiteRoleUi(role) {
   var banner = document.getElementById('siteRoleBanner');
   if (role === '하청') {
-    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-green-50 border-green-200 text-green-800';
-    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">하</span></div>하청 사용자 — 원청에게 받은 공유 코드를 입력해 현장에 연결할 수 있습니다.';
+    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-orange-50 border-orange-200 text-orange-800';
+    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-[#FF7A00] flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">하</span></div>하청 사용자 — 원청에게 받은 공유 코드를 입력해 현장에 연결할 수 있습니다.';
     document.getElementById('subJoinSection').classList.remove('hidden');
     document.getElementById('subJoinedSection').classList.remove('hidden');
     loadJoinedSites();
   } else {
-    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-[#1A2E44]/5 border-[#1A2E44]/20 text-[#1A2E44]';
-    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-[#1A2E44] flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">원</span></div>원청 사용자 — 건설사 및 현장을 등록하고 하청 공유 코드를 생성할 수 있습니다.';
+    banner.className = 'flex items-center gap-3 px-5 py-3 rounded border text-sm font-medium bg-[#086CF0]/5 border-[#086CF0]/20 text-[#086CF0]';
+    banner.innerHTML = '<div class="w-6 h-6 rounded-full bg-[#086CF0] flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-bold">원</span></div>원청 사용자 — 건설사 및 현장을 등록하고 하청 공유 코드를 생성할 수 있습니다.';
     document.getElementById('ownerCompanySection').classList.remove('hidden');
     document.getElementById('ownerSiteSection').classList.remove('hidden');
     document.getElementById('ownerCodeSection').classList.remove('hidden');

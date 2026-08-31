@@ -190,11 +190,11 @@ export default function MyPage({ onNavigate, userType }: MyPageProps) {
           <div className="bg-white rounded shadow-sm border border-gray-100 overflow-hidden sticky top-4">
             {/* User summary */}
             <div className="px-5 py-5 bg-gradient-to-br from-[#1A2E44] to-[#003b5c]">
-              <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-3 ${isSubcontractor ? 'bg-green-500' : 'bg-[#1A2E44]'}`}>
+              <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-3 ${isSubcontractor ? 'bg-[#FF7A00]' : 'bg-[#086CF0]'}`}>
                 <span className="text-white font-bold text-lg">{isSubcontractor ? '이' : '김'}</span>
               </div>
               <p className="text-white font-semibold text-sm">{isSubcontractor ? '이작업자' : '김현장'}</p>
-              <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isSubcontractor ? 'bg-green-500/30 text-green-200' : 'bg-[#1A2E44]/30 text-orange-200'}`}>
+              <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isSubcontractor ? 'bg-[#FF7A00]/30 text-orange-100' : 'bg-[#086CF0]/30 text-blue-100'}`}>
                 {isSubcontractor ? '하청 사용자' : '원청 사용자'}
               </span>
             </div>
