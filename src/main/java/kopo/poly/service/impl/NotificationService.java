@@ -46,6 +46,22 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public long getUnseenCount(Long receiverId) {
+        LocalDateTime seenAt = userRepository.findById(receiverId)
+                .map(User::getNotificationsSeenAt)
+                .orElse(null);
+        LocalDateTime since = seenAt != null ? seenAt : LocalDateTime.of(1970, 1, 1, 0, 0);
+        return notificationRepository.countByReceiverIdAndCreatedAtAfter(receiverId, since);
+    }
+
+    @Override
+    @Transactional
+    public void markNotificationsSeen(Long receiverId) {
+        userRepository.findById(receiverId).ifPresent(User::markNotificationsSeen);
+    }
+
+    @Override
     @Transactional
     public void markAllRead(Long receiverId) {
         notificationRepository.markAllReadByReceiverId(receiverId, LocalDateTime.now());

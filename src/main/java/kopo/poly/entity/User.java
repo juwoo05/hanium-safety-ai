@@ -76,6 +76,11 @@ public class User {
     @Builder.Default
     private boolean twoFactorEnabled = false;
 
+    // 알림 페이지를 마지막으로 방문(확인)한 시각. 헤더 종 아이콘의 배지는 이 시각 이후 생성된
+    // 알림 개수만 센다. 개별 알림의 읽음 상태(read)와는 무관하며, 알림 페이지 방문 시 갱신된다.
+    @Column(name = "notifications_seen_at")
+    private LocalDateTime notificationsSeenAt;
+
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
         this.updatedAt = LocalDateTime.now();
@@ -102,5 +107,9 @@ public class User {
 
     public void withdraw() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void markNotificationsSeen() {
+        this.notificationsSeenAt = LocalDateTime.now();
     }
 }

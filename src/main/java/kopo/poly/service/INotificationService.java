@@ -14,6 +14,12 @@ public interface INotificationService {
 
     long getUnreadCount(Long receiverId);
 
+    /** 알림 페이지를 마지막으로 방문한 이후 새로 도착한 알림 개수 (헤더 종 배지용). */
+    long getUnseenCount(Long receiverId);
+
+    /** 알림 페이지 방문 시각을 현재로 갱신한다. 개별 알림의 읽음 상태는 바꾸지 않는다. */
+    void markNotificationsSeen(Long receiverId);
+
     void markAllRead(Long receiverId);
 
     void markRead(Long notificationId, Long receiverId);
