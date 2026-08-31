@@ -21,10 +21,17 @@ const NAV_ITEMS = [
   { label: '신고 게시판', path: 'report-board',   icon: MessageSquare },
 ];
 
+// 하청 계정은 대시보드 / 사진 업로드 / 신고 게시판만 접근 가능 — 나머지 업무 메뉴는 숨긴다.
+const SUB_HIDDEN_PATHS = new Set(['actions', 'analytics', 'actions-detail']);
+
 const SIDEBAR_W = 220;
 
 export default function Layout({ children, currentPath = '', onNavigate, userType }: LayoutProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const navItems = userType === 'subcontractor'
+    ? NAV_ITEMS.filter(item => !SUB_HIDDEN_PATHS.has(item.path))
+    : NAV_ITEMS;
 
   const isActive = (path: string): boolean => {
     if (path === 'actions-detail') return currentPath === 'actions-detail';
@@ -121,7 +128,7 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '10px 10px', overflowY: 'auto' }}>
-          {NAV_ITEMS.map(item => {
+          {navItems.map(item => {
             const active = isActive(item.path);
             return (
               <button

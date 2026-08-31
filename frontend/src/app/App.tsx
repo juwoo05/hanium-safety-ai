@@ -116,7 +116,7 @@ export default function App() {
     }
   };
 
-  const SHOW_QUICK_NAV = false; // 영상 촬영용으로 숨김 — 개발 중 다시 필요하면 true로
+  const SHOW_QUICK_NAV = true;
   const showQuickNav = SHOW_QUICK_NAV && !publicPages.has(currentPage);
 
   return (
