@@ -71,14 +71,21 @@
       <div id="sidebarUserMenu" class="hidden absolute bottom-[46px] left-2 right-2 bg-[#1E293B] border border-white/[0.07] rounded-md shadow-lg overflow-hidden z-50">
         <a href="/mypage" class="block px-3.5 py-2.5 text-xs text-slate-400 hover:bg-white/5 transition-colors">내 정보</a>
         <div class="border-t border-white/[0.06]"></div>
-        <a href="/logout" class="flex items-center gap-2 px-3.5 py-2.5 text-xs text-red-400 hover:bg-red-400/[0.06] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          로그아웃
-        </a>
+        <%-- Spring Security의 기본 /logout 은 POST만 받는다. <a href> 로 GET 요청을 보내면
+             매칭되는 핸들러가 없어 404가 뜨므로, CSRF 토큰을 담은 폼으로 제출한다. --%>
+        <form action="/logout" method="post" style="margin:0">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+          <button type="submit" class="w-full flex items-center gap-2 px-3.5 py-2.5 text-xs text-red-400 hover:bg-red-400/[0.06] transition-colors" style="background:none;border:none;cursor:pointer;text-align:left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            로그아웃
+          </button>
+        </form>
       </div>
     </div>
   </div>
 </aside>
+
+<%@ include file="_quicknav.jsp" %>
 
 <script>
 // 현재 페이지 메뉴 활성화 (디자인 원본의 블루 액센트)
@@ -98,6 +105,10 @@
 
 // 사이드바 사용자 정보 (모든 인증 페이지 공통 표시)
 (function() {
+  // 하청 계정은 대시보드 / 사진 업로드 / 신고 게시판만 접근 가능 — 나머지 업무 메뉴는 숨긴다.
+  // (알림·설정은 역할과 무관한 공통 기능이라 그대로 둔다)
+  var SUB_HIDDEN_PATHS = ['actions', 'analytics', 'actions-detail'];
+
   fetch('/api/users/me', { credentials: 'same-origin' })
     .then(function(res) { if (!res.ok) throw new Error(); return res.json(); })
     .then(function(user) {
@@ -107,6 +118,14 @@
       if (nameEl) nameEl.textContent = user.username || '-';
       if (initialEl) initialEl.textContent = user.username ? user.username.charAt(0) : '?';
       if (roleEl) roleEl.textContent = user.companyName || '';
+
+      if (user.role === 'SUBCONTRACTOR') {
+        document.querySelectorAll('.nav-item, .quicknav-item').forEach(function(el) {
+          if (SUB_HIDDEN_PATHS.indexOf(el.getAttribute('data-path')) !== -1) {
+            el.style.display = 'none';
+          }
+        });
+      }
     })
     .catch(function() {});
   fetch('/api/sites', { credentials: 'same-origin' })

@@ -5,9 +5,10 @@ import kopo.poly.entity.User;
 public record CurrentUserResponse(
         Long id,
         String username,
-        String companyName
+        String companyName,
+        String role
 ) {
     public static CurrentUserResponse from(User user) {
-        return new CurrentUserResponse(user.getId(), user.getUsername(), user.getCompanyName());
+        return new CurrentUserResponse(user.getId(), user.getUsername(), user.getCompanyName(), user.getRole().name());
     }
 }
