@@ -25,37 +25,30 @@
         <p style="font-size:11px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:5px">현황 개요</p>
         <h1 id="bannerGreeting" style="font-size:22px;font-weight:600;color:#0F172A;letter-spacing:-0.02em;line-height:1">대시보드</h1>
       </div>
-      <a href="/upload" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#1A2E44;color:white;border:none;border-radius:4px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        사진 업로드
-      </a>
+      <a href="/upload" style="padding:7px 16px;font-size:12px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer;text-decoration:none">사진 업로드</a>
     </div>
 
     <!-- KPI -->
-    <div class="grid grid-cols-4 gap-4 mb-5">
-      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 18px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="margin-bottom:12px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <p style="font-size:11px;color:#9CA3AF;margin-bottom:3px">내 조치 건수</p>
-        <p id="kpiMyTotal" style="font-size:22px;font-weight:700;color:#0F172A">-</p>
+    <div class="grid gap-3 mb-6 dash-kpi" style="grid-template-columns:repeat(auto-fit, minmax(150px, 1fr))">
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">내 조치 건수</p>
+        <div class="flex items-end gap-1.5"><span id="kpiMyTotal" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
       </div>
-      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 18px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="margin-bottom:12px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-        <p style="font-size:11px;color:#9CA3AF;margin-bottom:3px">고위험 항목</p>
-        <p id="kpiMyHighRisk" style="font-size:22px;font-weight:700;color:#0F172A">-</p>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">고위험 항목</p>
+        <div class="flex items-end gap-1.5"><span id="kpiMyHighRisk" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
       </div>
-      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 18px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="margin-bottom:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <p style="font-size:11px;color:#9CA3AF;margin-bottom:3px">진행 중 조치</p>
-        <p id="kpiMyInProgress" style="font-size:22px;font-weight:700;color:#0F172A">-</p>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">진행 중 조치</p>
+        <div class="flex items-end gap-1.5"><span id="kpiMyInProgress" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">건</span></div>
       </div>
-      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 18px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="margin-bottom:12px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <p style="font-size:11px;color:#9CA3AF;margin-bottom:3px">완료율</p>
-        <p id="kpiMyCompletionRate" style="font-size:22px;font-weight:700;color:#0F172A">-</p>
+      <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
+        <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">완료율</p>
+        <div class="flex items-end gap-1.5"><span id="kpiMyCompletionRate" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">%</span></div>
       </div>
     </div>
 
-    <div class="grid gap-5" style="grid-template-columns:1fr 300px">
+    <div class="grid gap-5 dash-2col" style="grid-template-columns:minmax(0, 1fr) 300px">
       <!-- Left -->
       <div class="flex flex-col" style="gap:16px">
         <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:16px 20px">
@@ -93,7 +86,7 @@
       </div>
 
       <!-- Right -->
-      <div class="flex flex-col" style="gap:14px">
+      <div class="flex flex-col" style="gap:16px">
         <div id="weatherBox" style="background:linear-gradient(135deg,#0ea5e9,#2563eb);border-radius:4px;padding:16px 18px;color:white">
           <p style="font-size:11px;color:#BAE6FD;margin-bottom:6px">서울 · 현재 날씨</p>
           <div class="flex items-end justify-between">
@@ -235,7 +228,7 @@
     qs('#kpiMyTotal').textContent = total;
     qs('#kpiMyHighRisk').textContent = high;
     qs('#kpiMyInProgress').textContent = inProgress;
-    qs('#kpiMyCompletionRate').textContent = completionRate + '%';
+    qs('#kpiMyCompletionRate').textContent = completionRate;
     qs('#perfCompletionRate').textContent = completionRate + '%';
     qs('#perfCompletionBar').style.width = completionRate + '%';
     qs('#perfOnTimeRate').textContent = completed.length ? onTimeRate + '%' : '완료 이력 없음';

@@ -33,7 +33,7 @@
     </div>
 
     <!-- KPI -->
-    <div class="grid gap-3 mb-6" style="grid-template-columns:repeat(5, 1fr)">
+    <div class="grid gap-3 mb-6 dash-kpi" style="grid-template-columns:repeat(auto-fit, minmax(150px, 1fr))">
       <div style="background:white;border:1px solid #E2E6EA;border-radius:4px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.03)">
         <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px">전체 현장</p>
         <div class="flex items-end gap-1.5"><span id="kpiSites" style="font-size:26px;font-weight:700;color:#0F172A;line-height:1;letter-spacing:-0.03em">-</span><span style="font-size:12px;color:#CBD5E1;margin-bottom:2px">개</span></div>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Main grid -->
-    <div class="grid gap-5" style="grid-template-columns:1fr 300px">
+    <div class="grid gap-5 dash-2col" style="grid-template-columns:minmax(0, 1fr) 300px">
 
       <!-- Issues table -->
       <div style="background:white;border:1px solid #E5E7EB;border-radius:4px">
