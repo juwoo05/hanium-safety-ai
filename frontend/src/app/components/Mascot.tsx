@@ -19,7 +19,7 @@ export default function Mascot({ message, className = '', gesture = 'greeting', 
       <div className={`${sizeClasses[size]} relative`}>
         <img
           src={mascotImage}
-          alt="SafeMate 안전 도우미"
+          alt="연결고리 안전 도우미"
           className="w-full h-full object-contain"
           style={{ mixBlendMode: 'multiply' }}
         />

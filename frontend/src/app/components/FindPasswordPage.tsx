@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, Mail, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FindPasswordPageProps {
@@ -65,7 +65,7 @@ export default function FindPasswordPage({ onNavigate }: FindPasswordPageProps) 
 
         <div className="flex items-center gap-2 mb-6">
           <div className="w-12 h-12 bg-[#1A2E44] rounded flex items-center justify-center">
-            <Shield className="w-7 h-7 text-white" />
+            <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" className="w-11 h-11 object-contain" />
           </div>
           <div>
             <span className="font-bold text-2xl text-[#1A2E44]">비밀번호 찾기</span>

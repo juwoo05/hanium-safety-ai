@@ -17,55 +17,56 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F7FA] to-white">
+    <div className="min-h-screen bg-white text-slate-900">
       {/* Header */}
-      <header className="container mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
+       <div className="max-w-7xl mx-auto px-5 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-[#1A2E44] rounded-lg flex items-center justify-center">
-            <Shield className="w-6 h-6 text-white" />
-          </div>
-          <span className="font-bold text-xl text-[#1A2E44]">SafeMate</span>
+          <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" className="w-10 h-10 object-contain" />
+          <span className="font-bold text-xl text-[#1A2E44]">연결고리</span>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="px-4 py-2 text-[#1A2E44] hover:text-[#1A2E44] transition-colors">
+        <div className="flex items-center gap-1 sm:gap-3">
+          <button className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
             제품 소개
           </button>
-          <button className="px-4 py-2 text-[#1A2E44] hover:text-[#1A2E44] transition-colors">
+          <button className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
             가격
           </button>
           <button
             onClick={() => onNavigate('login')}
-            className="px-6 py-2 bg-[#1A2E44] text-white rounded-lg hover:bg-[#0F2233] transition-colors shadow-md"
+            className="px-5 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors shadow-sm"
           >
             시작하기
           </button>
         </div>
+       </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-6 py-16">
+      <section className="max-w-7xl mx-auto px-5 sm:px-6 py-14 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-block px-4 py-2 bg-[#1A2E44]/10 rounded-full mb-6">
-              <span className="text-[#1A2E44] font-semibold text-sm">AI 기반 현장 안전 솔루션</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full mb-5">
+              <span className="w-2 h-2 rounded-full bg-[#FF7A00]" />
+              <span className="text-[#086CF0] font-semibold text-sm">AI 기반 현장 안전 솔루션</span>
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-[#1A2E44] mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-[#1A2E44] mb-6 leading-tight">
               AI가 현장 위험을<br />분석하고 안전 조치까지<br />도와드립니다
             </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
               현장 사진 업로드부터 위험 탐지, 조치 등록, 리포트 관리까지<br />
               현장 안전 업무를 한 번에 관리할 수 있는 스마트 안전 플랫폼
             </p>
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
               <button
                 onClick={() => onNavigate('upload')}
-                className="px-8 py-4 bg-[#1A2E44] text-white text-lg font-semibold rounded-xl hover:bg-[#0F2233] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="px-7 py-3.5 bg-[#1A2E44] text-white text-base font-semibold rounded-lg hover:bg-[#0F2233] transition-colors shadow-md"
               >
                 현장 사진 분석하기
               </button>
               <button
                 onClick={() => onNavigate('dashboard')}
-                className="px-8 py-4 border-2 border-[#1A2E44] text-[#1A2E44] text-lg font-semibold rounded-xl hover:bg-[#1A2E44] hover:text-white transition-all"
+                className="px-7 py-3.5 border border-slate-300 text-[#1A2E44] text-base font-semibold rounded-lg hover:border-[#1A2E44] hover:bg-slate-50 transition-colors"
               >
                 대시보드 보기
               </button>
@@ -98,8 +99,8 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </div>
           <div className="relative">
-            <div style={{ background: '#F0F4F8', borderRadius: 8, padding: 32 }}>
-              <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 4, padding: 20, marginBottom: 16 }}>
+            <div style={{ background: '#EEF3F8', border: '1px solid #E2E8F0', borderRadius: 8, padding: 32 }}>
+              <div style={{ background: 'white', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, marginBottom: 16 }}>
                 <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 8 }}>AI 위험요소 분석 결과 — SR-2026-001</p>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', background: '#FEF2F2', color: '#991B1B', borderRadius: 3 }}>안전난간 미설치</span>
@@ -107,7 +108,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', background: '#FFFBEB', color: '#B45309', borderRadius: 3 }}>안전모 미착용</span>
                 </div>
               </div>
-              <div className="bg-white rounded p-6 shadow-xl" style={{ border: '1px solid #E5E7EB' }}>
+              <div className="bg-white rounded-lg p-6 shadow-sm" style={{ border: '1px solid #E2E8F0' }}>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm text-gray-600">분석 진행 중...</span>
                   <span className="text-sm font-semibold text-[#1A2E44]">87%</span>
@@ -132,7 +133,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-gradient-to-r from-[#1A2E44] to-[#243E58] py-16">
+      <section className="bg-[#1A2E44] py-12">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <div>
@@ -159,7 +160,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       <section className="container mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-[#1A2E44] mb-4">
-            SafeMate를 선택해야 하는 이유
+            연결고리를 선택해야 하는 이유
           </h2>
           <p className="text-xl text-gray-600">
             AI 기술로 현장 안전 관리가 달라집니다
@@ -177,7 +178,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               title: '비용 절감',
               description: '사고 예방으로 평균 60% 비용 감소',
               metric: '60%',
-              color: 'bg-green-500'
+              color: 'bg-[#FF7A00]'
             },
             {
               title: '정확성 향상',
@@ -186,8 +187,8 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               color: 'bg-[#1A2E44]'
             }
           ].map((benefit, index) => (
-            <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow text-center">
-              <div className={`w-20 h-20 ${benefit.color} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+            <div key={index} className="bg-white rounded-lg p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow text-center">
+              <div className={`w-20 h-20 ${benefit.color} rounded-lg flex items-center justify-center mx-auto mb-6`}>
                 <span className="text-3xl font-bold text-white">{benefit.metric}</span>
               </div>
               <h3 className="text-2xl font-bold text-[#1A2E44] mb-3">{benefit.title}</h3>
@@ -198,7 +199,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Process Section */}
-      <section className="bg-gradient-to-b from-[#F5F7FA] to-white py-20">
+      <section className="bg-slate-50 border-y border-slate-200 py-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[#1A2E44] mb-4">
@@ -227,7 +228,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               }
             ].map((process, index) => (
               <div key={index} className="relative">
-                <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
+                <div className="bg-white rounded-lg p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="text-6xl font-bold text-[#1A2E44]/20 mb-4">{process.step}</div>
                   <h3 className="text-xl font-bold text-[#1A2E44] mb-3">{process.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{process.description}</p>
@@ -244,14 +245,14 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       {/* Features */}
       <section className="container mx-auto px-6 py-20">
         <h2 className="text-4xl font-bold text-[#1A2E44] text-center mb-4">
-          SafeMate의 핵심 기능
+            연결고리의 핵심 기능
         </h2>
         <p className="text-xl text-gray-600 text-center mb-12">
           현장 안전 관리에 필요한 모든 기능을 제공합니다
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+            <div key={index} className="bg-white rounded-lg p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="w-12 h-12 bg-[#1A2E44]/10 rounded-xl flex items-center justify-center mb-4">
                 <feature.icon className="w-6 h-6 text-[#1A2E44]" />
               </div>
@@ -275,10 +276,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           ].map((plan, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl p-8 shadow-md ${plan.popular ? 'ring-2 ring-[#1A2E44] relative' : ''}`}
+              className={`bg-white rounded-lg p-8 border border-slate-200 shadow-sm ${plan.popular ? 'ring-2 ring-[#086CF0] relative' : ''}`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#1A2E44] text-white px-4 py-1 rounded-full text-sm font-semibold">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#086CF0] text-white px-4 py-1 rounded-full text-sm font-semibold">
                   인기
                 </div>
               )}
@@ -310,10 +311,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Final CTA Section */}
-      <section className="bg-gradient-to-r from-[#1A2E44] to-[#243E58] py-20">
+      <section className="bg-[#1A2E44] py-20 border-t-4 border-[#FF7A00]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            지금 바로 SafeMate를 시작하세요
+            지금 바로 연결고리를 시작하세요
           </h2>
           <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
             14일 무료 체험으로 현장 안전 관리의 새로운 경험을 시작하세요.<br />
@@ -322,15 +323,15 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={() => onNavigate('signup')}
-              className="px-10 py-5 bg-[#1A2E44] text-white text-lg font-semibold rounded-xl hover:bg-[#0F2233] transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-1"
+              className="px-9 py-4 bg-[#FF7A00] text-white text-lg font-semibold rounded-lg hover:bg-[#E96F00] transition-colors shadow-lg"
             >
               무료로 시작하기
             </button>
             <button
               onClick={() => onNavigate('login')}
-              className="px-10 py-5 bg-white text-[#1A2E44] text-lg font-semibold rounded-xl hover:bg-gray-100 transition-all shadow-xl"
+              className="px-9 py-4 bg-white text-[#1A2E44] text-lg font-semibold rounded-lg hover:bg-slate-100 transition-colors shadow-md"
             >
-              영업팀 문의하기
+              로그인하기
             </button>
           </div>
         </div>
@@ -342,16 +343,14 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-[#1A2E44] rounded-lg flex items-center justify-center">
-                  <Shield className="w-6 h-6" />
-                </div>
-                <span className="font-bold text-xl">SafeMate</span>
+                <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" className="w-10 h-10 object-contain" />
+                <span className="font-bold text-xl">연결고리</span>
               </div>
               <p className="text-gray-300 mb-4">
                 AI가 지켜주는<br />현장 안전 관리 시스템
               </p>
               <p className="text-gray-400 text-sm">
-                © 2026 SafeMate.<br />All rights reserved.
+                © 2026 연결고리.<br />All rights reserved.
               </p>
             </div>
 
@@ -396,7 +395,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               <div className="flex items-center gap-4">
                 <span className="text-gray-400 text-sm">고객센터: 1588-1234</span>
                 <span className="text-gray-400 text-sm">|</span>
-                <span className="text-gray-400 text-sm">support@safemate.com</span>
+                <span className="text-gray-400 text-sm">support@yeongyeolgori.kr</span>
               </div>
             </div>
           </div>

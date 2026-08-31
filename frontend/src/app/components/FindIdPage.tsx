@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, User, Building2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { User, Building2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FindIdPageProps {
@@ -37,11 +37,11 @@ export default function FindIdPage({ onNavigate }: FindIdPageProps) {
 
         <div className="flex items-center gap-2 mb-8">
           <div className="w-12 h-12 bg-[#1A2E44] rounded flex items-center justify-center">
-            <Shield className="w-7 h-7 text-white" />
+            <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" className="w-11 h-11 object-contain" />
           </div>
           <div>
             <span className="font-bold text-2xl text-[#1A2E44]">아이디 찾기</span>
-            <p className="text-xs text-gray-500">SafeMate 계정 아이디를 찾아드립니다</p>
+            <p className="text-xs text-gray-500">연결고리 계정 아이디를 찾아드립니다</p>
           </div>
         </div>
 

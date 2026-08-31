@@ -1140,7 +1140,7 @@ export default function AIAnalysisPage({ onNavigate }: AIAnalysisPageProps) {
                       <h2 className="text-xl font-bold text-gray-900">
                         {REPORT_TEMPLATES.find(t => t.id === selectedTemplate)?.name ?? '안전점검 결과보고서'}
                       </h2>
-                      <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 SafeMate · 2026년 08월 09일</p>
+                      <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 연결고리 · 2026년 08월 09일</p>
                     </div>
 
                     {/* Site info table */}
@@ -1339,7 +1339,7 @@ export default function AIAnalysisPage({ onNavigate }: AIAnalysisPageProps) {
                         </tbody>
                       </table>
                       <p className="text-right text-xs text-gray-400 mt-2">
-                        상기 내용은 AI 분석 결과를 바탕으로 자동 생성된 보고서입니다. · SafeMate v2.0
+                        상기 내용은 AI 분석 결과를 바탕으로 자동 생성된 보고서입니다. · 연결고리 v2.0
                       </p>
                     </div>
                   </div>

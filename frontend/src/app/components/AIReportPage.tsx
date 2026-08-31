@@ -620,7 +620,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                       <span className="flex items-center gap-1"><Sparkles className="w-3 h-3 text-purple-500" /> AI 자동생성</span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900">{templateName}</h3>
-                    <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 SafeMate · 2026년 08월 09일</p>
+                    <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 연결고리 · 2026년 08월 09일</p>
                   </div>
 
                   {/* Site info */}
@@ -774,7 +774,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                         </tr>
                       </tbody>
                     </table>
-                    <p className="text-right text-xs text-gray-400 mt-2">SafeMate AI 자동생성 보고서 · 2026.08.09</p>
+                    <p className="text-right text-xs text-gray-400 mt-2">연결고리 AI 자동생성 보고서 · 2026.08.09</p>
                   </div>
                 </div>
               </div>

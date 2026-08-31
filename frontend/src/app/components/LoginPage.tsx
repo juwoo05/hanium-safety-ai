@@ -28,10 +28,10 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
       <div style={{ width: '100%', maxWidth: 400 }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32, justifyContent: 'center' }}>
-          <div style={{ width: 28, height: 28, background: '#1A2E44', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 13, fontWeight: 700 }}>
-            S
+          <div style={{ width: 28, height: 28, background: '#F8FAFC', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" style={{ width: 26, height: 26, objectFit: 'contain' }} />
           </div>
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.01em' }}>안전고리</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', letterSpacing: '0' }}>연결고리</span>
         </div>
 
         {/* Card */}
@@ -118,7 +118,7 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', marginTop: 20 }}>
-          건설현장 안전관리 AI 플랫폼 · 안전고리
+          건설현장 안전관리 AI 플랫폼 · 연결고리
         </p>
       </div>
     </div>

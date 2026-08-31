@@ -165,7 +165,7 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
     setTimeout(() => {
       const today = new Date().toISOString().slice(0, 10);
       setSafetyForm({
-        companyName: '(주)세이프메이트 건설',
+        companyName: '(주)연결고리 건설',
         siteName: '3동 건물 외벽 공사현장',
         inspectionDate: today,
         inspector: '김현장',
@@ -722,7 +722,7 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
                   {/* ── 공통: 개요 섹션 ── */}
                   <FormSection title="기본 정보">
                     <div className="grid grid-cols-2 gap-4">
-                      <FormField label="건설사명" value={safetyForm.companyName} onChange={v => setField('companyName', v)} editable={editMode} placeholder="예) (주)세이프메이트 건설" />
+                      <FormField label="건설사명" value={safetyForm.companyName} onChange={v => setField('companyName', v)} editable={editMode} placeholder="예) (주)연결고리 건설" />
                       <FormField label="현장명" value={safetyForm.siteName} onChange={v => setField('siteName', v)} editable={editMode} placeholder="예) 3동 건물 외벽 공사현장" />
                       <FormField label="점검일시" value={safetyForm.inspectionDate} onChange={v => setField('inspectionDate', v)} editable={editMode} type="date" />
                       <FormField label="점검자" value={safetyForm.inspector} onChange={v => setField('inspector', v)} editable={editMode} placeholder="예) 김현장" />

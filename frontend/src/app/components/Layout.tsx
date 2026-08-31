@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import {
   LayoutDashboard, Camera, ClipboardList, BarChart2,
-  FileText, MessageSquare, Bell, LogOut, Shield, ChevronDown,
+  FileText, MessageSquare, Bell, LogOut, ChevronDown,
   Settings,
 } from 'lucide-react';
 
@@ -106,7 +106,7 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
                 flexShrink: 0,
               }}
             >
-              <Shield size={13} color="#5CA8E8" strokeWidth={2} />
+              <img src="/app/images/yeongyeol-gori-logo.png" alt="연결고리 로고" style={{ width: 24, height: 24, objectFit: 'contain' }} />
             </div>
             <span style={{ fontSize: 14, fontWeight: 600, color: '#E2E8F0', letterSpacing: '0' }}>
               안전고리
