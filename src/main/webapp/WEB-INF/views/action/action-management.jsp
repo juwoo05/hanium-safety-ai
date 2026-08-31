@@ -28,9 +28,9 @@
         <p id="summaryLine" style="font-size:12px;color:#6B7280">전체 0건 · 완료율 0%</p>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" onclick="alert('Excel 다운로드 완료')" style="display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer">
+        <button type="button" id="exportBtn" onclick="exportSelected()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          내보내기
+          <span id="exportBtnLabel">내보내기</span>
         </button>
         <a href="/upload" style="display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer;text-decoration:none">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -66,6 +66,7 @@
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
             <tr style="background:#F9FAFB;border-bottom:1px solid #F3F4F6">
+              <th style="padding:9px 14px;width:36px;text-align:center;white-space:nowrap"><input type="checkbox" id="selectAllCheckbox" style="width:14px;height:14px;cursor:pointer" aria-label="전체 선택"/></th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap"></th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap">항목 ID</th>
               <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap">위험유형</th>
@@ -78,7 +79,7 @@
             </tr>
           </thead>
           <tbody id="actionTableBody">
-            <tr><td colspan="9" style="padding:32px;text-align:center;font-size:13px;color:#9CA3AF">불러오는 중...</td></tr>
+            <tr><td colspan="10" style="padding:32px;text-align:center;font-size:13px;color:#9CA3AF">불러오는 중...</td></tr>
           </tbody>
         </table>
       </div>
@@ -120,6 +121,7 @@
   var currentActions = [];
   var expandedId = null;
   var CURRENT_USER_ROLE = null;
+  var selectedIds = new Set(); // 내보내기 대상으로 체크된 조치 항목 id (문자열)
 
   function qs(sel) { return document.querySelector(sel); }
   function todayStr() { return new Date().toISOString().slice(0, 10); }
@@ -200,6 +202,7 @@
     var thumbHtml = '<img src="' + thumbSrc + '" alt="' + esc(a.title) + '" style="width:40px;height:30px;border-radius:3px;object-fit:cover;display:block"/>';
 
     var row = '<tr class="action-row" data-id="' + a.id + '" style="border-bottom:1px solid #F9FAFB;cursor:pointer;background:' + (isExpanded ? '#FAFAFA' : 'transparent') + '">' +
+      '<td class="check-cell" style="padding:10px 14px;width:36px;text-align:center"><input type="checkbox" class="row-check" data-id="' + a.id + '"' + (selectedIds.has(String(a.id)) ? ' checked' : '') + ' style="width:14px;height:14px;cursor:pointer"/></td>' +
       '<td style="padding:10px 14px">' + thumbHtml + '</td>' +
       '<td style="padding:10px 14px;color:#9CA3AF;font-family:monospace;font-size:12px">AC-' + a.id + '</td>' +
       '<td style="padding:10px 14px"><span style="font-weight:500;color:#0F172A">' + esc(a.title) + '</span></td>' +
@@ -212,7 +215,7 @@
       '<td style="padding:10px 14px;white-space:nowrap">' + actionsHtml + '</td></tr>';
 
     if (isExpanded) {
-      row += '<tr style="background:#FAFAFA;border-bottom:1px solid #F3F4F6"><td colspan="9" style="padding:12px 14px 14px 14px">' +
+      row += '<tr style="background:#FAFAFA;border-bottom:1px solid #F3F4F6"><td colspan="10" style="padding:12px 14px 14px 14px">' +
         '<div class="grid gap-4" style="display:grid;grid-template-columns:1fr 1fr 1fr;font-size:12px">' +
         '<div><p style="color:#9CA3AF;margin-bottom:4px">공종/분류</p><p style="color:#374151;font-weight:500">' + esc(a.category || '-') + '</p></div>' +
         '<div><p style="color:#9CA3AF;margin-bottom:4px">발견일시</p><p style="color:#374151;font-weight:500">' + (a.discoveredAt ? a.discoveredAt.replace('T', ' ').slice(0, 16) : '-') + '</p></div>' +
@@ -225,15 +228,51 @@
     return row;
   }
 
+  function visibleActions() {
+    return statusTab === 'ALL' ? currentActions : currentActions.filter(function (a) { return a.status === statusTab; });
+  }
+
   function renderTable() {
-    var filtered = statusTab === 'ALL' ? currentActions : currentActions.filter(function (a) { return a.status === statusTab; });
+    var filtered = visibleActions();
     qs('#actionTableBody').innerHTML = filtered.length ? filtered.map(rowHtml).join('') :
-      '<tr><td colspan="9" style="padding:64px;text-align:center;color:#9CA3AF;font-size:13px">해당 조건의 조치 항목이 없습니다.</td></tr>';
+      '<tr><td colspan="10" style="padding:64px;text-align:center;color:#9CA3AF;font-size:13px">해당 조건의 조치 항목이 없습니다.</td></tr>';
     qs('#footerCount').textContent = filtered.length + '건 표시 / 전체 ' + currentActions.length + '건';
     attachRowHandlers();
+    syncSelectionUI();
+  }
+
+  // 필터/탭 변경, 재조회 후 더 이상 목록에 없는 선택 항목은 정리한다.
+  function pruneSelection() {
+    var ids = new Set(currentActions.map(function (a) { return String(a.id); }));
+    selectedIds.forEach(function (id) { if (!ids.has(id)) selectedIds.delete(id); });
+  }
+
+  function syncSelectionUI() {
+    var checks = document.querySelectorAll('.row-check');
+    var selectAll = qs('#selectAllCheckbox');
+    if (selectAll) {
+      var total = checks.length;
+      var checked = 0;
+      checks.forEach(function (c) { if (c.checked) checked++; });
+      selectAll.checked = total > 0 && checked === total;
+      selectAll.indeterminate = checked > 0 && checked < total;
+    }
+    var label = qs('#exportBtnLabel');
+    if (label) label.textContent = selectedIds.size > 0 ? '내보내기 (' + selectedIds.size + ')' : '내보내기';
   }
 
   function attachRowHandlers() {
+    document.querySelectorAll('.check-cell').forEach(function (cell) {
+      cell.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+    document.querySelectorAll('.row-check').forEach(function (chk) {
+      chk.addEventListener('click', function (e) { e.stopPropagation(); });
+      chk.addEventListener('change', function () {
+        var id = String(chk.dataset.id);
+        if (chk.checked) selectedIds.add(id); else selectedIds.delete(id);
+        syncSelectionUI();
+      });
+    });
     document.querySelectorAll('.expand-btn').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -329,14 +368,70 @@
       })
       .then(function (actions) {
         currentActions = actions;
+        pruneSelection();
         renderSummary(actions);
         renderTabs(actions);
         renderTable();
       })
       .catch(function () {
-        qs('#actionTableBody').innerHTML = '<tr><td colspan="9" style="padding:32px;text-align:center;font-size:13px;color:#991B1B">조치 목록을 불러오지 못했습니다.</td></tr>';
+        qs('#actionTableBody').innerHTML = '<tr><td colspan="10" style="padding:32px;text-align:center;font-size:13px;color:#991B1B">조치 목록을 불러오지 못했습니다.</td></tr>';
       });
   }
+
+  // 전체 선택 체크박스: 현재 화면에 보이는(필터/탭 적용된) 항목을 일괄 선택/해제한다.
+  function bindSelectAll() {
+    var selectAll = qs('#selectAllCheckbox');
+    if (!selectAll) return;
+    selectAll.addEventListener('change', function () {
+      var on = selectAll.checked;
+      visibleActions().forEach(function (a) {
+        if (on) selectedIds.add(String(a.id)); else selectedIds.delete(String(a.id));
+      });
+      document.querySelectorAll('.row-check').forEach(function (c) { c.checked = on; });
+      syncSelectionUI();
+    });
+  }
+
+  var CSV_COLUMNS = [
+    { key: '항목ID',   get: function (a) { return 'AC-' + a.id; } },
+    { key: '위험유형', get: function (a) { return a.title || ''; } },
+    { key: '현장',     get: function (a) { return a.location || ''; } },
+    { key: '담당자',   get: function (a) { return a.reporterName || '미배정'; } },
+    { key: '위험등급', get: function (a) { return RISK_LABEL[a.riskLevel] || a.riskLevel || ''; } },
+    { key: '마감일',   get: function (a) { return a.dueDate || ''; } },
+    { key: '상태',     get: function (a) { return STATUS_LABEL[a.status] || a.status || ''; } },
+    { key: '분류',     get: function (a) { return a.category || ''; } },
+    { key: '발견일시', get: function (a) { return a.discoveredAt ? a.discoveredAt.replace('T', ' ').slice(0, 16) : ''; } }
+  ];
+
+  function csvCell(v) {
+    var s = (v == null ? '' : String(v));
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  window.exportSelected = function () {
+    var rows = selectedIds.size > 0
+      ? currentActions.filter(function (a) { return selectedIds.has(String(a.id)); })
+      : visibleActions();
+    if (!rows.length) {
+      alert('내보낼 조치 항목이 없습니다.');
+      return;
+    }
+    var lines = [CSV_COLUMNS.map(function (c) { return csvCell(c.key); }).join(',')];
+    rows.forEach(function (a) {
+      lines.push(CSV_COLUMNS.map(function (c) { return csvCell(c.get(a)); }).join(','));
+    });
+    // Excel에서 한글이 깨지지 않도록 UTF-8 BOM 추가
+    var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = '조치관리_' + todayStr() + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   window.applyFilters = loadActions;
   var debounceTimer;
@@ -345,6 +440,7 @@
     debounceTimer = setTimeout(loadActions, 300);
   };
 
+  bindSelectAll();
   loadCurrentUser();
   loadSiteFilter();
   loadActions();
