@@ -98,8 +98,12 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span>분석 리포트</span>
     </a>
-    <a href="/reports" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="actions-detail">
+    <a href="/actions/detail" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="actions-detail">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>안전 서류</span>
+    </a>
+    <a href="/reports" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="reports">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h1"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span>보고서</span>
     </a>
     <a href="/msds" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="msds">
@@ -194,7 +198,7 @@
 // 사이드바 사용자 정보 (모든 인증 페이지 공통 표시)
 (function() {
   // 하청 계정에서 숨기는 메뉴: 조치 관리(원청 배정 기능) / 분석 리포트(원청 현황 통계).
-  // '보고서'(actions-detail)는 TBM·교육일지·보호구 지급대장처럼 하청이 직접 작성해야 하는
+  // '안전 서류'(actions-detail)는 TBM·교육일지·보호구 지급대장처럼 하청이 직접 작성해야 하는
   // 서류가 많아 노출한다. (알림·설정은 역할 무관 공통 기능)
   var SUB_HIDDEN_PATHS = ['actions', 'analytics'];
 

@@ -16,8 +16,12 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span style="font-size:9px;white-space:nowrap">조치관리</span>
       </a>
-      <a href="/reports" class="quicknav-item" data-path="actions-detail" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 8px;border-radius:4px;text-decoration:none">
+      <a href="/actions/detail" class="quicknav-item" data-path="actions-detail" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 8px;border-radius:4px;text-decoration:none">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span style="font-size:9px;white-space:nowrap">안전 서류</span>
+      </a>
+      <a href="/reports" class="quicknav-item" data-path="reports" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 8px;border-radius:4px;text-decoration:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
         <span style="font-size:9px;white-space:nowrap">보고서</span>
       </a>
       <a href="/msds" class="quicknav-item" data-path="msds" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 8px;border-radius:4px;text-decoration:none">
