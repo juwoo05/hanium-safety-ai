@@ -27,7 +27,7 @@
         <h1 id="bannerGreeting" style="font-size:22px;font-weight:600;color:#0F172A;letter-spacing:-0.02em;line-height:1">대시보드</h1>
       </div>
       <div class="flex items-center gap-2">
-        <a href="/upload" style="padding:7px 14px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E2E6EA;border-radius:4px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04);text-decoration:none">사진 등록</a>
+        <a href="/upload" style="padding:7px 14px;font-size:12px;font-weight:500;background:white;color:#374151;border:1px solid #E2E6EA;border-radius:4px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04);text-decoration:none">사진업로드</a>
         <a href="/actions" style="padding:7px 16px;font-size:12px;font-weight:500;background:#1A2E44;color:white;border:none;border-radius:4px;cursor:pointer;text-decoration:none">조치 등록</a>
       </div>
     </div>

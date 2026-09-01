@@ -105,7 +105,9 @@
     'https://images.unsplash.com/photo-1713593930871-e21d7f9ef4a1?w=80&h=60&fit=crop&auto=format',
     'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=80&h=60&fit=crop&auto=format'
   ];
-  function mockThumbFor(id) { return MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
+  // 실제 현장사진: 안전모 미착용(id 53), 추락 위험 현장(id 54)
+  var REAL_SITE_PHOTOS = { 53: '/images/site-photos/safety-helmet-missing.png', 54: '/images/site-photos/fall-risk-site.png' };
+  function mockThumbFor(id) { return REAL_SITE_PHOTOS[id] || MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
 
   var RISK_LABEL = { HIGH: '고위험', MEDIUM: '중위험', SAFE: '안전' };
   var RISK_COLOR = { HIGH: '#991B1B', MEDIUM: '#B45309', SAFE: '#166534' };
