@@ -31,16 +31,11 @@ public class PageController {
     @PostMapping("/actions/new")
     public String actionsNewPost() { return "redirect:/actions"; }
 
-    // 사진 업로드(AI 판독용 조치전 사진 등록)는 원청 전용 기능이다.
     @GetMapping("/upload")
-    public String upload(Authentication authentication) {
-        return isSubcontractor(authentication) ? "redirect:/dashboard/sub" : "upload/upload";
-    }
+    public String upload() { return "upload/upload"; }
 
     @PostMapping("/upload")
-    public String uploadPost(Authentication authentication) {
-        return isSubcontractor(authentication) ? "redirect:/dashboard/sub" : "upload/upload";
-    }
+    public String uploadPost() { return "upload/upload"; }
 
     private boolean isSubcontractor(Authentication authentication) {
         return authentication != null && authentication.getAuthorities().stream()
@@ -56,6 +51,13 @@ public class PageController {
 
     @GetMapping("/analytics")
     public String analytics() { return "analytics/analytics"; }
+
+    // 사이드바 "보고서" 메뉴: 저장된 보고서 목록 (시연용 프론트 더미 데이터 화면).
+    @GetMapping("/reports")
+    public String savedReports() { return "report/saved-reports"; }
+
+    @GetMapping("/reports/detail")
+    public String savedReportDetail() { return "report/saved-report-detail"; }
 
     // /notifications 는 kopo.poly.controller.NotificationController 에서 처리한다.
 
