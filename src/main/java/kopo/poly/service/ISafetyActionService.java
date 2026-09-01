@@ -37,4 +37,7 @@ public interface ISafetyActionService {
 
     // 원청: 승인 요청을 반려해 다시 진행중으로 되돌린다. PENDING_APPROVAL 상태에서만 가능.
     SafetyAction rejectCompletion(Long actionId);
+
+    // 조치 항목을 영구 삭제한다. 되돌릴 수 없으므로 호출부에서 신중히 사용할 것.
+    void delete(Long actionId);
 }

@@ -11,6 +11,7 @@ import kopo.poly.entity.enums.UserRole;
 import kopo.poly.repository.UserRepository;
 import kopo.poly.service.ISafetyActionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class SafetyActionApiController {
@@ -101,6 +103,14 @@ public class SafetyActionApiController {
     public ActionResponse reject(@PathVariable Long id, HttpSession session) {
         requirePrimeContractor(session);
         return ActionResponse.from(safetyActionService.rejectCompletion(id));
+    }
+
+    // 원청 전용: 조치 항목을 영구 삭제한다.
+    @DeleteMapping("/api/actions/{id}")
+    public Map<String, Boolean> delete(@PathVariable Long id, HttpSession session) {
+        requirePrimeContractor(session);
+        safetyActionService.delete(id);
+        return Map.of("ok", true);
     }
 
     private void requirePrimeContractor(HttpSession session) {

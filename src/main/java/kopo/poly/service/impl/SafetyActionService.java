@@ -146,6 +146,13 @@ public class SafetyActionService implements ISafetyActionService {
         return action;
     }
 
+    @Override
+    @Transactional
+    public void delete(Long actionId) {
+        SafetyAction action = requireAction(actionId);
+        safetyActionRepository.delete(action);
+    }
+
     private SafetyAction requireAction(Long actionId) {
         return safetyActionRepository.findById(actionId)
                 .orElseThrow(() -> new NoSuchElementException("조치를 찾을 수 없습니다: " + actionId));
