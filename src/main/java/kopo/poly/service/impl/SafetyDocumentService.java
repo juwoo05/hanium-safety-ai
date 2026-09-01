@@ -77,6 +77,11 @@ public class SafetyDocumentService implements ISafetyDocumentService {
         return safetyDocumentRepository.findByInspectionOrderByCreatedAtDesc(inspection);
     }
 
+    @Override
+    public List<SafetyDocument> findMine(Long userId) {
+        return safetyDocumentRepository.findByCreatedByOrderByUpdatedAtDesc(userId);
+    }
+
     // "AI 자동 작성" 버튼: 이 리포트에 실제로 저장된 감지 위험요소/조치 데이터를 양식 필드로 매핑한다.
     // 담당자명·회사명처럼 이 도메인에 저장돼 있지 않은 값은 지어내지 않고 비워둔다.
     @Override

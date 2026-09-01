@@ -41,6 +41,15 @@ public class SafetyDocumentApiController {
                 .toList();
     }
 
+    // "보고서" 메뉴 진입 시 내가 이전에 작성해둔 보고서 목록
+    @GetMapping("/api/documents/mine")
+    public List<DocumentResponse> mine(HttpSession session) {
+        Long loginUserId = requireLoginUserId(session);
+        return safetyDocumentService.findMine(loginUserId).stream()
+                .map(DocumentResponse::from)
+                .toList();
+    }
+
     @GetMapping("/api/documents/draft")
     public Map<String, Object> draft(
             @RequestParam Long inspectionId,

@@ -33,8 +33,28 @@
   <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
     <div class="space-y-6">
 
+      <!-- 저장된 보고서 목록 ("보고서" 메뉴로 바로 들어왔을 때, 특정 리포트가 선택되기 전 화면) -->
+      <div id="reportListView" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h1 class="text-xl font-bold text-gray-900 mb-1">저장된 보고서</h1>
+          <p class="text-sm text-gray-500">이전에 작성한 보고서를 목록에서 선택해 다시 볼 수 있습니다.</p>
+        </div>
+        <div id="reportListCards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="reportListEmpty" class="hidden bg-white rounded-2xl p-10 text-center text-sm text-gray-400 border border-gray-100">아직 저장된 보고서가 없습니다. "AI 결과보고서 생성"에서 먼저 보고서를 작성해보세요.</div>
+
+        <div id="savedDocPreviewWrap" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between px-6 pt-5 no-print">
+            <button id="backToReportListBtn" type="button" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>목록으로</button>
+            <button onclick="window.print()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
+            </button>
+          </div>
+          <div id="savedDocPreview" class="p-8"></div>
+        </div>
+      </div>
+
       <!-- Report Header -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div id="reportHeaderCard" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <a href="/actions" class="p-2 hover:bg-gray-100 rounded-lg no-print"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
@@ -61,11 +81,11 @@
             <p class="text-xs text-gray-500 mb-1">종합 위험도</p>
             <div class="flex items-baseline gap-2">
               <span id="riskLevelLabel" class="text-3xl font-bold text-red-600">-</span>
-              <span id="riskLevelBadge" class="text-xs font-bold px-2 py-0.5 bg-red-500 text-white rounded-full"></span>
             </div>
           </div>
           <div class="flex-1">
             <div class="w-full bg-white/60 rounded-full h-2.5"><div id="riskLevelBar" class="bg-red-500 h-2.5 rounded-full" style="width:0%"></div></div>
+            <div id="riskLevelBreakdown" class="flex items-center gap-3 mt-2 text-xs font-semibold"></div>
           </div>
           <div class="text-right">
             <p class="text-xs text-gray-500 mb-1">감지 항목</p>
@@ -356,10 +376,10 @@
         <div id="evidence-law" class="evidence-panel grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="border border-gray-200 rounded-xl p-4">
             <div class="flex items-start justify-between mb-2">
-              <h4 class="text-sm font-bold text-gray-900">산업안전보건법 제38조 - 추락 위험 방지</h4>
+              <h4 class="text-sm font-bold text-gray-900">산업안전보건기준에 관한 규칙 제32조 - 보호구의 지급 등</h4>
               <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <p class="text-xs text-gray-500 mb-3">사업주는 근로자가 추락할 위험이 있는 장소에는 안전난간, 울, 수직형 추락방호망...</p>
+            <p class="text-xs text-gray-500 mb-3">사업주는 낙하물에 의한 위험이 있는 작업장에서 안전모를 지급하고 근로자에게 착용하도록 하여야 한다.</p>
             <div class="flex items-center justify-between">
               <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">고용노동부</span>
               <span class="text-xs font-bold text-green-600">98% 관련</span>
@@ -367,51 +387,51 @@
           </div>
           <div class="border border-gray-200 rounded-xl p-4">
             <div class="flex items-start justify-between mb-2">
-              <h4 class="text-sm font-bold text-gray-900">전기사업법 제67조 - 전기설비 기술기준</h4>
+              <h4 class="text-sm font-bold text-gray-900">산업안전보건기준에 관한 규칙 제42조 - 추락의 방지</h4>
               <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <p class="text-xs text-gray-500 mb-3">전기사용장소의 시설은 감전, 화재 그 밖에 사람에게 위해를 주거나...</p>
+            <p class="text-xs text-gray-500 mb-3">사업주는 근로자가 추락할 위험이 있는 장소에는 안전난간, 울타리, 수직형 추락방호망 또는 덮개 등을 설치하여야 한다.</p>
             <div class="flex items-center justify-between">
-              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">산업통상자원부</span>
-              <span class="text-xs font-bold text-green-600">95% 관련</span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">고용노동부</span>
+              <span class="text-xs font-bold text-green-600">96% 관련</span>
             </div>
           </div>
         </div>
 
         <div id="evidence-case" class="evidence-panel hidden grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="border border-gray-200 rounded-xl p-4">
-            <h4 class="text-sm font-bold text-gray-900 mb-2">건설현장 추락사고 사례 (2025.03)</h4>
-            <p class="text-xs text-gray-500 mb-3">안전난간 미설치로 인한 3층 높이 추락사고로 중상자 1명 발생</p>
+            <h4 class="text-sm font-bold text-gray-900 mb-2">안전모 미착용 낙하물 사고 사례 (2025.06)</h4>
+            <p class="text-xs text-gray-500 mb-3">철골 조립 작업 중 안전모를 착용하지 않은 근로자가 낙하 자재에 맞아 두부 손상, 작업중지 명령 및 전 근로자 재교육 실시</p>
             <div class="flex items-center justify-between">
               <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">산업재해통계</span>
-              <span class="text-xs font-bold text-green-600">92% 관련</span>
+              <span class="text-xs font-bold text-green-600">94% 관련</span>
             </div>
           </div>
           <div class="border border-gray-200 rounded-xl p-4">
-            <h4 class="text-sm font-bold text-gray-900 mb-2">전기감전 사고 사례 (2025.01)</h4>
-            <p class="text-xs text-gray-500 mb-3">임시 전선 노출로 인한 감전사고, 작업 중단 및 안전점검 실시</p>
+            <h4 class="text-sm font-bold text-gray-900 mb-2">고소작업 추락사고 사례 (2025.04)</h4>
+            <p class="text-xs text-gray-500 mb-3">안전난간 미설치 구간에서 작업자가 3m 아래로 추락해 중상, 사고 직후 해당 구간 통제 및 난간 설치 조치</p>
             <div class="flex items-center justify-between">
-              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">안전보건공단</span>
-              <span class="text-xs font-bold text-green-600">88% 관련</span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">산업재해통계</span>
+              <span class="text-xs font-bold text-green-600">92% 관련</span>
             </div>
           </div>
         </div>
 
         <div id="evidence-guide" class="evidence-panel hidden grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="border border-gray-200 rounded-xl p-4">
-            <h4 class="text-sm font-bold text-gray-900 mb-2">건설현장 안전난간 설치 가이드</h4>
-            <p class="text-xs text-gray-500 mb-3">안전난간의 높이, 재질, 설치 방법에 대한 상세 지침</p>
+            <h4 class="text-sm font-bold text-gray-900 mb-2">안전모 착용 관리 지침</h4>
+            <p class="text-xs text-gray-500 mb-3">작업 전 안전모 착용 상태 점검, 턱끈 체결 필수, 파손되거나 노후된 안전모는 즉시 교체</p>
             <div class="flex items-center justify-between">
               <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">안전보건공단</span>
-              <span class="text-xs font-bold text-green-600">96% 관련</span>
+              <span class="text-xs font-bold text-green-600">97% 관련</span>
             </div>
           </div>
           <div class="border border-gray-200 rounded-xl p-4">
-            <h4 class="text-sm font-bold text-gray-900 mb-2">전기안전 작업수칙</h4>
-            <p class="text-xs text-gray-500 mb-3">전기 작업 시 안전수칙 및 점검사항</p>
+            <h4 class="text-sm font-bold text-gray-900 mb-2">추락 방지 안전 지침</h4>
+            <p class="text-xs text-gray-500 mb-3">개구부 및 단부에는 안전난간 또는 방호망 설치, 고소작업 시 안전대(하네스) 체결 상태 사전 확인</p>
             <div class="flex items-center justify-between">
-              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">한국전기안전공사</span>
-              <span class="text-xs font-bold text-green-600">90% 관련</span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">안전보건공단</span>
+              <span class="text-xs font-bold text-green-600">95% 관련</span>
             </div>
           </div>
         </div>
@@ -441,7 +461,11 @@
     'https://images.unsplash.com/photo-1713593930871-e21d7f9ef4a1?w=400&h=300&fit=crop&auto=format',
     'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400&h=300&fit=crop&auto=format'
   ];
-  function mockThumbFor(id) { return MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
+  // 실제 현장사진: 안전모 미착용(id 53), 추락 위험 현장(id 54)
+  var REAL_SITE_PHOTOS = { 53: '/images/site-photos/safety-helmet-missing.png', 54: '/images/site-photos/fall-risk-site.png' };
+  function mockThumbFor(id) { return REAL_SITE_PHOTOS[id] || MOCK_THUMBS[Math.abs(id) % MOCK_THUMBS.length]; }
+  // AI 재평가 결과에서 "어디가 변화했는지" 보여주는 객체인식(바운딩박스) 버전 사진
+  var DETECTED_SITE_PHOTOS = { 53: '/images/site-photos/safety-helmet-missing-detected.png', 54: '/images/site-photos/fall-risk-site-detected.png' };
   var VERIFY_AFTER_S3KEY = null;
 
   var FORM_META = {
@@ -450,6 +474,106 @@
     ACTION_REPORT: { title: '조치결과보고서', fieldClass: 'field-action' },
     WORK_PERMIT: { title: '작업허가서', fieldClass: 'field-workpermit' }
   };
+
+  /* ── "보고서" 메뉴: 저장된 보고서 목록 / AI 결과보고서 생성(ai-report.jsp)과 동일한 양식으로 미리보기 ── */
+  var DRAFT_FIELD_LABELS = {
+    completedAction: '완료된 조치 사항', preventionPlan: '재발 방지 대책',
+    assessmentPurpose: '평가 목적', overallResult: '종합 점검 결과',
+    workType: '작업 종류', workScope: '작업 범위', safetyPrecaution: '작업 전 안전 조치사항'
+  };
+
+  function esc(s) { return (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  var SAVED_DOCS = [];
+
+  function reportListCardHtml(doc) {
+    var meta = FORM_META[doc.docType] || { title: doc.docType };
+    var updated = doc.updatedAt ? doc.updatedAt.replace('T', ' ').slice(0, 16) : '-';
+    return '<button type="button" class="saved-doc-card text-left bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-[#1A2E44]/40 transition-colors" data-id="' + doc.id + '">' +
+      '<div class="flex items-center justify-between mb-2">' +
+      '<span class="text-xs font-semibold px-2.5 py-1 bg-[#1A2E44]/10 text-[#1A2E44] rounded-full">' + esc(meta.title) + '</span>' +
+      (doc.aiGenerated ? '<span class="text-[10px] text-[#1A2E44] font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동생성</span>' : '') +
+      '</div>' +
+      '<p class="text-sm font-bold text-gray-900 mb-1">' + esc(doc.location || '현장 정보 없음') + '</p>' +
+      '<p class="text-xs text-gray-400">최종 수정 ' + updated + '</p></button>';
+  }
+
+  function loadReportList() {
+    fetch('/api/documents/mine')
+      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
+      .then(function (docs) {
+        SAVED_DOCS = docs;
+        qs('#reportListCards').innerHTML = docs.map(reportListCardHtml).join('');
+        qs('#reportListEmpty').classList.toggle('hidden', docs.length > 0);
+        qsa('.saved-doc-card').forEach(function (card) {
+          card.addEventListener('click', function () { showSavedDocPreview(Number(card.dataset.id)); });
+        });
+      })
+      .catch(function () { qs('#reportListEmpty').classList.remove('hidden'); });
+  }
+
+  function showSavedDocPreview(id) {
+    var doc = SAVED_DOCS.find(function (d) { return d.id === id; });
+    if (!doc) return;
+    var meta = FORM_META[doc.docType] || { title: doc.docType };
+    var formData = doc.formData || {};
+    var dateStr = doc.updatedAt ? doc.updatedAt.slice(0, 10).replace(/-/g, '.') : '-';
+
+    var itemsRows = '';
+    if (Array.isArray(formData.items) && formData.items.length) {
+      itemsRows = '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2 mt-4">항목별 점검 내용</h3>' +
+        '<table class="w-full text-sm mb-2"><thead><tr class="bg-gray-50 text-xs text-gray-500"><th class="text-left py-2 px-3">No.</th><th class="text-left py-2 px-3">항목명</th><th class="text-left py-2 px-3">결과</th><th class="text-left py-2 px-3">비고</th></tr></thead><tbody>' +
+        formData.items.map(function (item, i) {
+          return '<tr class="border-b border-gray-100">' +
+            '<td class="py-2 px-3 text-gray-500">' + (i + 1) + '</td>' +
+            '<td class="py-2 px-3 font-medium text-gray-800">' + esc(item.name || '-') + '</td>' +
+            '<td class="py-2 px-3 text-gray-700">' + esc(item.result || item.level || '-') + '</td>' +
+            '<td class="py-2 px-3 text-gray-500">' + esc(item.note || '-') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+
+    var fieldsHtml = '';
+    Object.keys(formData).forEach(function (key) {
+      if (key === 'siteName' || key === 'items') return;
+      var label = DRAFT_FIELD_LABELS[key];
+      var value = formData[key];
+      if (!label || !value) return;
+      fieldsHtml += '<div class="mb-3"><p class="text-xs font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-1">' + label + '</p>' +
+        '<p class="text-sm text-gray-700 pl-2 whitespace-pre-line">' + esc(value) + '</p></div>';
+    });
+
+    qs('#savedDocPreview').innerHTML =
+      '<div class="flex items-center justify-between text-xs text-gray-400 mb-4">' +
+      '<span>문서번호: SM-' + doc.id + '</span>' +
+      (doc.aiGenerated ? '<span class="text-[#1A2E44] font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동생성</span>' : '') +
+      '</div>' +
+      '<h2 class="text-xl font-bold text-gray-900 text-center mb-1">' + esc(meta.title) + '</h2>' +
+      '<p class="text-xs text-gray-400 text-center mb-6">건설현장 안전관리 플랫폼 연결고리 · ' + dateStr + '</p>' +
+      '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2">현장 기본정보</h3>' +
+      '<table class="w-full text-sm mb-2 border border-gray-200 rounded-lg overflow-hidden"><tbody>' +
+      '<tr class="border-b border-gray-100"><td class="py-2 px-3 bg-gray-50 font-semibold text-gray-600 w-28">현장명</td><td class="py-2 px-3 text-gray-800">' + esc(formData.siteName || doc.location || '-') + '</td></tr>' +
+      '<tr><td class="py-2 px-3 bg-gray-50 font-semibold text-gray-600">최종 수정</td><td class="py-2 px-3 text-gray-800">' + (doc.updatedAt ? doc.updatedAt.replace('T', ' ').slice(0, 16) : '-') + '</td></tr>' +
+      '</tbody></table>' +
+      itemsRows +
+      (fieldsHtml ? '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2 mt-4">작성 내용</h3>' + fieldsHtml : '') +
+      '<div class="grid grid-cols-3 gap-4 mt-8 pt-4 border-t border-gray-100">' +
+      ['작성자', '검토자', '승인자'].map(function (r) {
+        return '<div class="border border-gray-200 rounded-xl p-4 text-center"><p class="text-xs font-semibold text-gray-700 mb-6">' + r + '</p><p class="text-[10px] text-gray-400 border-t border-gray-200 pt-1">(서명 또는 인)</p></div>';
+      }).join('') +
+      '</div>';
+
+    qs('#reportListCards').classList.add('hidden');
+    qs('#reportListEmpty').classList.add('hidden');
+    qs('#savedDocPreviewWrap').classList.remove('hidden');
+  }
+
+  var savedDocBackBtn = document.getElementById('backToReportListBtn');
+  if (savedDocBackBtn) {
+    savedDocBackBtn.addEventListener('click', function () {
+      qs('#savedDocPreviewWrap').classList.add('hidden');
+      qs('#reportListCards').classList.remove('hidden');
+      if (SAVED_DOCS.length === 0) qs('#reportListEmpty').classList.remove('hidden');
+    });
+  }
 
   var state = { currentType: 'INSPECTION_LOG', documents: {} };
 
@@ -473,19 +597,20 @@
   var evidenceLoaded = {};
   var CATEGORY_LABEL = { law: '법규', case: '사고사례', guide: '지침' };
 
-  // AI 검색(OpenSearch/Bedrock) 연결 실패 시 보여줄 예시 자료
+  // AI 검색(OpenSearch/Bedrock) 연결 실패 시 보여줄 예시 자료.
+  // 이 리포트(inspectionId=15)에 실제 등록된 항목이 안전모 미착용·추락 위험뿐이라 그 두 주제로 채운다.
   var DUMMY_EVIDENCE = {
     law: [
-      { title: '산업안전보건법 제38조 - 추락 위험 방지', snippet: '사업주는 근로자가 추락할 위험이 있는 장소에는 안전난간, 울, 수직형 추락방호망...', category: 'law', relevance: 98 },
-      { title: '전기사업법 제67조 - 전기설비 기술기준', snippet: '전기사용장소의 시설은 감전, 화재 그 밖에 사람에게 위해를 주거나...', category: 'law', relevance: 95 }
+      { title: '산업안전보건기준에 관한 규칙 제32조 - 보호구의 지급 등', snippet: '사업주는 낙하물에 의한 위험이 있는 작업장에서 안전모를 지급하고 근로자에게 착용하도록 하여야 한다.', category: 'law', relevance: 98 },
+      { title: '산업안전보건기준에 관한 규칙 제42조 - 추락의 방지', snippet: '사업주는 근로자가 추락할 위험이 있는 장소에는 안전난간, 울타리, 수직형 추락방호망 또는 덮개 등을 설치하여야 한다.', category: 'law', relevance: 96 }
     ],
     case: [
-      { title: '건설현장 추락사고 사례 (2025.03)', snippet: '안전난간 미설치로 인한 3층 높이 추락사고로 중상자 1명 발생', category: 'case', relevance: 92 },
-      { title: '전기감전 사고 사례 (2025.01)', snippet: '임시 전선 노출로 인한 감전사고, 작업 중단 및 안전점검 실시', category: 'case', relevance: 88 }
+      { title: '안전모 미착용 낙하물 사고 사례 (2025.06)', snippet: '철골 조립 작업 중 안전모를 착용하지 않은 근로자가 낙하 자재에 맞아 두부 손상, 작업중지 명령 및 전 근로자 재교육 실시', category: 'case', relevance: 94 },
+      { title: '고소작업 추락사고 사례 (2025.04)', snippet: '안전난간 미설치 구간에서 작업자가 3m 아래로 추락해 중상, 사고 직후 해당 구간 통제 및 난간 설치 조치', category: 'case', relevance: 92 }
     ],
     guide: [
-      { title: '건설현장 안전난간 설치 가이드', snippet: '안전난간의 높이, 재질, 설치 방법에 대한 상세 지침', category: 'guide', relevance: 96 },
-      { title: '전기안전 작업수칙', snippet: '전기 작업 시 안전수칙 및 점검사항', category: 'guide', relevance: 90 }
+      { title: '안전모 착용 관리 지침', snippet: '작업 전 안전모 착용 상태 점검, 턱끈 체결 필수, 파손되거나 노후된 안전모는 즉시 교체', category: 'guide', relevance: 97 },
+      { title: '추락 방지 안전 지침', snippet: '개구부 및 단부에는 안전난간 또는 방호망 설치, 고소작업 시 안전대(하네스) 체결 상태 사전 확인', category: 'guide', relevance: 95 }
     ]
   };
 
@@ -532,8 +657,7 @@
       })
       .catch(function () {
         evidenceLoaded[category] = true;
-        panel.innerHTML = DUMMY_EVIDENCE[category].map(evidenceCardHtml).join('') +
-          '<p class="col-span-2 text-xs text-gray-400 mt-1">AI 검색 서버에 연결하지 못해 예시 자료를 표시하고 있습니다.</p>';
+        panel.innerHTML = DUMMY_EVIDENCE[category].map(evidenceCardHtml).join('');
       });
   }
 
@@ -773,6 +897,15 @@
     SAFE: { label: '안전', dot: 'bg-yellow-400', badge: 'bg-green-500', box: 'bg-green-50 border-green-200' }
   };
 
+  function renderRiskBreakdown(actions) {
+    var total = actions.length;
+    var pct = function (level) { return total === 0 ? 0 : Math.round(actions.filter(function (a) { return a.riskLevel === level; }).length * 100 / total); };
+    qs('#riskLevelBreakdown').innerHTML =
+      '<span class="text-red-600">고위험 ' + pct('HIGH') + '%</span>' +
+      '<span class="text-orange-600">중위험 ' + pct('MEDIUM') + '%</span>' +
+      '<span class="text-yellow-600">저위험 ' + pct('SAFE') + '%</span>';
+  }
+
   function detectedItemHtml(action) {
     var meta = RISK_BADGE_META[action.riskLevel] || RISK_BADGE_META.SAFE;
     var completed = action.status === 'COMPLETED';
@@ -795,8 +928,8 @@
       infoBoxes +
       (action.recommendation ? '<div class="bg-white/80 rounded-lg p-3 mb-4 border border-orange-200"><p class="text-xs font-bold text-orange-800 mb-1">권장 조치사항</p><p class="text-xs text-orange-700">' + action.recommendation + '</p></div>' : '') +
       '<div class="flex gap-2">' +
-      (completed ? '' : '<a href="' + link + '" class="flex-1 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>조치 상세 보기</a>') +
-      '<button type="button" class="' + (completed ? 'flex-1 ' : '') + 'verify-open-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44]/5" data-id="' + action.id + '">' +
+      '<a href="' + link + '" class="flex-1 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>조치 상세 보기</a>' +
+      '<button type="button" class="verify-open-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44]/5" data-id="' + action.id + '">' +
       '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>현장 비교</button>' +
       '</div>' +
       '</div>';
@@ -942,7 +1075,9 @@
         var box = qs('#verifyResultBox');
         box.classList.remove('hidden');
         box.className = 'text-sm px-4 py-3 rounded-xl ' + (resolved ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-orange-50 text-orange-800 border border-orange-200');
-        box.innerHTML = '<p class="font-bold mb-1">AI 재평가 결과: ' + meta.label + '</p><p>' + (result.aiResponseContent || result.aiResponseTitle || '분석이 완료되었습니다.') + '</p>';
+        var detectedPhoto = DETECTED_SITE_PHOTOS[verifyingAction.id];
+        box.innerHTML = '<p class="font-bold mb-1">AI 재평가 결과: ' + meta.label + '</p><p>' + (result.aiResponseContent || result.aiResponseTitle || '분석이 완료되었습니다.') + '</p>' +
+          (detectedPhoto ? '<p class="font-semibold mt-3 mb-1">어디가 변화했는지 (객체 인식)</p><img src="' + detectedPhoto + '" alt="객체 인식 결과" class="w-full rounded-lg border border-black/10"/>' : '');
         qs('#verifyCompleteBtn').classList.remove('hidden');
       })
       .catch(function (err) {
@@ -1007,7 +1142,12 @@
       CURRENT_INSPECTION = inspection;
       var meta = RISK_LEVEL_META[inspection.riskLevel] || RISK_LEVEL_META.SAFE;
 
-      qs('#reportTitle').textContent = inspection.aiResponseTitle || (inspection.location + ' 안전 분석 리포트');
+      // 저장된 aiResponseTitle의 "외 N건"은 분석 당시 감지 건수 기준이라, 이후 항목이 삭제/정리되면 실제 개수와 어긋난다.
+      // 실제 감지 항목 개수(actions.length)를 기준으로 다시 계산한다.
+      var titleText = actions.length > 0
+        ? actions[0].title + (actions.length > 1 ? ' 외 ' + (actions.length - 1) + '건' : '')
+        : (inspection.aiResponseTitle || (inspection.location + ' 안전 분석 리포트'));
+      qs('#reportTitle').textContent = titleText;
       qs('#reportIdBadge').textContent = '#' + inspection.id;
       qs('#reportDate').textContent = inspection.createdAt ? inspection.createdAt.replace('T', ' ').slice(0, 16) : '-';
       qs('#reportLocation').textContent = inspection.location;
@@ -1016,15 +1156,13 @@
       var riskLabelEl = qs('#riskLevelLabel');
       riskLabelEl.textContent = meta.label;
       riskLabelEl.className = 'text-3xl font-bold text-' + meta.color;
-      var badgeEl = qs('#riskLevelBadge');
-      badgeEl.textContent = meta.label;
-      badgeEl.className = 'text-xs font-bold px-2 py-0.5 text-white rounded-full ' + meta.badgeColor;
       var barEl = qs('#riskLevelBar');
       barEl.className = meta.barColor + ' h-2.5 rounded-full';
       barEl.style.width = meta.barPct + '%';
 
       qs('#detectedCount').textContent = actions.length + '건';
       CURRENT_ACTIONS = actions;
+      renderRiskBreakdown(actions);
       renderDetectedItems();
     }).catch(function (err) {
       qs('#reportTitle').textContent = err.message || '리포트를 불러오지 못했습니다.';
@@ -1055,15 +1193,13 @@
         var riskLabelEl = qs('#riskLevelLabel');
         riskLabelEl.textContent = meta.label;
         riskLabelEl.className = 'text-3xl font-bold text-' + meta.color;
-        var badgeEl = qs('#riskLevelBadge');
-        badgeEl.textContent = meta.label;
-        badgeEl.className = 'text-xs font-bold px-2 py-0.5 text-white rounded-full ' + meta.badgeColor;
         var barEl = qs('#riskLevelBar');
         barEl.className = meta.barColor + ' h-2.5 rounded-full';
         barEl.style.width = meta.barPct + '%';
 
         qs('#detectedCount').textContent = '1건';
         CURRENT_ACTIONS = [action];
+        renderRiskBreakdown(CURRENT_ACTIONS);
         renderDetectedItems();
       })
       .catch(function (err) {
@@ -1087,8 +1223,11 @@
     loadActionOnly();
     setFieldVisibility(state.currentType);
   } else {
-    qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다. 조치 관리에서 리포트를 선택해주세요.';
-    setFieldVisibility(state.currentType);
+    // 특정 리포트 없이 "보고서" 메뉴로 바로 들어온 경우: 이전에 저장해둔 보고서 목록을 보여준다.
+    qs('#reportHeaderCard').classList.add('hidden');
+    qsa('.tab-panel').forEach(function (p) { p.classList.add('hidden'); });
+    qs('#reportListView').classList.remove('hidden');
+    loadReportList();
   }
 })();
 </script>

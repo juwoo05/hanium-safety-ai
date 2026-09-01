@@ -9,6 +9,7 @@ import java.util.Map;
 public record DocumentResponse(
         Long id,
         Long inspectionId,
+        String location,
         DocumentType docType,
         Map<String, Object> formData,
         boolean aiGenerated,
@@ -18,6 +19,7 @@ public record DocumentResponse(
         return new DocumentResponse(
                 document.getId(),
                 document.getInspection() != null ? document.getInspection().getId() : null,
+                document.getInspection() != null ? document.getInspection().getLocation() : null,
                 document.getDocType(),
                 document.getFormData(),
                 document.isAiGenerated(),

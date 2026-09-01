@@ -14,6 +14,9 @@ public interface ISafetyDocumentService {
 
     List<SafetyDocument> findByInspectionId(Long inspectionId);
 
+    // "보고서" 메뉴 진입 시 이전에 작성해둔 보고서 목록을 보여주기 위한 조회
+    List<SafetyDocument> findMine(Long userId);
+
     // "AI 자동 작성" 버튼: 이 리포트에 실제로 저장된 감지 위험요소/조치 데이터를 양식 필드로 매핑한다.
     Map<String, Object> buildDraft(Long inspectionId, DocumentType docType);
 }
