@@ -724,8 +724,16 @@ document.getElementById('saveCompanyBtn').addEventListener('click', function () 
     .then(function (res) { return res.json().then(function (body) { return { ok: res.ok, body: body }; }); })
     .then(function (r) {
       msg.classList.remove('hidden');
-      if (r.ok) { showMessage(msg, '건설사 정보가 저장되었습니다.', true); }
-      else { showMessage(msg, r.body.error || '저장에 실패했습니다.', false); }
+      if (r.ok) {
+        showMessage(msg, '건설사 정보가 저장되었습니다.', true);
+        // 저장 직후 바로 그 건설사 명의로 현장을 등록/선택할 수 있도록 §2로 이동시킨다.
+        var siteSection = document.getElementById('ownerSiteSection');
+        siteSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('addSiteForm').classList.remove('hidden');
+        document.getElementById('newSiteNameInput').focus();
+      } else {
+        showMessage(msg, r.body.error || '저장에 실패했습니다.', false);
+      }
     })
     .catch(function () {
       msg.classList.remove('hidden');
