@@ -33,26 +33,6 @@
   <main class="flex-1 overflow-y-auto" style="padding:28px 32px 56px;max-width:1280px">
     <div class="space-y-6">
 
-      <!-- 저장된 보고서 목록 ("보고서" 메뉴로 바로 들어왔을 때, 특정 리포트가 선택되기 전 화면) -->
-      <div id="reportListView" class="hidden space-y-4">
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h1 class="text-xl font-bold text-gray-900 mb-1">저장된 보고서</h1>
-          <p class="text-sm text-gray-500">이전에 작성한 보고서를 목록에서 선택해 다시 볼 수 있습니다.</p>
-        </div>
-        <div id="reportListCards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div id="reportListEmpty" class="hidden bg-white rounded-2xl p-10 text-center text-sm text-gray-400 border border-gray-100">아직 저장된 보고서가 없습니다. "AI 결과보고서 생성"에서 먼저 보고서를 작성해보세요.</div>
-
-        <div id="savedDocPreviewWrap" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between px-6 pt-5 no-print">
-            <button id="backToReportListBtn" type="button" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>목록으로</button>
-            <button onclick="window.print()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
-            </button>
-          </div>
-          <div id="savedDocPreview" class="p-8"></div>
-        </div>
-      </div>
-
       <!-- Report Header -->
       <div id="reportHeaderCard" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
@@ -475,106 +455,6 @@
     WORK_PERMIT: { title: '작업허가서', fieldClass: 'field-workpermit' }
   };
 
-  /* ── "보고서" 메뉴: 저장된 보고서 목록 / AI 결과보고서 생성(ai-report.jsp)과 동일한 양식으로 미리보기 ── */
-  var DRAFT_FIELD_LABELS = {
-    completedAction: '완료된 조치 사항', preventionPlan: '재발 방지 대책',
-    assessmentPurpose: '평가 목적', overallResult: '종합 점검 결과',
-    workType: '작업 종류', workScope: '작업 범위', safetyPrecaution: '작업 전 안전 조치사항'
-  };
-
-  function esc(s) { return (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  var SAVED_DOCS = [];
-
-  function reportListCardHtml(doc) {
-    var meta = FORM_META[doc.docType] || { title: doc.docType };
-    var updated = doc.updatedAt ? doc.updatedAt.replace('T', ' ').slice(0, 16) : '-';
-    return '<button type="button" class="saved-doc-card text-left bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-[#1A2E44]/40 transition-colors" data-id="' + doc.id + '">' +
-      '<div class="flex items-center justify-between mb-2">' +
-      '<span class="text-xs font-semibold px-2.5 py-1 bg-[#1A2E44]/10 text-[#1A2E44] rounded-full">' + esc(meta.title) + '</span>' +
-      (doc.aiGenerated ? '<span class="text-[10px] text-[#1A2E44] font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동생성</span>' : '') +
-      '</div>' +
-      '<p class="text-sm font-bold text-gray-900 mb-1">' + esc(doc.location || '현장 정보 없음') + '</p>' +
-      '<p class="text-xs text-gray-400">최종 수정 ' + updated + '</p></button>';
-  }
-
-  function loadReportList() {
-    fetch('/api/documents/mine')
-      .then(function (res) { if (!res.ok) throw new Error(); return res.json(); })
-      .then(function (docs) {
-        SAVED_DOCS = docs;
-        qs('#reportListCards').innerHTML = docs.map(reportListCardHtml).join('');
-        qs('#reportListEmpty').classList.toggle('hidden', docs.length > 0);
-        qsa('.saved-doc-card').forEach(function (card) {
-          card.addEventListener('click', function () { showSavedDocPreview(Number(card.dataset.id)); });
-        });
-      })
-      .catch(function () { qs('#reportListEmpty').classList.remove('hidden'); });
-  }
-
-  function showSavedDocPreview(id) {
-    var doc = SAVED_DOCS.find(function (d) { return d.id === id; });
-    if (!doc) return;
-    var meta = FORM_META[doc.docType] || { title: doc.docType };
-    var formData = doc.formData || {};
-    var dateStr = doc.updatedAt ? doc.updatedAt.slice(0, 10).replace(/-/g, '.') : '-';
-
-    var itemsRows = '';
-    if (Array.isArray(formData.items) && formData.items.length) {
-      itemsRows = '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2 mt-4">항목별 점검 내용</h3>' +
-        '<table class="w-full text-sm mb-2"><thead><tr class="bg-gray-50 text-xs text-gray-500"><th class="text-left py-2 px-3">No.</th><th class="text-left py-2 px-3">항목명</th><th class="text-left py-2 px-3">결과</th><th class="text-left py-2 px-3">비고</th></tr></thead><tbody>' +
-        formData.items.map(function (item, i) {
-          return '<tr class="border-b border-gray-100">' +
-            '<td class="py-2 px-3 text-gray-500">' + (i + 1) + '</td>' +
-            '<td class="py-2 px-3 font-medium text-gray-800">' + esc(item.name || '-') + '</td>' +
-            '<td class="py-2 px-3 text-gray-700">' + esc(item.result || item.level || '-') + '</td>' +
-            '<td class="py-2 px-3 text-gray-500">' + esc(item.note || '-') + '</td></tr>';
-        }).join('') + '</tbody></table>';
-    }
-
-    var fieldsHtml = '';
-    Object.keys(formData).forEach(function (key) {
-      if (key === 'siteName' || key === 'items') return;
-      var label = DRAFT_FIELD_LABELS[key];
-      var value = formData[key];
-      if (!label || !value) return;
-      fieldsHtml += '<div class="mb-3"><p class="text-xs font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-1">' + label + '</p>' +
-        '<p class="text-sm text-gray-700 pl-2 whitespace-pre-line">' + esc(value) + '</p></div>';
-    });
-
-    qs('#savedDocPreview').innerHTML =
-      '<div class="flex items-center justify-between text-xs text-gray-400 mb-4">' +
-      '<span>문서번호: SM-' + doc.id + '</span>' +
-      (doc.aiGenerated ? '<span class="text-[#1A2E44] font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>AI 자동생성</span>' : '') +
-      '</div>' +
-      '<h2 class="text-xl font-bold text-gray-900 text-center mb-1">' + esc(meta.title) + '</h2>' +
-      '<p class="text-xs text-gray-400 text-center mb-6">건설현장 안전관리 플랫폼 연결고리 · ' + dateStr + '</p>' +
-      '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2">현장 기본정보</h3>' +
-      '<table class="w-full text-sm mb-2 border border-gray-200 rounded-lg overflow-hidden"><tbody>' +
-      '<tr class="border-b border-gray-100"><td class="py-2 px-3 bg-gray-50 font-semibold text-gray-600 w-28">현장명</td><td class="py-2 px-3 text-gray-800">' + esc(formData.siteName || doc.location || '-') + '</td></tr>' +
-      '<tr><td class="py-2 px-3 bg-gray-50 font-semibold text-gray-600">최종 수정</td><td class="py-2 px-3 text-gray-800">' + (doc.updatedAt ? doc.updatedAt.replace('T', ' ').slice(0, 16) : '-') + '</td></tr>' +
-      '</tbody></table>' +
-      itemsRows +
-      (fieldsHtml ? '<h3 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-2 mt-4">작성 내용</h3>' + fieldsHtml : '') +
-      '<div class="grid grid-cols-3 gap-4 mt-8 pt-4 border-t border-gray-100">' +
-      ['작성자', '검토자', '승인자'].map(function (r) {
-        return '<div class="border border-gray-200 rounded-xl p-4 text-center"><p class="text-xs font-semibold text-gray-700 mb-6">' + r + '</p><p class="text-[10px] text-gray-400 border-t border-gray-200 pt-1">(서명 또는 인)</p></div>';
-      }).join('') +
-      '</div>';
-
-    qs('#reportListCards').classList.add('hidden');
-    qs('#reportListEmpty').classList.add('hidden');
-    qs('#savedDocPreviewWrap').classList.remove('hidden');
-  }
-
-  var savedDocBackBtn = document.getElementById('backToReportListBtn');
-  if (savedDocBackBtn) {
-    savedDocBackBtn.addEventListener('click', function () {
-      qs('#savedDocPreviewWrap').classList.add('hidden');
-      qs('#reportListCards').classList.remove('hidden');
-      if (SAVED_DOCS.length === 0) qs('#reportListEmpty').classList.remove('hidden');
-    });
-  }
-
   var state = { currentType: 'INSPECTION_LOG', documents: {} };
 
   function qs(sel, root) { return (root || document).querySelector(sel); }
@@ -917,7 +797,7 @@
         (action.regulationRef ? '<div class="bg-white/70 rounded-lg p-3"><p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">관련 법규</p><p class="text-xs text-gray-800 font-medium">' + action.regulationRef + '</p></div>' : '') +
         '</div>';
     }
-    return '<div class="rounded-xl border-2 p-5 ' + meta.box + '">' +
+    return '<div class="rounded-xl border-2 p-5 ' + meta.box + '" data-action-id="' + action.id + '">' +
       '<div class="flex items-start justify-between mb-3">' +
       '<div class="flex items-start gap-3 flex-1"><div class="w-2.5 h-2.5 rounded-full ' + meta.dot + ' mt-2 flex-shrink-0"></div>' +
       '<div><h4 class="font-bold text-gray-900 mb-1">' + action.title + '</h4>' +
@@ -941,7 +821,12 @@
       if (issueFilter === 'done') return a.status === 'COMPLETED';
       return true;
     });
-    qs('#detectedItems').innerHTML = filtered.length
+    var container = qs('#detectedItems');
+    var panel = qs('#verificationPanel');
+    // 검증 패널이 특정 카드 바로 아래로 옮겨져 있는 상태(openVerification 참고)에서
+    // innerHTML을 다시 쓰면 패널까지 통째로 지워지므로, 먼저 목록 밖으로 빼둔다.
+    if (panel.parentElement === container) container.insertAdjacentElement('afterend', panel);
+    container.innerHTML = filtered.length
       ? filtered.map(detectedItemHtml).join('')
       : '<p class="text-sm text-gray-400">해당하는 감지 항목이 없습니다.</p>';
     renderSummaryPanel();
@@ -997,7 +882,11 @@
   function openVerification(action) {
     verifyingAction = action;
     verifyAfterFile = null;
-    qs('#verificationPanel').classList.remove('hidden');
+    var panel = qs('#verificationPanel');
+    // 목록 맨 아래가 아니라, 방금 "현장 비교"를 누른 그 항목 카드 바로 아래에 패널을 붙인다.
+    var card = qs('#detectedItems').querySelector('[data-action-id="' + action.id + '"]');
+    if (card) card.insertAdjacentElement('afterend', panel);
+    panel.classList.remove('hidden');
     qs('#verifyIssueLabel').textContent = '조치 항목: ' + action.title;
 
     var rawBeforeImg = CURRENT_INSPECTION && CURRENT_INSPECTION.imageUrls && CURRENT_INSPECTION.imageUrls[0];
@@ -1223,11 +1112,8 @@
     loadActionOnly();
     setFieldVisibility(state.currentType);
   } else {
-    // 특정 리포트 없이 "보고서" 메뉴로 바로 들어온 경우: 이전에 저장해둔 보고서 목록을 보여준다.
-    qs('#reportHeaderCard').classList.add('hidden');
-    qsa('.tab-panel').forEach(function (p) { p.classList.add('hidden'); });
-    qs('#reportListView').classList.remove('hidden');
-    loadReportList();
+    qs('#reportTitle').textContent = '리포트가 선택되지 않았습니다. 조치 관리에서 리포트를 선택해주세요.';
+    setFieldVisibility(state.currentType);
   }
 })();
 </script>

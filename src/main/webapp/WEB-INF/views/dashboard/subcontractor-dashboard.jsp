@@ -107,10 +107,10 @@
             <a href="/upload" class="quick-action" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer;font-size:11px;color:#374151;font-weight:500;text-decoration:none">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A2E44" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               위험 분석</a>
-            <a href="/actions" class="quick-action" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer;font-size:11px;color:#374151;font-weight:500;text-decoration:none">
+            <a href="/actions" onclick="return srDenyIfSub(event)" class="quick-action" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer;font-size:11px;color:#374151;font-weight:500;text-decoration:none">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A2E44" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               조치 목록</a>
-            <a href="/actions/detail" class="quick-action" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer;font-size:11px;color:#374151;font-weight:500;text-decoration:none">
+            <a href="/reports" onclick="return srDenyIfSub(event)" class="quick-action" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:4px;cursor:pointer;font-size:11px;color:#374151;font-weight:500;text-decoration:none">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A2E44" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               보고서 확인</a>
           </div>
@@ -141,6 +141,15 @@
 </div>
 
 <style>.quick-action:hover{background:#F3F4F6}</style>
+<script>
+// 하청 계정에서는 이용할 수 없는 원청 전용 기능(사진업로드/조치관리/보고서)으로 가는 바로가기를 눌렀을 때
+// 그냥 이동시키는 대신 안내만 띄운다.
+function srDenyIfSub(e) {
+  e.preventDefault();
+  alert('원청만 이용할 수 있습니다.');
+  return false;
+}
+</script>
 <script>
 (function () {
   var STATUS_LABEL = { REQUESTED: '미완료', IN_PROGRESS: '진행 중', PENDING_APPROVAL: '승인 대기', COMPLETED: '완료' };
