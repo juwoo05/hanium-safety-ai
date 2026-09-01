@@ -93,6 +93,13 @@ public class SafetyDocumentService implements ISafetyDocumentService {
         Map<String, Object> draft = new LinkedHashMap<>();
         draft.put("siteName", inspection.getLocation());
 
+        // 교육/TBM/예산 서류 초안에서 공통으로 쓰는 "이 리포트가 감지한 위험요소" 요약
+        String hazardList = actions.stream()
+                .map(SafetyAction::getTitle)
+                .filter(t -> t != null && !t.isBlank())
+                .distinct()
+                .collect(Collectors.joining(", "));
+
         switch (docType) {
             case INSPECTION_LOG -> {
                 draft.put("overallResult", overallResultLabel(inspection.getRiskLevel()));
@@ -147,8 +154,42 @@ public class SafetyDocumentService implements ISafetyDocumentService {
                                 ? ""
                                 : "작업 전 다음 근거 법규에 따른 안전조치를 확인한다: " + safetyPrecaution);
             }
+            // 아래 서류들은 담당자/참석자/집행 내역처럼 이 도메인에 저장돼 있지 않은 값이 많아,
+            // AI 자동 작성은 "리포트가 확보한 위험요소·근거법규"를 요약 필드로만 채우고 나머지는 비워둔다.
+            case SAFETY_EDU_LOG -> {
+                draft.put("subType", "정기");
+                draft.put("summary", hazardList.isBlank()
+                        ? "현장 안전보건교육 실시"
+                        : inspection.getLocation() + " 현장에서 감지된 위험요소를 중심으로 교육을 실시한다: " + hazardList);
+                draft.put("note", "교육 대상자와 서명은 참석자 서명부에 별도로 기록한다.");
+            }
+            case TBM_LOG -> {
+                draft.put("subType", "작업 전");
+                draft.put("summary", ("오늘 작업: " + nullToDash(inspection.getWorkType())
+                        + (hazardList.isBlank() ? "" : " · 주요 위험요소: " + hazardList)).trim());
+                String briefing = actions.stream()
+                        .map(SafetyAction::getRecommendation)
+                        .filter(r -> r != null && !r.isBlank())
+                        .distinct()
+                        .collect(Collectors.joining(" "));
+                draft.put("note", briefing);
+            }
+            case PPE_ISSUE_LOG -> {
+                draft.put("subType", "정기 지급");
+                draft.put("summary", "안전모·안전화·안전대 등 개인 보호구 지급 내역");
+                draft.put("note", "지급 품목·수량·수령자 서명은 지급대장 항목에 직접 입력한다.");
+            }
+            case SAFETY_EXPENSE_LOG -> {
+                draft.put("subType", "집행 내역");
+                draft.put("summary", inspection.getLocation() + " 현장 산업안전보건관리비 집행 내역");
+                draft.put("note", "세금계산서·현장 사진 등 증빙서류를 증거자료 탭에 함께 첨부한다.");
+            }
         }
         return draft;
+    }
+
+    private String nullToDash(String value) {
+        return value == null || value.isBlank() ? "-" : value;
     }
 
     private String overallResultLabel(RiskLevel riskLevel) {

@@ -146,19 +146,20 @@
   var RISK_COLOR = { HIGH: '#991B1B', MEDIUM: '#B45309', SAFE: '#166534' };
   var RISK_BG    = { HIGH: '#FEF2F2', MEDIUM: '#FFFBEB', SAFE: '#F0FDF4' };
 
-  // React AIReportPage.tsx의 TEMPLATES 그대로. 실제 백엔드 DocumentType은 4종류뿐이라
-  // TBM/하청 조치확인서는 가장 가까운 기존 타입에 매핑해서 실제 AI 자동작성을 그대로 활용한다.
+  // React AIReportPage.tsx의 TEMPLATES 그대로. TBM은 전용 DocumentType(TBM_LOG)으로 저장하고,
+  // 하청 조치확인서는 별도 타입이 없어 가장 가까운 조치결과보고서(ACTION_REPORT)로 매핑한다.
   var TEMPLATES = [
     { id: 'ACTION_REPORT',   name: '조치결과보고서',       desc: '완료된 조치 결과 및 재발방지 계획 기록',      docType: 'ACTION_REPORT',   icon: '<polyline points="20 6 9 17 4 12"/>' },
     { id: 'INSPECTION_LOG',  name: '안전점검 결과보고서',   desc: '현장 안전점검 결과를 정리한 표준 보고서',      docType: 'INSPECTION_LOG',  icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
-    { id: 'TBM',             name: 'TBM 보고서',            desc: '작업 전 안전 회의 (Tool Box Meeting) 기록',    docType: 'INSPECTION_LOG',  icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
+    { id: 'TBM',             name: 'TBM 보고서',            desc: '작업 전 안전 회의 (Tool Box Meeting) 기록',    docType: 'TBM_LOG',         icon: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
     { id: 'CONFIRM',         name: '하청 조치확인서',       desc: '하청 업체의 조치 완료 확인 및 서명 문서',      docType: 'ACTION_REPORT',   icon: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>' }
   ];
 
   var DRAFT_FIELD_LABELS = {
     completedAction: '완료된 조치 사항', preventionPlan: '재발 방지 대책',
     assessmentPurpose: '평가 목적', overallResult: '종합 점검 결과',
-    workType: '작업 종류', workScope: '작업 범위', safetyPrecaution: '작업 전 안전 조치사항'
+    workType: '작업 종류', workScope: '작업 범위', safetyPrecaution: '작업 전 안전 조치사항',
+    subType: '세부 유형', summary: '주요 내용', note: '비고'
   };
 
   var STEP_META = [

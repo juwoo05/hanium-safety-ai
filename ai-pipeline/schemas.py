@@ -68,3 +68,22 @@ class EvidenceItem(BaseModel):
 
 class EvidenceResponse(BaseModel):
     items: list[EvidenceItem]
+
+
+class MsdsDetectRequest(BaseModel):
+    image_s3_key: str
+    work_info: str = ""
+
+
+class ChemicalCandidate(BaseModel):
+    chemical_name: str
+    cas_no: str | None = None
+    product_name: str | None = None
+    confidence: int = 0  # 0~100
+
+
+class MsdsDetectResponse(BaseModel):
+    # 사진에서 읽어낸 텍스트/경고표지 키워드
+    detected_keywords: list[str] = []
+    # 물질 후보(AI가 확정 못 하면 여러 개). 사용자가 이 중에서 선택한다.
+    chemical_candidates: list[ChemicalCandidate] = []
