@@ -17,12 +17,13 @@ const NAV_ITEMS = [
   { label: '사진 분석',   path: 'upload',         icon: Camera },
   { label: '조치관리',    path: 'actions',        icon: ClipboardList },
   { label: '분석 리포트', path: 'analytics',      icon: BarChart2 },
-  { label: '보고서',      path: 'actions-detail', icon: FileText },
+  { label: '안전 서류',   path: 'actions-detail', icon: FileText },
   { label: '신고 게시판', path: 'report-board',   icon: MessageSquare },
 ];
 
-// 하청 계정은 대시보드 / 사진 업로드 / 신고 게시판만 접근 가능 — 나머지 업무 메뉴는 숨긴다.
-const SUB_HIDDEN_PATHS = new Set(['actions', 'analytics', 'actions-detail']);
+// 하청 계정에서 숨기는 메뉴: 조치 관리 / 분석 리포트.
+// '안전 서류'는 TBM·교육일지·보호구 지급대장 등 하청이 직접 작성하는 서류가 많아 노출한다.
+const SUB_HIDDEN_PATHS = new Set(['actions', 'analytics']);
 
 const SIDEBAR_W = 220;
 

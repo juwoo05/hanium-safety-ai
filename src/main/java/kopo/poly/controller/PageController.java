@@ -49,6 +49,10 @@ public class PageController {
     @GetMapping("/analytics")
     public String analytics() { return "analytics/analytics"; }
 
+    // 사진에서 화학물질을 인식해 공식 MSDS/SDS 자료를 찾는 독립 화면.
+    @GetMapping("/msds")
+    public String msds() { return "msds/msds"; }
+
     // /notifications 는 kopo.poly.controller.NotificationController 에서 처리한다.
 
     @GetMapping("/mypage")

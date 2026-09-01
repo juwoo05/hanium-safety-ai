@@ -115,6 +115,36 @@ class SafetyDocumentServiceTest {
     }
 
     @Test
+    void TBM일지_초안은_현장정보와_위험요소를_요약필드로_채운다() {
+        AiSafetyInspection inspection = 리포트(RiskLevel.MEDIUM);
+        when(inspectionRepository.findById(1L)).thenReturn(Optional.of(inspection));
+        when(safetyActionRepository.findByInspectionOrderByCreatedAtDesc(inspection)).thenReturn(List.of(
+                조치("안전난간 미설치", RiskLevel.HIGH, ActionStatus.REQUESTED, "즉시 설치", "산안법 제38조")
+        ));
+
+        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.TBM_LOG);
+
+        assertThat(draft.get("siteName")).isEqualTo("3동 지하 1층");
+        assertThat(draft.get("subType")).isEqualTo("작업 전");
+        assertThat(draft.get("summary")).asString().contains("외벽 마감 작업").contains("안전난간 미설치");
+        assertThat(draft.get("note")).asString().contains("즉시 설치");
+    }
+
+    @Test
+    void 신규_서류타입_초안도_예외없이_최소필드를_반환한다() {
+        AiSafetyInspection inspection = 리포트(RiskLevel.SAFE);
+        when(inspectionRepository.findById(1L)).thenReturn(Optional.of(inspection));
+        when(safetyActionRepository.findByInspectionOrderByCreatedAtDesc(inspection)).thenReturn(List.of());
+
+        for (DocumentType type : List.of(
+                DocumentType.SAFETY_EDU_LOG, DocumentType.PPE_ISSUE_LOG, DocumentType.SAFETY_EXPENSE_LOG)) {
+            Map<String, Object> draft = safetyDocumentService.buildDraft(1L, type);
+            assertThat(draft.get("siteName")).isEqualTo("3동 지하 1층");
+            assertThat(draft.get("summary")).asString().isNotBlank();
+        }
+    }
+
+    @Test
     void 존재하지_않는_리포트로_초안을_요청하면_예외가_발생한다() {
         when(inspectionRepository.findById(999L)).thenReturn(Optional.empty());
 

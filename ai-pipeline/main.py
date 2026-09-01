@@ -9,6 +9,7 @@ from auth import verify_api_key
 from config import S3_BUCKET_NAME, get_s3_client
 from evidence import search_evidence
 from graph import build_analysis_graph
+from msds import detect_chemicals
 from report import generate_report
 from schemas import (
     AnalyzeRequest,
@@ -16,6 +17,8 @@ from schemas import (
     ErrorResponse,
     EvidenceRequest,
     EvidenceResponse,
+    MsdsDetectRequest,
+    MsdsDetectResponse,
     ReportRequest,
     ReportResponse,
     UploadResponse,
@@ -101,3 +104,19 @@ def evidence(request: EvidenceRequest):
         )
 
     return EvidenceResponse(items=items)
+
+
+@app.post("/msds/detect", response_model=MsdsDetectResponse, responses={500: {"model": ErrorResponse}})
+def msds_detect(request: MsdsDetectRequest):
+    try:
+        return detect_chemicals(request)
+    except (ClientError, BotoCoreError) as exc:
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(error="AWSServiceError", detail=str(exc)).model_dump(),
+        )
+    except Exception as exc:
+        return JSONResponse(
+            status_code=500,
+            content=ErrorResponse(error=type(exc).__name__, detail=str(exc)).model_dump(),
+        )

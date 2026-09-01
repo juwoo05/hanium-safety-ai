@@ -5,6 +5,8 @@ import kopo.poly.dto.response.AnalyzeResponseDto;
 import kopo.poly.dto.response.ErrorResponseDto;
 import kopo.poly.dto.request.EvidenceRequestDto;
 import kopo.poly.dto.response.EvidenceResponseDto;
+import kopo.poly.dto.request.MsdsDetectRequestDto;
+import kopo.poly.dto.response.MsdsDetectResponseDto;
 import kopo.poly.dto.response.UploadResponseDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
@@ -49,6 +51,20 @@ public class AiPipelineClient {
                     .body(EvidenceResponseDto.class);
         } catch (RestClientResponseException e) {
             throw new AiPipelineException("증거자료 검색이 실패했습니다: " + extractDetail(e), e);
+        } catch (RestClientException e) {
+            throw new AiPipelineException("AI 분석 서버에 연결할 수 없습니다: " + e.getMessage(), e);
+        }
+    }
+
+    public MsdsDetectResponseDto detectMsds(MsdsDetectRequestDto request) {
+        try {
+            return aiPipelineRestClient.post()
+                    .uri("/msds/detect")
+                    .body(request)
+                    .retrieve()
+                    .body(MsdsDetectResponseDto.class);
+        } catch (RestClientResponseException e) {
+            throw new AiPipelineException("MSDS 물질 인식이 실패했습니다: " + extractDetail(e), e);
         } catch (RestClientException e) {
             throw new AiPipelineException("AI 분석 서버에 연결할 수 없습니다: " + e.getMessage(), e);
         }
