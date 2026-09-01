@@ -165,25 +165,34 @@
 })();
 
 // 현재 페이지 메뉴 활성화 (디자인 원본의 블루 액센트)
+// href가 가장 길게(가장 구체적으로) 일치하는 항목 하나만 활성화한다.
+// (예전엔 data-path를 path.includes()로만 비교해 "/actions/detail"이 "actions"(조치관리)에도
+//  걸려 "보고서" 대신 "조치관리"가 활성화되는 오동작이 있었다.)
 (function() {
   const path = window.location.pathname;
-  document.querySelectorAll('.nav-item').forEach(function(el) {
-    const p = el.getAttribute('data-path');
-    if (path.includes(p)) {
-      el.classList.remove('text-slate-500');
-      el.classList.add('bg-white/[0.07]', 'text-white');
-      el.style.boxShadow = 'inset 2px 0 0 #4A90D9';
-      const icon = el.querySelector('svg');
-      if (icon) icon.classList.add('text-[#4A90D9]');
-    }
+  var items = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
+  var best = null;
+  items.forEach(function(el) {
+    var href = el.getAttribute('href');
+    if (!href) return;
+    var matches = path === href || path.indexOf(href + '/') === 0 || path.indexOf(href + '?') === 0;
+    if (matches && (!best || href.length > best.getAttribute('href').length)) best = el;
   });
+  if (best) {
+    best.classList.remove('text-slate-500');
+    best.classList.add('bg-white/[0.07]', 'text-white');
+    best.style.boxShadow = 'inset 2px 0 0 #4A90D9';
+    const icon = best.querySelector('svg');
+    if (icon) icon.classList.add('text-[#4A90D9]');
+  }
 })();
 
 // 사이드바 사용자 정보 (모든 인증 페이지 공통 표시)
 (function() {
-  // 하청 계정은 대시보드 / 사진 업로드 / 신고 게시판만 접근 가능 — 나머지 업무 메뉴는 숨긴다.
+  // 하청 계정은 대시보드 / 신고 게시판만 접근 가능 — 나머지 업무 메뉴는 숨긴다.
+  // 사진 업로드(AI 판독용 조치전 사진)는 원청 전용으로 바뀌어 하청에게는 숨긴다.
   // (알림·설정은 역할과 무관한 공통 기능이라 그대로 둔다)
-  var SUB_HIDDEN_PATHS = ['actions', 'analytics', 'actions-detail'];
+  var SUB_HIDDEN_PATHS = ['upload', 'actions', 'analytics', 'actions-detail'];
 
   fetch('/api/users/me', { credentials: 'same-origin' })
     .then(function(res) { if (!res.ok) throw new Error(); return res.json(); })

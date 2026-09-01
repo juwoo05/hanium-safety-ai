@@ -52,11 +52,17 @@
 
 <script>
 (function () {
+  // href가 가장 길게(가장 구체적으로) 일치하는 항목 하나만 활성화한다.
   var path = window.location.pathname;
-  document.querySelectorAll('.quicknav-item').forEach(function (el) {
-    var p = el.getAttribute('data-path');
-    if (path.indexOf(p) !== -1) el.classList.add('active');
+  var items = Array.prototype.slice.call(document.querySelectorAll('.quicknav-item'));
+  var best = null;
+  items.forEach(function (el) {
+    var href = el.getAttribute('href');
+    if (!href) return;
+    var matches = path === href || path.indexOf(href + '/') === 0 || path.indexOf(href + '?') === 0;
+    if (matches && (!best || href.length > best.getAttribute('href').length)) best = el;
   });
+  if (best) best.classList.add('active');
 
   var panel = document.getElementById('quickNavPanel');
   var toggle = document.getElementById('quickNavToggle');

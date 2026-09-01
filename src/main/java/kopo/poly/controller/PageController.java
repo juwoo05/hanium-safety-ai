@@ -16,9 +16,7 @@ public class PageController {
     // 하청 사용자가 눌러도 원청 대시보드로 가지 않도록 여기서 역할을 보고 갈라준다.
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication) {
-        boolean sub = authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> ("ROLE_" + UserRole.하청.name()).equals(a.getAuthority()));
-        return sub ? "redirect:/dashboard/sub" : "dashboard/contractor-dashboard";
+        return isSubcontractor(authentication) ? "redirect:/dashboard/sub" : "dashboard/contractor-dashboard";
     }
 
     @GetMapping("/dashboard/sub")
@@ -33,11 +31,21 @@ public class PageController {
     @PostMapping("/actions/new")
     public String actionsNewPost() { return "redirect:/actions"; }
 
+    // 사진 업로드(AI 판독용 조치전 사진 등록)는 원청 전용 기능이다.
     @GetMapping("/upload")
-    public String upload() { return "upload/upload"; }
+    public String upload(Authentication authentication) {
+        return isSubcontractor(authentication) ? "redirect:/dashboard/sub" : "upload/upload";
+    }
 
     @PostMapping("/upload")
-    public String uploadPost() { return "upload/upload"; }
+    public String uploadPost(Authentication authentication) {
+        return isSubcontractor(authentication) ? "redirect:/dashboard/sub" : "upload/upload";
+    }
+
+    private boolean isSubcontractor(Authentication authentication) {
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> ("ROLE_" + UserRole.하청.name()).equals(a.getAuthority()));
+    }
 
     @GetMapping("/actions/detail")
     public String actionsDetail() { return "action/report-detail"; }
