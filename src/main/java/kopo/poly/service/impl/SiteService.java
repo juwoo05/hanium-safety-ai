@@ -143,6 +143,19 @@ public class SiteService implements ISiteService {
                 .toList();
     }
 
+    // 소유자가 지정된 현장은 그 원청만 삭제할 수 있다. 소유자가 없는(구버전 방식으로 만든) 현장은 원청이면 누구나 정리할 수 있다.
+    @Override
+    @Transactional
+    public void delete(Long siteId, Long requestUserId) {
+        Site site = siteRepository.findById(siteId)
+                .orElseThrow(() -> new NoSuchElementException("현장을 찾을 수 없습니다."));
+        if (site.getOwnerId() != null && !site.getOwnerId().equals(requestUserId)) {
+            throw new NoSuchElementException("현장을 찾을 수 없습니다.");
+        }
+        siteMembershipRepository.deleteBySite(site);
+        siteRepository.delete(site);
+    }
+
     // 소유자 본인 것이 아니면 존재 여부를 굳이 알려주지 않고 그냥 "없음"으로 처리한다.
     private Site requireOwnedSite(Long siteId, Long ownerId) {
         Site site = siteRepository.findById(siteId)

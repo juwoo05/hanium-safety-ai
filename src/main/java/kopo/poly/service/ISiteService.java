@@ -34,4 +34,8 @@ public interface ISiteService {
 
     // 원청이 자신의 현장들에 연결된 하청 업체 목록을 본다.
     List<ConnectedSubcontractorResponse> connectedSubcontractors(Long ownerId);
+
+    // 현장을 영구 삭제한다. 연결된 하청 소속 기록(site_memberships)도 함께 정리한다.
+    // 소유자가 지정된 현장은 그 원청 본인만 삭제할 수 있다.
+    void delete(Long siteId, Long requestUserId);
 }

@@ -9,8 +9,12 @@ import kopo.poly.dto.response.SiteConnectionResponse;
 import kopo.poly.dto.response.SiteOwnerResponse;
 import kopo.poly.dto.response.SiteResponse;
 import kopo.poly.entity.Site;
+import kopo.poly.entity.User;
+import kopo.poly.entity.enums.UserRole;
+import kopo.poly.repository.UserRepository;
 import kopo.poly.service.ISiteService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +24,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class SiteApiController {
 
     private final ISiteService siteService;
+    private final UserRepository userRepository;
 
-    public SiteApiController(ISiteService siteService) {
+    public SiteApiController(ISiteService siteService, UserRepository userRepository) {
         this.siteService = siteService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/api/sites")
@@ -83,10 +90,30 @@ public class SiteApiController {
         return siteService.connectedSubcontractors(requireLoginUserId(session));
     }
 
+    // 원청 전용: 현장을 영구 삭제한다. 소유자가 지정된 현장은 그 원청 본인만 삭제할 수 있다(서비스단에서 검증).
+    @DeleteMapping("/api/sites/{id}")
+    public Map<String, Boolean> delete(@PathVariable Long id, HttpSession session) {
+        Long loginUserId = requirePrimeContractor(session);
+        siteService.delete(id, loginUserId);
+        return Map.of("ok", true);
+    }
+
     private Long requireLoginUserId(HttpSession session) {
         Long loginUserId = (Long) session.getAttribute("LOGIN_USER_ID");
         if (loginUserId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+        return loginUserId;
+    }
+
+    private Long requirePrimeContractor(HttpSession session) {
+        Long loginUserId = requireLoginUserId(session);
+        boolean isPrimeContractor = userRepository.findById(loginUserId)
+                .map(User::getRole)
+                .filter(role -> role == UserRole.원청)
+                .isPresent();
+        if (!isPrimeContractor) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "원청만 현장을 삭제할 수 있습니다.");
         }
         return loginUserId;
     }

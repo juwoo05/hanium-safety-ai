@@ -13,4 +13,7 @@ public interface SiteMembershipRepository extends JpaRepository<SiteMembership, 
 
     // 원청이 소유한 여러 현장에 소속된 하청 목록을 한 번에 보여주기 위한 조회
     List<SiteMembership> findBySiteOwnerIdOrderByJoinedAtDesc(Long ownerId);
+
+    // 현장 삭제 시 함께 정리한다. site_id에 NOT NULL FK가 걸려 있어 먼저 지워야 한다.
+    void deleteBySite(Site site);
 }
