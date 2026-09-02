@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PageController {
 
     @GetMapping("/")
-    public String root() { return "forward:/app/index.html"; }
+    public String root() { return "landing"; }
 
     @GetMapping("/landing")
     public String landing() { return "landing"; }

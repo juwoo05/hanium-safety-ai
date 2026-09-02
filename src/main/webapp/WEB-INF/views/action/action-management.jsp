@@ -199,6 +199,11 @@
     }
     actionsHtml += '<button type="button" class="expand-btn" data-id="' + a.id + '" aria-label="상세 보기" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid #E5E7EB;border-radius:3px;cursor:pointer;margin-left:4px;transform:' + (isExpanded ? 'rotate(180deg)' : 'none') + ';transition:transform .2s;vertical-align:middle">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>';
+    // 원청 전용: 조치 항목 삭제 (DELETE /api/actions/{id})
+    if (CURRENT_USER_ROLE === '원청') {
+      actionsHtml += '<button type="button" class="delete-btn" data-id="' + a.id + '" aria-label="삭제" style="width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid #E5E7EB;border-radius:3px;cursor:pointer;margin-left:4px;vertical-align:middle">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>';
+    }
 
     var thumbSrc = (a.thumbnailUrl && /^https?:\/\//.test(a.thumbnailUrl)) ? a.thumbnailUrl : mockThumbFor(a.id);
     var thumbHtml = '<img src="' + thumbSrc + '" alt="' + esc(a.title) + '" style="width:40px;height:30px;border-radius:3px;object-fit:cover;display:block"/>';
@@ -291,6 +296,9 @@
     document.querySelectorAll('.reject-btn').forEach(function (btn) {
       btn.addEventListener('click', function (e) { e.stopPropagation(); rejectAction(btn.dataset.id); });
     });
+    document.querySelectorAll('.delete-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) { e.stopPropagation(); deleteAction(btn.dataset.id); });
+    });
     document.querySelectorAll('.action-row').forEach(function (row) {
       row.addEventListener('click', function () {
         var a = currentActions.find(function (x) { return String(x.id) === String(row.dataset.id); });
@@ -338,6 +346,19 @@
       })
       .then(function () { loadActions(); })
       .catch(function () {});
+  }
+
+  function deleteAction(id) {
+    var a = currentActions.find(function (x) { return String(x.id) === String(id); });
+    if (!confirm('"' + (a ? a.title : '이 조치') + '" 항목을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.')) return;
+    fetch('/api/actions/' + id, { method: 'DELETE' })
+      .then(function (res) {
+        if (res.status === 403) { alert('원청만 삭제할 수 있습니다.'); throw new Error(); }
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(function () { selectedIds.delete(String(id)); loadActions(); })
+      .catch(function () { alert('삭제에 실패했습니다.'); });
   }
 
   function updateResetBtn() {

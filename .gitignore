@@ -50,10 +50,3 @@ ai-pipeline/.env
 /output/
 /outputs/
 src/main/webapp/images/*-preview.png
-
-### Frontend (frontend/) ###
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
-# Vite 빌드 산출물 — 팀원은 `cd frontend && npm i && npm run build` 로 생성
-src/main/resources/static/app/
