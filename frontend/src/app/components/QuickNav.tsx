@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, LogIn, LayoutDashboard, FileCheck2, Upload, FileText, BarChart3, Bell, User, ChevronDown, ChevronUp, Megaphone, FileSearch } from 'lucide-react';
+import { Home, LogIn, LayoutDashboard, FileCheck2, Upload, FileText, BarChart3, Bell, User, ChevronDown, ChevronUp, Megaphone, FileSearch, Files } from 'lucide-react';
 
 interface QuickNavProps {
   onNavigate: (page: string) => void;
@@ -15,7 +15,8 @@ export default function QuickNav({ onNavigate, currentPage }: QuickNavProps) {
     { id: 'dashboard',       label: '대시보드',  icon: LayoutDashboard },
     { id: 'upload',          label: '사진분석',  icon: Upload },
     { id: 'actions',         label: '조치관리',  icon: FileCheck2 },
-    { id: 'actions-detail',  label: '보고서',    icon: FileText },
+    { id: 'documents',       label: '안전서류',  icon: FileText },
+    { id: 'saved-reports',   label: '완료보고서', icon: Files },
     { id: 'analytics',       label: '리포트',    icon: BarChart3 },
     { id: 'ai-analysis',     label: 'AI분석',    icon: FileSearch },
     { id: 'notifications',   label: '알림',      icon: Bell },
@@ -45,7 +46,7 @@ export default function QuickNav({ onNavigate, currentPage }: QuickNavProps) {
                   onClick={() => onNavigate(page.id)}
                   title={page.label}
                   style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                    display: 'flex', alignItems: 'center', gap: 5,
                     padding: '5px 8px',
                     borderRadius: 4,
                     background: isActive ? 'rgba(74,144,217,0.18)' : 'transparent',
@@ -67,10 +68,10 @@ export default function QuickNav({ onNavigate, currentPage }: QuickNavProps) {
                     }
                   }}
                 >
-                  <page.icon style={{ width: 14, height: 14 }} strokeWidth={isActive ? 2 : 1.5} />
                   <span style={{ fontSize: 9, fontWeight: isActive ? 600 : 400, whiteSpace: 'nowrap', letterSpacing: '0.01em' }}>
                     {page.label}
                   </span>
+                  <page.icon style={{ width: 14, height: 14 }} strokeWidth={isActive ? 2 : 1.5} />
                 </button>
               );
             })}

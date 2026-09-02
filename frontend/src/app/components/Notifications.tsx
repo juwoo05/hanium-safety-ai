@@ -48,8 +48,15 @@ const initialNotifications: Notification[] = [
   { id: 5, type: 'urgent',  title: 'AI 분석 결과가 도착했습니다',  message: '지하 주차장 사진에서 3건의 위험 항목이 감지되었습니다.', time: '4시간 전', unread: false },
 ];
 
+const olderNotifications: Notification[] = [
+  { id: 101, type: 'success', title: '주간 안전점검이 완료되었습니다', message: '강남 복합시설 신축공사 주간 안전점검 결과가 저장되었습니다.', time: '어제', unread: false },
+  { id: 102, type: 'info', title: 'TBM 일지가 등록되었습니다', message: '9월 1일 작업 전 TBM 일지가 안전서류에 등록되었습니다.', time: '어제', unread: false },
+  { id: 103, type: 'warning', title: '보호구 재고 확인이 필요합니다', message: '안전대 재고가 기준 수량 이하로 내려갔습니다.', time: '2일 전', unread: false },
+];
+
 export default function Notifications({ onNavigate }: NotificationsProps) {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [olderLoaded, setOlderLoaded] = useState(false);
   const [settings, setSettings] = useState({
     deadline:  true,
     comment:   true,
@@ -151,8 +158,16 @@ export default function Notifications({ onNavigate }: NotificationsProps) {
               })
             )}
 
-            <button className="w-full py-3 border border-gray-200 text-gray-600 text-sm font-medium rounded hover:bg-gray-50 transition-colors">
-              이전 알림 더 보기
+            <button
+              disabled={olderLoaded}
+              onClick={() => {
+                setNotifications(prev => [...prev, ...olderNotifications]);
+                setOlderLoaded(true);
+                toast.success('이전 알림 3건을 불러왔습니다.');
+              }}
+              className="w-full py-3 border border-gray-200 text-gray-600 text-sm font-medium rounded hover:bg-gray-50 disabled:bg-gray-50 disabled:text-gray-400 transition-colors"
+            >
+              {olderLoaded ? '모든 알림을 불러왔습니다' : '이전 알림 더 보기'}
             </button>
           </div>
 

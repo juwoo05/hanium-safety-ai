@@ -3,6 +3,7 @@ import Layout from './Layout';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Download, BarChart3, AlertTriangle, CheckCircle2, Clock, ArrowUp, ArrowDown, Minus } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadCsv } from '../utils/demoFiles';
 
 interface AnalyticsProps {
   onNavigate: (page: string) => void;
@@ -175,7 +176,14 @@ export default function Analytics({ onNavigate }: AnalyticsProps) {
               ))}
             </div>
             <button
-              onClick={() => toast.success('리포트가 다운로드됩니다.')}
+              onClick={() => {
+                downloadCsv(
+                  `안전분석_${period}_${new Date().toISOString().slice(0, 10)}.csv`,
+                  ['기간', '고위험', '중위험', '저위험', '완료'],
+                  trend.map(item => [item.month, item.high, item.medium, item.low, item.completed])
+                );
+                toast.success(`${period} 분석 데이터를 CSV로 내보냈습니다.`);
+              }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px',
                 background: 'white', color: '#374151', border: '1px solid #E5E7EB',

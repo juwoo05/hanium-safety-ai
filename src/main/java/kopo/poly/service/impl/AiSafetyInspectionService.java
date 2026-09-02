@@ -1,9 +1,9 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.AnalyzeRequestDto;
-import kopo.poly.dto.response.AnalyzeResponseDto;
-import kopo.poly.dto.response.RiskItemDto;
-import kopo.poly.dto.request.AnalysisRequest;
+import kopo.poly.dto.request.AnalyzeRequestDTO;
+import kopo.poly.dto.response.AnalyzeResponseDTO;
+import kopo.poly.dto.response.RiskItemDTO;
+import kopo.poly.dto.request.AnalysisRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
@@ -48,9 +48,9 @@ public class AiSafetyInspectionService implements IAiSafetyInspectionService {
 
     @Override
     @Transactional
-    public AiSafetyInspection requestAnalysis(AnalysisRequest request) {
-        AnalyzeResponseDto response = aiPipelineClient.analyze(
-                new AnalyzeRequestDto(request.siteId(), request.imageS3Key(), request.workInfo())
+    public AiSafetyInspection requestAnalysis(AnalysisRequestDTO request) {
+        AnalyzeResponseDTO response = aiPipelineClient.analyze(
+                new AnalyzeRequestDTO(request.siteId(), request.imageS3Key(), request.workInfo())
         );
 
         AiSafetyInspection inspection = inspectionRepository.save(
@@ -113,7 +113,7 @@ public class AiSafetyInspectionService implements IAiSafetyInspectionService {
         return RiskLevel.SAFE;
     }
 
-    private String buildTitle(List<RiskItemDto> riskItems) {
+    private String buildTitle(List<RiskItemDTO> riskItems) {
         if (riskItems.isEmpty()) {
             return "위험요소 미발견";
         }
@@ -122,10 +122,10 @@ public class AiSafetyInspectionService implements IAiSafetyInspectionService {
                 : riskItems.get(0).riskName() + " 외 " + (riskItems.size() - 1) + "건";
     }
 
-    private String buildContent(List<RiskItemDto> riskItems) {
+    private String buildContent(List<RiskItemDTO> riskItems) {
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < riskItems.size(); i++) {
-            RiskItemDto item = riskItems.get(i);
+            RiskItemDTO item = riskItems.get(i);
             content.append(i + 1).append(". ").append(item.riskName())
                     .append(" - ").append(item.actionRequired())
                     .append(" (근거: ").append(item.legalBasis()).append(")\n");

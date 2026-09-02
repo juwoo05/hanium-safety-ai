@@ -9,6 +9,7 @@ import {
   AlertTriangle, Upload, X, Eye, FileScan,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadReportHtml } from '../utils/demoFiles';
 
 interface ReportDetailProps {
   onNavigate: (page: string) => void;
@@ -78,6 +79,11 @@ const FORM_TEMPLATES = [
   { id: 'risk',       label: '위험성평가서', icon: AlertTriangle,  desc: '위험요소 분류 및 개선대책 수립' },
   { id: 'action',     label: '조치결과보고서', icon: CheckCircle2, desc: '조치 완료 결과 및 재발방지 계획' },
   { id: 'work',       label: '작업허가서',    icon: FileText,      desc: '위험작업 사전 승인 및 조건 기록' },
+];
+
+const FORM_TEMPLATE_SECTIONS = [
+  { title: '핵심 작성 양식', items: FORM_TEMPLATES.slice(0, 3) },
+  { title: '승인·허가', items: FORM_TEMPLATES.slice(3) },
 ];
 
 interface UploadedFormFile {
@@ -201,7 +207,28 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
   };
 
   const handleDownload = () => {
-    toast.success('PDF 다운로드가 시작됩니다.');
+    downloadReportHtml({
+      id: 'SR-2026-001',
+      title: FORM_TEMPLATES.find(template => template.id === formTemplate)?.label || 'AI 안전점검 보고서',
+      site: safetyForm.siteName || '3동 지하 1층',
+      author: safetyForm.inspector || '김현장',
+      createdAt: safetyForm.inspectionDate || new Date().toISOString().slice(0, 10),
+      actionCount: detectedIssues.length,
+      details: [
+        { label: '종합 결과', value: safetyForm.overallResult || '고위험' },
+        { label: '재발 방지 대책', value: safetyForm.preventionPlan || '정기 안전점검과 작업자 교육을 강화합니다.' },
+      ],
+    });
+    toast.success('보고서 파일을 내려받았습니다.');
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('공유 링크를 클립보드에 복사했습니다.');
+    } catch {
+      toast.info('공유 링크: ' + window.location.href);
+    }
   };
 
   const handleFormFiles = (raw: FileList | File[]) => {
@@ -299,7 +326,7 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
               <button onClick={handleDownload} className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
                 <Download className="w-4 h-4" /> PDF
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
+              <button onClick={handleShare} className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
                 <Share2 className="w-4 h-4" /> 공유
               </button>
             </div>
@@ -502,25 +529,38 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
 
             {/* Left: Template selector */}
             <div className="lg:col-span-1 space-y-4">
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                <p className="text-sm font-bold text-gray-700 mb-3">양식 종류</p>
-                <div className="space-y-2">
-                  {FORM_TEMPLATES.map(tpl => {
-                    const Icon = tpl.icon;
-                    const active = formTemplate === tpl.id;
-                    return (
-                      <button key={tpl.id} onClick={() => { setFormTemplate(tpl.id); setAiDone(false); setSafetyForm(EMPTY_FORM); setEditMode(true); }}
-                        className={`w-full text-left flex items-start gap-3 p-3 rounded-xl border-2 transition-all ${active ? 'border-[#1A2E44] bg-[#1A2E44]/5' : 'border-gray-100 hover:border-gray-200'}`}>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${active ? 'bg-[#1A2E44] text-white' : 'bg-gray-100 text-gray-500'}`}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <p className={`text-sm font-semibold ${active ? 'text-[#1A2E44]' : 'text-gray-800'}`}>{tpl.label}</p>
-                          <p className="text-[10px] text-gray-400 mt-0.5 leading-tight">{tpl.desc}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 lg:sticky lg:top-24">
+                <div className="flex items-center justify-between px-1 mb-3">
+                  <p className="text-sm font-bold text-gray-900">양식 종류</p>
+                  <span className="text-[11px] font-semibold text-gray-400">{FORM_TEMPLATES.length}개</span>
+                </div>
+                <div className="space-y-3">
+                  {FORM_TEMPLATE_SECTIONS.map(section => (
+                    <section key={section.title} className="rounded-xl border border-gray-200 bg-gray-50 p-2">
+                      <div className="flex items-center justify-between px-1 pb-2">
+                        <p className="text-[11px] font-extrabold tracking-wide text-slate-500">{section.title}</p>
+                        <span className="inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-slate-200 px-1.5 text-[10px] font-extrabold text-slate-600">
+                          {section.items.length}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        {section.items.map(tpl => {
+                          const Icon = tpl.icon;
+                          const active = formTemplate === tpl.id;
+                          return (
+                            <button key={tpl.id} onClick={() => { setFormTemplate(tpl.id); setAiDone(false); setSafetyForm(EMPTY_FORM); setEditMode(true); }}
+                              className={`min-h-[58px] w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl border transition-all ${active ? 'border-[#1A2E44] bg-orange-50 shadow-sm' : 'border-transparent bg-white/70 hover:bg-white'}`}>
+                              <Icon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${active ? 'text-[#1A2E44]' : 'text-gray-400'}`} />
+                              <div className="min-w-0">
+                                <p className={`text-sm font-bold ${active ? 'text-[#1A2E44]' : 'text-gray-900'}`}>{tpl.label}</p>
+                                <p className="text-[11px] text-gray-500 mt-0.5 leading-tight">{tpl.desc}</p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  ))}
                 </div>
               </div>
 
@@ -928,7 +968,7 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
                 <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#1A2E44] transition-all">
                   <div className="flex items-start justify-between mb-2">
                     <p className="text-sm font-bold text-gray-900 flex-1 pr-2">{item.title}</p>
-                    <button aria-label="북마크" className="p-0.5 hover:text-[#1A2E44] text-gray-400 transition-colors flex-shrink-0">
+                    <button aria-label="북마크" onClick={() => toast.success('근거자료를 북마크에 저장했습니다.')} className="p-0.5 hover:text-[#1A2E44] text-gray-400 transition-colors flex-shrink-0">
                       <Bookmark className="w-4 h-4" />
                     </button>
                   </div>
@@ -938,7 +978,7 @@ export default function ReportDetail({ onNavigate, beforeImages = [], onStartRep
                       <span className="text-xs text-gray-500">{item.source}</span>
                       <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">{item.relevance}% 관련</span>
                     </div>
-                    <button className="text-xs text-[#1A2E44] hover:underline font-medium flex items-center gap-1">
+                    <button onClick={() => toast.info(`${item.source} 근거자료 미리보기를 열었습니다.`)} className="text-xs text-[#1A2E44] hover:underline font-medium flex items-center gap-1">
                       보기 <ExternalLink className="w-3 h-3" />
                     </button>
                   </div>

@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.response.EvidenceItemDto;
+import kopo.poly.dto.response.EvidenceItemDTO;
 import kopo.poly.service.IEvidenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class EvidenceApiController {
     }
 
     @GetMapping("/api/evidence")
-    public List<EvidenceItemDto> search(
+    public List<EvidenceItemDTO> search(
             @RequestParam Long inspectionId,
             @RequestParam(required = false) String category,
             HttpSession session

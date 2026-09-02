@@ -125,7 +125,7 @@
       <div id="reportHeaderCard" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <a href="/actions" class="p-2 hover:bg-gray-100 rounded-lg no-print"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+            <a id="reportBackLink" href="/actions" class="p-2 hover:bg-gray-100 rounded-lg no-print"><svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
             <h1 id="reportTitle" class="text-xl font-bold text-gray-900">리포트를 불러오는 중...</h1>
             <span id="reportIdBadge" class="text-xs font-medium px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full"></span>
           </div>
@@ -185,7 +185,6 @@
           <button class="tab-btn pb-3 text-sm font-semibold text-gray-900 border-b-2 border-gray-900" data-tab="result">분석결과</button>
           <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="form">안전양식</button>
           <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="evidence">증거자료</button>
-          <button class="tab-btn pb-3 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600" data-tab="msds">MSDS 확인</button>
         </div>
       </div>
 
@@ -295,9 +294,9 @@
               <span class="text-[11px] font-semibold text-gray-400">8개</span>
             </div>
             <div id="formTypeList">
-              <section class="form-section">
+              <section class="form-section action-form-section">
                 <div class="form-section-head">
-                  <p class="form-section-title">핵심 작성 양식</p>
+                  <p class="form-section-title">조치 연계 서류</p>
                   <span class="form-section-count">3</span>
                 </div>
                 <div class="form-section-items">
@@ -316,7 +315,7 @@
                 </div>
               </section>
 
-              <section class="form-section">
+              <section class="form-section standalone-form-section">
                 <div class="form-section-head">
                   <p class="form-section-title">현장 운영 기록</p>
                   <span class="form-section-count">3</span>
@@ -337,7 +336,7 @@
                 </div>
               </section>
 
-              <section class="form-section">
+              <section class="form-section standalone-form-section">
                 <div class="form-section-head">
                   <p class="form-section-title">승인·증빙</p>
                   <span class="form-section-count">2</span>
@@ -361,7 +360,7 @@
               <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>
               <h3 class="text-sm font-semibold">AI 자동 작성</h3>
             </div>
-            <p class="text-xs text-white/70 mb-4">조치관리 데이터를 기반으로 AI가 양식을 자동 작성합니다.</p>
+            <p id="aiAssistDescription" class="text-xs text-white/70 mb-4">조치관리 데이터를 기반으로 AI가 양식을 자동 작성합니다.</p>
             <button id="aiAutoFillBtn" class="w-full py-2.5 bg-[#1A2E44] hover:bg-[#0F2233] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.9L18 9.5l-4.4 1.6L12 16l-1.6-4.9L6 9.5l4.4-1.6z"/></svg>자동 작성하기
             </button>
@@ -616,74 +615,18 @@
         <p id="evidenceNotice" class="hidden text-xs text-gray-400 mt-4">위 항목은 예시 데이터입니다. 실제 리포트에서 열면 AI가 검색한 관련 법규·사고사례·지침으로 대체됩니다.</p>
       </div>
 
-      <!-- MSDS 확인 탭 -->
-      <div id="tab-msds" class="tab-panel hidden space-y-5">
-
-        <!-- 점검 사진에서 물질 인식 -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-start justify-between gap-3 mb-3">
-            <div>
-              <h3 class="text-base font-semibold text-gray-900">점검 사진에서 물질 인식</h3>
-              <p class="text-xs text-gray-500 mt-0.5">이 리포트의 현장 사진을 AI가 읽어 MSDS 검색어를 뽑아줍니다. 사진을 직접 올려 분석하려면 사이드바 <a href="/msds" class="font-semibold text-[#1A2E44] hover:underline">MSDS</a> 메뉴를 이용하세요.</p>
-            </div>
-            <button id="msdsDetectBtn" type="button" class="flex-shrink-0 px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#0F2233] flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              점검 사진으로 인식
-            </button>
-          </div>
-          <div id="msdsDetectKeywords" class="hidden flex-wrap gap-1.5 mb-3"></div>
-          <div id="msdsCandidates" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-          <p id="msdsDetectHint" class="text-xs text-gray-400">아직 인식하지 않았습니다. 아래에서 직접 검색할 수도 있습니다.</p>
-        </div>
-
-        <!-- MSDS 검색 -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h3 class="text-base font-semibold text-gray-900 mb-3">MSDS / SDS 검색</h3>
-          <div class="flex gap-2 mb-4">
-            <input id="msdsSearchInput" type="text" placeholder="물질명, CAS 번호 또는 제품명 (예: 톨루엔 / 108-88-3)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
-            <button id="msdsSearchBtn" type="button" class="px-5 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#0F2233] flex-shrink-0">검색</button>
-          </div>
-          <p class="text-[11px] text-gray-400 mb-2">출처 구분 — <span class="font-semibold text-[#1A6DE0]">KOSHA 참고자료</span> · <span class="font-semibold text-[#B45309]">제조사 제공자료</span> · <span class="font-semibold text-gray-600">내부 등록자료</span>. 법적으로 유효한 MSDS는 제조사/수입사/판매자 제공본입니다.</p>
-          <div style="overflow-x:auto">
-            <table class="w-full text-sm" style="border-collapse:collapse">
-              <thead>
-                <tr class="text-left text-[11px] font-semibold text-gray-400 border-b border-gray-100">
-                  <th class="py-2 pr-3 whitespace-nowrap">물질명 / 제품명</th>
-                  <th class="py-2 pr-3 whitespace-nowrap">CAS No.</th>
-                  <th class="py-2 pr-3 whitespace-nowrap">개정일</th>
-                  <th class="py-2 pr-3 whitespace-nowrap">출처</th>
-                  <th class="py-2 pr-3 whitespace-nowrap">신뢰도</th>
-                  <th class="py-2 pr-3 whitespace-nowrap">KOSHA MSDS</th>
-                  <th class="py-2 whitespace-nowrap">첨부</th>
-                </tr>
-              </thead>
-              <tbody id="msdsSearchResults">
-                <tr><td colspan="7" class="py-8 text-center text-gray-400 text-sm">검색어를 입력하거나 위에서 물질 인식을 실행하세요.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 이 점검에 첨부된 MSDS -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-base font-semibold text-gray-900">이 점검에 첨부된 MSDS</h3>
-            <span id="msdsAttachedCount" class="text-xs text-gray-400">0건</span>
-          </div>
-          <div id="msdsAttachedList" class="space-y-2">
-            <p class="text-sm text-gray-400">첨부된 MSDS가 없습니다. 위 검색 결과에서 "첨부"를 누르면 이 점검·위험요소·보고서에 함께 저장됩니다.</p>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 </div>
 
 <script>
 (function () {
-  var INSPECTION_ID = new URLSearchParams(window.location.search).get('inspectionId');
-  var ACTION_ID = new URLSearchParams(window.location.search).get('actionId');
+  var URL_PARAMS = new URLSearchParams(window.location.search);
+  var INSPECTION_ID = URL_PARAMS.get('inspectionId');
+  var ACTION_ID = URL_PARAMS.get('actionId');
+  var SITE_ID = URL_PARAMS.get('siteId');
+  var REQUESTED_TYPE = URL_PARAMS.get('docType');
+  var IS_STANDALONE = window.location.pathname.indexOf('/documents/new') === 0;
   var CURRENT_USER_ID = null;
   var CURRENT_INSPECTION = null;
 
@@ -728,7 +671,7 @@
   };
   var MAX_DOC_PHOTOS = 10;
 
-  var state = { currentType: 'INSPECTION_LOG', documents: {} };
+  var state = { currentType: IS_STANDALONE ? (REQUESTED_TYPE || 'TBM_LOG') : 'INSPECTION_LOG', documents: {} };
 
   function qs(sel, root) { return (root || document).querySelector(sel); }
   function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
@@ -1050,15 +993,30 @@
     return data;
   }
 
-  // AI 자동 작성: 이 리포트에 저장된 실제 감지 위험요소·조치 데이터를 서버에서 양식 필드로 매핑해 받아온다.
+  // AI 자동 작성: 조치 연계 서류는 점검 데이터를, 독립 서류는 선택한 현장 기본정보를 사용한다.
+  function readApiResponse(res, fallbackMessage) {
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return Promise.reject(new Error('로그인이 필요합니다.'));
+    }
+    return res.json().catch(function () { return {}; }).then(function (body) {
+      if (!res.ok) throw new Error(body.error || fallbackMessage);
+      return body;
+    });
+  }
+
   qs('#aiAutoFillBtn').addEventListener('click', function () {
     var type = state.currentType;
 
-    if (!INSPECTION_ID && !ACTION_ID) {
+    if (IS_STANDALONE && !SITE_ID) {
+      alert('작성할 현장을 먼저 선택해주세요.');
+      return;
+    }
+    if (!IS_STANDALONE && !INSPECTION_ID && !ACTION_ID) {
       alert('리포트가 선택되지 않았습니다. 조치 관리에서 리포트를 선택한 뒤 다시 시도해주세요.');
       return;
     }
-    if (!INSPECTION_ID) {
+    if (!IS_STANDALONE && !INSPECTION_ID) {
       alert('AI 검사 기록이 없는 조치라 자동 작성을 사용할 수 없습니다. 직접 입력해주세요.');
       return;
     }
@@ -1087,12 +1045,11 @@
       setTimeout(function () { progressWrap.classList.add('hidden'); }, 400);
     }
 
-    fetch('/api/documents/draft?inspectionId=' + encodeURIComponent(INSPECTION_ID) + '&docType=' + type)
-      .then(function (res) {
-        if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
-        if (!res.ok) throw new Error('자동 작성 실패');
-        return res.json();
-      })
+    var draftUrl = IS_STANDALONE
+      ? '/api/documents/draft/standalone?siteId=' + encodeURIComponent(SITE_ID) + '&docType=' + type
+      : '/api/documents/draft?inspectionId=' + encodeURIComponent(INSPECTION_ID) + '&docType=' + type;
+    fetch(draftUrl)
+      .then(function (res) { return readApiResponse(res, 'AI 초안을 만들지 못했습니다.'); })
       .then(function (draft) {
         // AI 초안에는 사진이 없으므로, 사용자가 이미 첨부한 사진은 그대로 살린다.
         if (FORM_META[type] && FORM_META[type].photos && genericPhotos.length) draft.photos = genericPhotos.slice();
@@ -1118,24 +1075,33 @@
     var formData = collectForm(type);
     var wasAiGenerated = state.documents[type] ? state.documents[type].aiGenerated : false;
     state.documents[type] = { formData: formData, aiGenerated: wasAiGenerated };
+    var saveBtn = qs('#saveFormBtn');
+    var saveBtnContent = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.textContent = '저장 중...';
 
     fetch('/api/documents', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         inspectionId: INSPECTION_ID ? Number(INSPECTION_ID) : null,
+        siteId: SITE_ID ? Number(SITE_ID) : null,
         docType: type,
         formData: formData,
         aiGenerated: wasAiGenerated
       })
-    }).then(function (res) {
-      if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
-      if (!res.ok) throw new Error('저장 실패');
-      return res.json();
-    }).then(function () {
-      alert('저장되었습니다.');
+    }).then(function (res) { return readApiResponse(res, '문서를 저장하지 못했습니다.'); }).then(function () {
+      if (IS_STANDALONE) {
+        alert('저장되었습니다. 완료된 보고서로 이동합니다.');
+        window.location.href = '/reports';
+      } else {
+        alert('저장되었습니다.');
+      }
     }).catch(function (err) {
       alert(err.message);
+    }).finally(function () {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = saveBtnContent;
     });
   });
 
@@ -1350,8 +1316,6 @@
       '<a href="' + link + '" class="flex-1 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>조치 상세 보기</a>' +
       '<button type="button" class="verify-open-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44]/5" data-id="' + action.id + '">' +
       '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>현장 비교</button>' +
-      '<button type="button" class="msds-find-btn flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors border-2 border-gray-200 text-gray-600 hover:border-[#1A2E44] hover:text-[#1A2E44]" data-id="' + action.id + '">' +
-      '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>MSDS 찾기</button>' +
       '</div>' +
       '</div>';
   }
@@ -1419,11 +1383,6 @@
       var a1 = CURRENT_ACTIONS.find(function (a) { return String(a.id) === verifyBtn.dataset.id; });
       if (a1) openVerification(a1);
       return;
-    }
-    var msdsBtn = e.target.closest('.msds-find-btn');
-    if (msdsBtn) {
-      var a2 = CURRENT_ACTIONS.find(function (a) { return String(a.id) === msdsBtn.dataset.id; });
-      if (a2 && window.msdsFindFor) window.msdsFindFor(a2.title);
     }
   });
 
@@ -1630,218 +1589,43 @@
       });
   }
 
-  /* ── MSDS 확인 탭 ─────────────────────────────────────────────────
-     사진 → 물질 인식(/api/msds/detect) → 검색(/api/msds/search) → 첨부(/api/msds/attach)
-     → 첨부 목록(/api/msds/inspection/{id}). 문서 미리보기/다운로드/인쇄는 documentUrl 새 창. */
-  (function () {
-    function msdsEsc(s) {
-      return (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-    var SOURCE_BADGE = {
-      KOSHA:        'bg-blue-50 text-[#1A6DE0]',
-      MANUFACTURER: 'bg-orange-50 text-[#B45309]',
-      INTERNAL:     'bg-gray-100 text-gray-600',
-      UNKNOWN:      'bg-gray-100 text-gray-500'
-    };
-    var SOURCE_LABEL = {
-      KOSHA: 'KOSHA 참고자료', MANUFACTURER: '제조사 제공자료', INTERNAL: '내부 등록자료', UNKNOWN: '출처 미상'
-    };
-    var lastSearchResults = [];
-    var attachedLoaded = false;
-
-    // 이 탭의 "점검 사진으로 인식"은 리포트가 있을 때만. 사진을 직접 올려 분석하려면 사이드바 'MSDS' 메뉴 사용.
-    function needInspectionPhoto() {
-      if (!INSPECTION_ID) {
-        alert('이 화면의 "점검 사진으로 인식"은 AI 점검 리포트가 있을 때만 가능합니다.\n사진을 직접 올려 분석하려면 사이드바 ‘MSDS’ 메뉴를 이용하세요.');
-        return false;
-      }
-      return true;
-    }
-
-    // KOSHA MSDS 상세 페이지로 이동하는 링크(새 탭).
-    function koshaLink(url) {
-      return url
-        ? '<a href="' + msdsEsc(url) + '" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-[#1A2E44] hover:underline whitespace-nowrap flex-shrink-0">KOSHA MSDS ↗</a>'
-        : '<span class="text-xs text-gray-400 flex-shrink-0">-</span>';
-    }
-
-    // ── 물질 인식 ──
-    qs('#msdsDetectBtn').addEventListener('click', function () {
-      if (!needInspectionPhoto()) return;
-      var btn = qs('#msdsDetectBtn');
-      btn.disabled = true;
-      qs('#msdsDetectHint').textContent = 'AI가 사진을 분석하는 중입니다...';
-      fetch('/api/msds/detect', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inspectionId: Number(INSPECTION_ID) })
-      })
-        .then(function (res) {
-          if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
-          if (!res.ok) return res.json().then(function (e) { throw new Error(e.error || '물질 인식 실패'); });
-          return res.json();
-        })
-        .then(function (data) { renderDetect(data); })
-        .catch(function (err) { qs('#msdsDetectHint').textContent = (err && err.message) || 'AI 인식 서버에 연결하지 못했습니다. 아래에서 직접 검색하세요.'; })
-        .finally(function () { btn.disabled = false; });
-    });
-
-    function renderDetect(data) {
-      var kws = (data && data.detectedKeywords) || [];
-      var kwWrap = qs('#msdsDetectKeywords');
-      if (kws.length) {
-        kwWrap.innerHTML = kws.map(function (k) {
-          return '<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">' + msdsEsc(k) + '</span>';
-        }).join('');
-        kwWrap.classList.remove('hidden'); kwWrap.classList.add('flex');
-      } else {
-        kwWrap.classList.add('hidden');
-      }
-
-      var cands = (data && data.chemicalCandidates) || [];
-      var cWrap = qs('#msdsCandidates');
-      if (cands.length) {
-        cWrap.innerHTML = cands.map(function (c) {
-          return '<button type="button" class="msds-cand-btn text-left px-3 py-2 rounded-lg border border-gray-200 hover:border-[#1A2E44] hover:bg-orange-50/40" ' +
-            'data-q="' + msdsEsc(c.casNo || c.chemicalName) + '">' +
-            '<span class="block text-sm font-semibold text-gray-900">' + msdsEsc(c.chemicalName) + '</span>' +
-            '<span class="block text-xs text-gray-500">' + msdsEsc(c.casNo || 'CAS 미상') + (c.productName ? ' · ' + msdsEsc(c.productName) : '') + ' · 신뢰도 ' + (c.confidence || 0) + '%</span>' +
-            '</button>';
-        }).join('');
-        cWrap.classList.remove('hidden'); cWrap.classList.add('grid');
-        qsa('#msdsCandidates .msds-cand-btn').forEach(function (b) {
-          b.addEventListener('click', function () { qs('#msdsSearchInput').value = b.dataset.q; doSearch(); });
-        });
-        qs('#msdsDetectHint').textContent = cands.length + '개 후보를 찾았습니다. 물질을 선택하면 자동으로 검색합니다.';
-      } else {
-        cWrap.classList.add('hidden');
-        qs('#msdsDetectHint').textContent = '사진에서 화학물질을 확정하지 못했습니다. 아래에서 직접 검색하세요.';
-      }
-    }
-
-    // ── 검색 ──
-    function doSearch() {
-      var q = qs('#msdsSearchInput').value.trim();
-      if (!q) return;
-      var body = qs('#msdsSearchResults');
-      body.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-gray-400 text-sm">검색 중...</td></tr>';
-      fetch('/api/msds/search?query=' + encodeURIComponent(q))
-        .then(function (res) {
-          if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
-          if (!res.ok) throw new Error('검색 실패');
-          return res.json();
-        })
-        .then(function (results) { lastSearchResults = results || []; renderSearchResults(); })
-        .catch(function () { body.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-red-400 text-sm">검색에 실패했습니다.</td></tr>'; });
-    }
-    qs('#msdsSearchBtn').addEventListener('click', doSearch);
-    qs('#msdsSearchInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
-
-    function renderSearchResults() {
-      var body = qs('#msdsSearchResults');
-      if (!lastSearchResults.length) {
-        body.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-gray-400 text-sm">검색 결과가 없습니다.</td></tr>';
-        return;
-      }
-      body.innerHTML = lastSearchResults.map(function (r, i) {
-        var badge = SOURCE_BADGE[r.sourceType] || SOURCE_BADGE.UNKNOWN;
-        return '<tr class="border-b border-gray-50 align-top">' +
-          '<td class="py-2.5 pr-3"><p class="font-semibold text-gray-900">' + msdsEsc(r.chemicalName) + '</p>' +
-            (r.productName ? '<p class="text-xs text-gray-500">' + msdsEsc(r.productName) + '</p>' : '') + '</td>' +
-          '<td class="py-2.5 pr-3 text-gray-600 whitespace-nowrap">' + msdsEsc(r.casNo || '-') + '</td>' +
-          '<td class="py-2.5 pr-3 text-gray-500 whitespace-nowrap">' + msdsEsc(r.revisionDate || '-') + '</td>' +
-          '<td class="py-2.5 pr-3 whitespace-nowrap"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ' + badge + '">' + msdsEsc(SOURCE_LABEL[r.sourceType] || '출처 미상') + '</span>' +
-            (r.sourceName ? '<span class="block text-[10px] text-gray-400 mt-0.5">' + msdsEsc(r.sourceName) + '</span>' : '') + '</td>' +
-          '<td class="py-2.5 pr-3 text-gray-600 whitespace-nowrap">' + (r.confidence || 0) + '%</td>' +
-          '<td class="py-2.5 pr-3 whitespace-nowrap">' + koshaLink(r.documentUrl || r.sourceUrl) + '</td>' +
-          '<td class="py-2.5 whitespace-nowrap"><button type="button" class="msds-attach px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#1A2E44] text-white hover:bg-[#0F2233]" data-i="' + i + '">첨부</button></td>' +
-          '</tr>';
-      }).join('');
-      qsa('#msdsSearchResults .msds-attach').forEach(function (b) { b.addEventListener('click', function () { attach(lastSearchResults[b.dataset.i], b); }); });
-    }
-
-    // ── 첨부 (리포트가 있으면 그 점검에, 없으면 내 자료함에 저장) ──
-    function attach(r, btn) {
-      btn.disabled = true;
-      fetch('/api/msds/attach', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          inspectionId: INSPECTION_ID ? Number(INSPECTION_ID) : null,
-          chemicalName: r.chemicalName, casNo: r.casNo, productName: r.productName,
-          sourceType: r.sourceType, sourceName: r.sourceName, sourceUrl: r.sourceUrl,
-          documentUrl: r.documentUrl, revisionDate: r.revisionDate, confidence: r.confidence, verified: false
-        })
-      })
-        .then(function (res) {
-          if (res.status === 401) { window.location.href = '/login'; throw new Error(); }
-          if (!res.ok) return res.json().then(function (e) { throw new Error(e.error || '첨부 실패'); });
-          return res.json();
-        })
-        .then(function () { attachedLoaded = false; loadAttachedMsds(); btn.textContent = '첨부됨'; })
-        .catch(function (err) { alert((err && err.message) || '첨부에 실패했습니다.'); btn.disabled = false; });
-    }
-
-    // ── 첨부된 MSDS 목록 ──
-    function loadAttachedMsds() {
-      if (!INSPECTION_ID || attachedLoaded) return;
-      attachedLoaded = true;
-      fetch('/api/msds/inspection/' + INSPECTION_ID)
-        .then(function (res) { return res.ok ? res.json() : []; })
-        .then(function (list) { renderAttached(list || []); })
-        .catch(function () { attachedLoaded = false; });
-    }
-
-    function renderAttached(list) {
-      qs('#msdsAttachedCount').textContent = list.length + '건';
-      var wrap = qs('#msdsAttachedList');
-      if (!list.length) {
-        wrap.innerHTML = '<p class="text-sm text-gray-400">첨부된 MSDS가 없습니다. 위 검색 결과에서 "첨부"를 누르면 이 점검·위험요소·보고서에 함께 저장됩니다.</p>';
-        return;
-      }
-      wrap.innerHTML = list.map(function (d) {
-        var badge = SOURCE_BADGE[d.sourceType] || SOURCE_BADGE.UNKNOWN;
-        return '<div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100">' +
-          '<div class="flex-1 min-w-0">' +
-            '<p class="text-sm font-semibold text-gray-900">' + msdsEsc(d.chemicalName) +
-              (d.casNo ? ' <span class="text-xs font-normal text-gray-500">(' + msdsEsc(d.casNo) + ')</span>' : '') + '</p>' +
-            '<p class="text-xs text-gray-500 mt-0.5"><span class="font-semibold px-1.5 py-0.5 rounded-full ' + badge + '">' + msdsEsc(d.sourceTypeLabel) + '</span> ' +
-              msdsEsc(d.sourceName || '') + (d.revisionDate ? ' · 개정 ' + msdsEsc(d.revisionDate) : '') + '</p>' +
-          '</div>' +
-          koshaLink(d.documentUrl || d.sourceUrl) +
-          '<button type="button" class="att-verify text-xs font-semibold flex-shrink-0 px-2 py-1 rounded-lg ' +
-            (d.verified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500') + '" data-id="' + d.id + '" data-v="' + d.verified + '">' +
-            (d.verified ? '✓ 확인됨' : '확인') + '</button>' +
-          '</div>';
-      }).join('');
-      qsa('#msdsAttachedList .att-verify').forEach(function (b) {
-        b.addEventListener('click', function () {
-          var next = b.dataset.v !== 'true';
-          fetch('/api/msds/' + b.dataset.id + '/verify', {
-            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ verified: next })
-          }).then(function (res) { return res.ok ? res.json() : null; })
-            .then(function () { attachedLoaded = false; loadAttachedMsds(); })
-            .catch(function () {});
-        });
-      });
-    }
-
-    // MSDS 탭을 처음 열 때 첨부 목록 로드
-    var msdsTabBtn = qsa('.tab-btn').filter(function (b) { return b.dataset.tab === 'msds'; })[0];
-    if (msdsTabBtn) msdsTabBtn.addEventListener('click', loadAttachedMsds);
-
-    // 감지 항목 목록의 "MSDS 찾기" 버튼 → MSDS 탭으로 이동 + 검색어 프리필
-    window.msdsFindFor = function (title) {
-      if (msdsTabBtn) msdsTabBtn.click();
-      qs('#msdsSearchInput').value = title || '';
-      if (title) doSearch();
-      qs('#tab-msds').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  })();
 
   loadCurrentUser();
 
-  // 초기 로드: 저장된 리포트가 있으면 기존 양식 불러오기
-  if (INSPECTION_ID) {
+  // 독립 서류는 현장 정보만 사용하고 분석결과·증거자료 영역을 노출하지 않는다.
+  if (IS_STANDALONE) {
+    qsa('.action-form-section').forEach(function (section) { section.classList.add('hidden'); });
+    qsa('.tab-btn').forEach(function (button) { button.classList.toggle('hidden', button.dataset.tab !== 'form'); });
+    qs('#riskBanner').classList.add('hidden');
+    qs('#reportBackLink').href = '/documents';
+    qs('#reportIdBadge').classList.add('hidden');
+    qs('#reportTitle').textContent = FORM_META[state.currentType] ? FORM_META[state.currentType].title : '안전 서류 작성';
+    qs('#aiAssistDescription').textContent = '선택한 현장 정보와 문서 유형을 기반으로 AI가 초안을 작성합니다.';
+    var standaloneFormTab = qsa('.tab-btn').filter(function (button) { return button.dataset.tab === 'form'; })[0];
+    if (standaloneFormTab) standaloneFormTab.click();
+    fetch('/api/sites', { credentials: 'same-origin' })
+      .then(function (res) { return readApiResponse(res, '현장 정보를 불러오지 못했습니다.'); })
+      .then(function (sites) {
+        var site = sites.find(function (item) { return String(item.id) === String(SITE_ID); });
+        if (site) {
+          qs('#reportLocation').textContent = site.name;
+          qs('[data-field="siteName"]').value = site.name;
+        } else {
+          throw new Error('선택한 현장에 접근할 수 없습니다.');
+        }
+        qs('#reportDate').textContent = new Date().toLocaleDateString('ko-KR');
+      })
+      .catch(function (err) {
+        qs('#reportLocation').textContent = '-';
+        alert(err.message);
+      });
+    selectFormType(state.currentType);
+  } else {
+    qsa('.standalone-form-section').forEach(function (section) { section.classList.add('hidden'); });
+  }
+
+  // 초기 로드: 저장된 조치 연계 리포트가 있으면 기존 양식 불러오기
+  if (!IS_STANDALONE && INSPECTION_ID) {
     loadInspectionHeader();
     fetch('/api/documents?inspectionId=' + INSPECTION_ID)
       .then(function (res) { return res.ok ? res.json() : []; })
@@ -1850,12 +1634,11 @@
         selectFormType(state.currentType);
       })
       .catch(function () { selectFormType(state.currentType); });
-  } else if (ACTION_ID) {
+  } else if (!IS_STANDALONE && ACTION_ID) {
     loadActionOnly();
     setFieldVisibility(state.currentType);
-  } else {
-    // 리포트 없이 사이드바 '안전 서류'로 바로 들어온 경우: 안전양식 탭을 먼저 보여준다.
-    qs('#reportTitle').textContent = '안전 서류';
+  } else if (!IS_STANDALONE) {
+    qs('#reportTitle').textContent = '조치 연계 서류';
     qs('#reportIdBadge').classList.add('hidden');
     var formTab = qsa('.tab-btn').filter(function (b) { return b.dataset.tab === 'form'; })[0];
     if (formTab) formTab.click();

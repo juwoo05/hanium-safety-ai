@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class PageController {
 
-    @GetMapping({"/", "/landing"})
+    @GetMapping("/")
+    public String root() { return "forward:/app/index.html"; }
+
+    @GetMapping("/landing")
     public String landing() { return "landing"; }
 
     // 사이드바 로고/메뉴가 역할 구분 없이 항상 "/dashboard"로 링크되어 있어서,
@@ -45,6 +48,12 @@ public class PageController {
     @GetMapping("/actions/detail")
     public String actionsDetail() { return "action/report-detail"; }
 
+    @GetMapping("/documents")
+    public String documents() { return "document/documents"; }
+
+    @GetMapping("/documents/new")
+    public String documentsNew() { return "action/report-detail"; }
+
     // 보고서 상세의 "안전양식 자동 작성"에서 진입하는 AI 결과보고서 생성 4단계 위저드.
     @GetMapping("/actions/detail/report")
     public String aiReport() { return "action/ai-report"; }
@@ -52,7 +61,7 @@ public class PageController {
     @GetMapping("/analytics")
     public String analytics() { return "analytics/analytics"; }
 
-    // 사이드바 "보고서" 메뉴: 저장된 보고서 목록 (시연용 프론트 더미 데이터 화면).
+    // 사이드바 "보고서" 메뉴: 로그인 사용자가 저장한 안전서류 목록.
     @GetMapping("/reports")
     public String savedReports() { return "report/saved-reports"; }
 

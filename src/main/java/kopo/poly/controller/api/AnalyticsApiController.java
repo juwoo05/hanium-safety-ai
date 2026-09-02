@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.response.AnalyticsSummaryResponse;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO;
 import kopo.poly.service.IAnalyticsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class AnalyticsApiController {
     }
 
     @GetMapping("/api/analytics/summary")
-    public AnalyticsSummaryResponse summary(
+    public AnalyticsSummaryResponseDTO summary(
             @RequestParam(required = false) Integer year,
             HttpSession session
     ) {

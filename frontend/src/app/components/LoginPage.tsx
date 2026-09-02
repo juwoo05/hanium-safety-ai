@@ -10,10 +10,15 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [accountType, setAccountType] = useState<'원청' | '하청' | null>(null);
+  const [accountTypeError, setAccountTypeError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const role = email === 'sub@safemate.com' ? 'subcontractor' : 'contractor';
+    if (!accountType) {
+      setAccountTypeError('로그인할 계정 유형을 선택해주세요.');
+      return;
+    }
+    const role = accountType === '하청' ? 'subcontractor' : 'contractor';
     onLogin(role);
   };
 
@@ -49,7 +54,10 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
                 return (
                   <button key={role} type="button"
                     aria-pressed={selected}
-                    onClick={() => setAccountType(selected ? null : role)}
+                    onClick={() => {
+                      setAccountType(selected ? null : role);
+                      setAccountTypeError('');
+                    }}
                     style={{
                       padding: '9px 12px', fontSize: 12, fontWeight: 600,
                       background: selected ? color : 'white',
@@ -64,6 +72,7 @@ export default function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
                 );
               })}
             </div>
+            {accountTypeError && <p style={{ marginTop: 6, fontSize: 11, color: '#DC2626' }}>{accountTypeError}</p>}
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

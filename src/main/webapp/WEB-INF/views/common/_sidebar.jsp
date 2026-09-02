@@ -35,6 +35,8 @@
     display: flex; left: 6px; background: transparent; color: #CBD5E1; box-shadow: none;
   }
   body.sidebar-collapsed #sidebarOpen:hover { background: rgba(255,255,255,.08); color: #fff; }
+  #sidebar .nav-item span { order: 1; }
+  #sidebar .nav-item > svg { order: 2; }
 
   /* flex 자식의 기본 min-width:auto 때문에 본문이 뷰포트보다 넓어져 화면 오른쪽이
      잘리는 현상 방지. 넓은 표 등은 각자의 overflow-x 컨테이너 안에서 스크롤된다. */
@@ -94,17 +96,17 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       <span>조치 관리</span>
     </a>
-    <a href="/analytics" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="analytics">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>분석 리포트</span>
-    </a>
-    <a href="/actions/detail" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="actions-detail">
+    <a href="/documents" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="documents">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       <span>안전 서류</span>
     </a>
     <a href="/reports" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="reports">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h1"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span>보고서</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>완료된 보고서</span>
+    </a>
+    <a href="/analytics" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="analytics">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>분석 리포트</span>
     </a>
     <a href="/msds" class="nav-item flex items-center gap-2.5 px-3 py-2 mb-0.5 rounded text-sm text-slate-500 hover:bg-white/[0.04] hover:text-slate-300 transition-colors" data-path="msds">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
@@ -198,7 +200,7 @@
 // 사이드바 사용자 정보 (모든 인증 페이지 공통 표시)
 (function() {
   // 하청 계정에서 숨기는 메뉴: 조치 관리(원청 배정 기능) / 분석 리포트(원청 현황 통계).
-  // '안전 서류'(actions-detail)는 TBM·교육일지·보호구 지급대장처럼 하청이 직접 작성해야 하는
+  // '안전 서류'(documents)는 TBM·교육일지·보호구 지급대장처럼 하청이 직접 작성해야 하는
   // 서류가 많아 노출한다. (알림·설정은 역할 무관 공통 기능)
   var SUB_HIDDEN_PATHS = ['actions', 'analytics'];
 

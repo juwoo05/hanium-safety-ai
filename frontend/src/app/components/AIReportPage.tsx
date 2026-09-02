@@ -7,11 +7,15 @@ import {
   Sparkles, Eye, X, Check, CheckSquare,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadSafetyDocumentHtml } from '../utils/demoFiles';
+import { createSafetyDocumentSnapshot, SafetyDocumentPreview, type SafetyDocumentSnapshot } from './SafetyDocumentTemplate';
 
 interface AIReportPageProps {
   onNavigate: (page: string) => void;
   completedActions?: CompletedAction[];
   onConsumeActions?: () => void;
+  onReportSaved?: (report: { title: string; actionCount: number; site: string; author: string; createdAt: string; snapshot: SafetyDocumentSnapshot }) => void;
+  initialStandaloneTemplate?: string;
 }
 
 type ReportStep = 1 | 2 | 3 | 4;
@@ -36,12 +40,25 @@ const STEPS_UPLOAD = [
   { number: 4, label: '저장 및 PDF',    icon: Save },
 ];
 
+const STEPS_STANDALONE = [
+  { number: 1, label: '기본정보',       icon: FileText },
+  { number: 2, label: '양식 선택',      icon: CheckSquare },
+  { number: 3, label: 'AI 양식 생성',   icon: Sparkles },
+  { number: 4, label: '저장 및 PDF',    icon: Save },
+];
+
 const TEMPLATES = [
   { id: 'action',     name: '조치결과보고서',          desc: '완료된 조치 결과 및 재발방지 계획 기록',       icon: CheckCircle2 },
-  { id: 'inspection', name: '안전점검 결과보고서',      desc: '현장 안전점검 결과를 정리한 표준 보고서',       icon: Shield },
-  { id: 'tbm',        name: 'TBM 보고서',              desc: '작업 전 안전 회의 (Tool Box Meeting) 기록',     icon: BarChart2 },
-  { id: 'confirm',    name: '하청 조치확인서',          desc: '하청 업체의 조치 완료 확인 및 서명 문서',       icon: AlertTriangle },
+  { id: 'inspection', name: '안전점검일지',             desc: '점검 항목별 적합 여부와 지적·조치사항 기록',       icon: Shield },
+  { id: 'risk',       name: '위험성평가서',             desc: '유해·위험요인의 위험성 결정과 감소대책 기록',      icon: AlertTriangle },
+  { id: 'tbm',        name: 'TBM 일지',                 desc: '작업 전 위험요인·안전대책 공유와 참석자 기록',     icon: BarChart2 },
+  { id: 'edu',        name: '안전보건교육일지',          desc: '교육 내용과 참석자 서명부 기록',                 icon: Shield },
+  { id: 'ppe',        name: '보호구 지급대장',           desc: '보호구 품목·수량·수령자 기록',                   icon: CheckCircle2 },
+  { id: 'work',       name: '안전작업허가서',             desc: '위험작업 전 안전조치 확인과 작업 승인 기록',       icon: FileText },
+  { id: 'expense',    name: '산업안전보건관리비 사용내역서', desc: '안전관리비 집행 항목·금액·증빙과 누계 기록',       icon: BarChart2 },
 ];
+
+const STANDALONE_TEMPLATE_IDS = new Set(['tbm', 'edu', 'ppe', 'work', 'expense']);
 
 const RISK_PILL: Record<string, string> = {
   high: 'bg-red-100 text-red-700 border-red-200',
@@ -61,16 +78,21 @@ function ProgressBar({ pct }: { pct: number }) {
   );
 }
 
-export default function AIReportPage({ onNavigate, completedActions, onConsumeActions }: AIReportPageProps) {
+export default function AIReportPage({ onNavigate, completedActions, onConsumeActions, onReportSaved, initialStandaloneTemplate }: AIReportPageProps) {
   const fromReport = Boolean(completedActions?.length);
-  const STEPS = fromReport ? STEPS_WITH_ACTIONS : STEPS_UPLOAD;
+  const standaloneMode = Boolean(initialStandaloneTemplate);
+  const STEPS = fromReport ? STEPS_WITH_ACTIONS : standaloneMode ? STEPS_STANDALONE : STEPS_UPLOAD;
+  const availableTemplates = standaloneMode ? TEMPLATES.filter(template => STANDALONE_TEMPLATE_IDS.has(template.id)) : TEMPLATES.slice(0, 4);
 
   const [step, setStep] = useState<ReportStep>(1);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(
     () => new Set(completedActions?.map((_, i) => i) ?? [])
   );
   const [formFiles, setFormFiles] = useState<FormFile[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(fromReport ? 'action' : null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(fromReport ? 'action' : initialStandaloneTemplate ?? null);
+  const [siteName, setSiteName] = useState('강남 복합시설 신축공사');
+  const [documentDate, setDocumentDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [writer, setWriter] = useState('김현장');
   const [genPct, setGenPct] = useState(0);
   const [genDone, setGenDone] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -78,6 +100,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
   const fileRef = useRef<HTMLInputElement>(null);
   const genIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const genTimeoutRef  = useRef<ReturnType<typeof setTimeout>  | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>  | null>(null);
 
   useEffect(() => {
     const consume = onConsumeActions;
@@ -85,6 +108,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
       consume?.();
       if (genIntervalRef.current) clearInterval(genIntervalRef.current);
       if (genTimeoutRef.current)  clearTimeout(genTimeoutRef.current);
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -93,6 +117,26 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
 
   const templateName = TEMPLATES.find(t => t.id === selectedTemplate)?.name
     ?? (formFiles.find(f => f.id === selectedTemplate)?.name ?? '조치결과보고서');
+  const [dateYear = '', dateMonth = '', dateDay = ''] = documentDate.split('-');
+  const dottedDate = documentDate ? [dateYear, dateMonth, dateDay].join('.') : '-';
+  const koreanDate = documentDate ? `${dateYear}년 ${dateMonth}월 ${dateDay}일` : '-';
+  const compactDate = documentDate.replace(/-/g, '') || 'undated';
+  const fileSiteName = siteName.trim().replace(/\s+/g, '') || '현장';
+  const reportFileName = `${fileSiteName}_${templateName}_${compactDate}.pdf`;
+  const documentNumber = `SM-${compactDate}-001`;
+  const generatedDocument = createSafetyDocumentSnapshot({
+    templateId: selectedTemplate,
+    siteName,
+    documentDate,
+    writer,
+    documentNumber,
+    actions: selectedActions,
+  });
+
+  const downloadGeneratedReport = () => {
+    downloadSafetyDocumentHtml(generatedDocument);
+    toast.success('보고서 파일을 내려받았습니다.');
+  };
 
   const toggleId = (i: number) => {
     setSelectedIds(prev => {
@@ -138,7 +182,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
   const resetAll = () => {
     setStep(1);
     setFormFiles([]);
-    setSelectedTemplate(fromReport ? 'action' : null);
+    setSelectedTemplate(fromReport ? 'action' : initialStandaloneTemplate ?? null);
     setSelectedIds(new Set(completedActions?.map((_, i) => i) ?? []));
     setGenPct(0);
     setGenDone(false);
@@ -147,13 +191,15 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
   };
 
   return (
-    <Layout currentPath="ai-report" onNavigate={onNavigate}>
+    <Layout currentPath={standaloneMode ? 'documents' : 'ai-report'} onNavigate={onNavigate}>
       <div className="mb-6">
         <p style={{ fontSize: 11, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 500, marginBottom: 5 }}>결과보고서</p>
         <h1 style={{ fontSize: 22, fontWeight: 600, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: 6 }}>AI 결과보고서 생성</h1>
         <p style={{ fontSize: 12, color: '#6B7280' }}>
           {fromReport
             ? '완료된 조치 항목을 선택하여 안전양식을 자동으로 작성합니다.'
+            : standaloneMode
+              ? '현장 기본정보를 바탕으로 선택한 안전서류를 AI가 자동 작성합니다.'
             : '업로드한 양식 파일을 기반으로 현장 점검 결과보고서를 자동 생성합니다.'}
         </p>
       </div>
@@ -191,10 +237,38 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
 
         <div className="p-6">
 
+          {step === 1 && standaloneMode && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">기본정보</h2>
+                <p className="text-sm text-gray-500 mt-1">서류에 공통으로 들어갈 현장과 작성 정보를 확인하세요.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="block md:col-span-2">
+                  <span className="block text-xs font-semibold text-gray-600 mb-1.5">현장명</span>
+                  <input value={siteName} onChange={event => setSiteName(event.target.value)} className="w-full h-10 px-3 border border-gray-200 rounded text-sm outline-none focus:border-[#4A90D9]" />
+                </label>
+                <label className="block">
+                  <span className="block text-xs font-semibold text-gray-600 mb-1.5">작성일</span>
+                  <input type="date" value={documentDate} onChange={event => setDocumentDate(event.target.value)} className="w-full h-10 px-3 border border-gray-200 rounded text-sm outline-none focus:border-[#4A90D9]" />
+                </label>
+                <label className="block">
+                  <span className="block text-xs font-semibold text-gray-600 mb-1.5">작성자</span>
+                  <input value={writer} onChange={event => setWriter(event.target.value)} className="w-full h-10 px-3 border border-gray-200 rounded text-sm outline-none focus:border-[#4A90D9]" />
+                </label>
+              </div>
+              <div className="flex justify-end pt-2">
+                <button disabled={!siteName.trim() || !documentDate || !writer.trim()} onClick={() => setStep(2)} className="flex items-center gap-2 px-5 py-2.5 bg-[#1A2E44] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded text-sm font-semibold">
+                  양식 선택 <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ══════════════════════════════════════════════
               STEP 1-A: Completed action selector (from ReportDetail)
           ══════════════════════════════════════════════ */}
-          {step === 1 && fromReport && (
+          {step === 1 && fromReport && !standaloneMode && (
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-green-50 rounded flex items-center justify-center">
@@ -306,7 +380,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
           {/* ══════════════════════════════════════════════
               STEP 1-B: File upload (standalone nav)
           ══════════════════════════════════════════════ */}
-          {step === 1 && !fromReport && (
+          {step === 1 && !fromReport && !standaloneMode && (
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-blue-50 rounded flex items-center justify-center">
@@ -409,7 +483,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">기본 제공 양식</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {TEMPLATES.map(t => (
+                  {availableTemplates.map(t => (
                     <button
                       key={t.id}
                       onClick={() => setSelectedTemplate(t.id)}
@@ -521,17 +595,17 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                           <tr>
                             <td className="bg-gray-100 px-2 py-1 font-semibold border border-gray-300 w-16 text-center">현장명</td>
                             <td className="px-2 py-1 border border-gray-300" colSpan={3}>
-                              {genPct >= 5 ? '강남 복합시설 신축공사' : <span className="text-gray-200">▓▓▓▓▓▓▓▓</span>}
+                              {genPct >= 5 ? siteName : <span className="text-gray-200">▓▓▓▓▓▓▓▓</span>}
                             </td>
                           </tr>
                           <tr>
                             <td className="bg-gray-100 px-2 py-1 font-semibold border border-gray-300 text-center">점검일</td>
                             <td className="px-2 py-1 border border-gray-300">
-                              {genPct >= 8 ? '2026.08.09' : <span className="text-gray-200">▓▓▓▓▓</span>}
+                              {genPct >= 8 ? dottedDate : <span className="text-gray-200">▓▓▓▓▓</span>}
                             </td>
                             <td className="bg-gray-100 px-2 py-1 font-semibold border border-gray-300 text-center w-14">담당자</td>
                             <td className="px-2 py-1 border border-gray-300">
-                              {genPct >= 10 ? '이조치' : <span className="text-gray-200">▓▓▓</span>}
+                              {genPct >= 10 ? writer : <span className="text-gray-200">▓▓▓</span>}
                             </td>
                           </tr>
                         </tbody>
@@ -606,21 +680,29 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
               {/* Full document */}
               <div className="border border-gray-300 rounded overflow-hidden shadow-sm">
                 <div className="bg-gray-100 border-b border-gray-300 px-4 py-2.5 flex items-center justify-between">
+                  <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-gray-500" /><span className="text-sm font-medium text-gray-700">{templateName} 원본 미리보기</span></div>
+                  <span className="text-xs text-gray-400">{reportFileName}</span>
+                </div>
+                <div className="bg-white p-6 max-h-[720px] overflow-y-auto"><SafetyDocumentPreview document={generatedDocument} /></div>
+              </div>
+              {false && (
+              <div className="border border-gray-300 rounded overflow-hidden shadow-sm">
+                <div className="bg-gray-100 border-b border-gray-300 px-4 py-2.5 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-gray-500" />
                     <span className="text-sm font-medium text-gray-700">보고서 미리보기</span>
                   </div>
-                  <span className="text-xs text-gray-400">강남복합시설_{templateName}_20260809.pdf</span>
+                  <span className="text-xs text-gray-400">{reportFileName}</span>
                 </div>
                 <div className="bg-white p-6 space-y-5 text-sm max-h-[680px] overflow-y-auto">
                   {/* Header */}
                   <div className="text-center space-y-1 pb-4 border-b-2 border-gray-800">
                     <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                      <span>문서번호: SM-2026-0809-001</span>
+                      <span>문서번호: {documentNumber}</span>
                       <span className="flex items-center gap-1"><Sparkles className="w-3 h-3 text-purple-500" /> AI 자동생성</span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900">{templateName}</h3>
-                    <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 연결고리 · 2026년 08월 09일</p>
+                    <p className="text-xs text-gray-500">건설현장 안전관리 플랫폼 연결고리 · {koreanDate}</p>
                   </div>
 
                   {/* Site info */}
@@ -632,7 +714,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                       <tbody>
                         <tr>
                           <td className="bg-gray-100 px-3 py-2 font-semibold border border-gray-400 w-24 text-center">현  장  명</td>
-                          <td className="px-3 py-2 border border-gray-400" colSpan={3}>강남 복합시설 신축공사</td>
+                          <td className="px-3 py-2 border border-gray-400" colSpan={3}>{siteName}</td>
                         </tr>
                         <tr>
                           <td className="bg-gray-100 px-3 py-2 font-semibold border border-gray-400 text-center">원청 건설사</td>
@@ -642,9 +724,9 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                         </tr>
                         <tr>
                           <td className="bg-gray-100 px-3 py-2 font-semibold border border-gray-400 text-center">점  검  일</td>
-                          <td className="px-3 py-2 border border-gray-400">2026년 08월 09일</td>
+                          <td className="px-3 py-2 border border-gray-400">{koreanDate}</td>
                           <td className="bg-gray-100 px-3 py-2 font-semibold border border-gray-400 text-center">담  당  자</td>
-                          <td className="px-3 py-2 border border-gray-400">이조치</td>
+                          <td className="px-3 py-2 border border-gray-400">{writer}</td>
                         </tr>
                         {fromReport && (
                           <tr>
@@ -745,7 +827,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                     </p>
                     <div className="border border-gray-300 rounded p-3 bg-gray-50 text-xs text-gray-700 leading-5">
                       {fromReport
-                        ? `금번 강남 복합시설 신축공사 현장 AI 안전점검 결과, 총 ${selectedActions.length}건의 완료 조치를 확인하였습니다. ${selectedActions.map(a => a.title).join(', ')} 항목 모두 조치가 적합하게 완료되었습니다. 지속적인 안전 관리 및 정기 점검을 권장합니다.`
+                        ? `금번 ${siteName} 현장 AI 안전점검 결과, 총 ${selectedActions.length}건의 완료 조치를 확인하였습니다. ${selectedActions.map(a => a.title).join(', ')} 항목 모두 조치가 적합하게 완료되었습니다. 지속적인 안전 관리 및 정기 점검을 권장합니다.`
                         : '현장 점검 결과 감지된 위험요소에 대한 조치가 완료되었습니다. 지속적인 안전 관리 및 정기 점검을 권장합니다.'}
                     </div>
                   </div>
@@ -768,21 +850,37 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                           <td className="px-3 py-6 border border-gray-400 text-center text-gray-300 text-xl">(인)</td>
                         </tr>
                         <tr>
-                          <td className="px-3 py-2 border border-gray-400 text-center text-gray-600 font-medium">이조치</td>
+                          <td className="px-3 py-2 border border-gray-400 text-center text-gray-600 font-medium">{writer}</td>
                           <td className="px-3 py-2 border border-gray-400 text-center text-gray-400"></td>
                           <td className="px-3 py-2 border border-gray-400 text-center text-gray-400"></td>
                         </tr>
                       </tbody>
                     </table>
-                    <p className="text-right text-xs text-gray-400 mt-2">연결고리 AI 자동생성 보고서 · 2026.08.09</p>
+                    <p className="text-right text-xs text-gray-400 mt-2">연결고리 AI 자동생성 보고서 · {dottedDate}</p>
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Action buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
-                  onClick={() => { setSaved(true); toast.success('보고서가 저장되었습니다.'); }}
+                  onClick={() => {
+                    if (saved) return;
+                    setSaved(true);
+                    toast.success('보고서가 저장되었습니다. 완료된 보고서로 이동합니다.');
+                    saveTimeoutRef.current = setTimeout(() => {
+                      onReportSaved?.({
+                        title: templateName,
+                        actionCount: selectedActions.length,
+                        site: siteName.trim(),
+                        author: writer.trim(),
+                        createdAt: dottedDate,
+                        snapshot: generatedDocument,
+                      });
+                      onNavigate('saved-reports');
+                    }, 600);
+                  }}
                   className={`flex items-center justify-center gap-2 px-4 py-3 rounded font-bold text-sm transition-colors ${
                     saved ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-[#1A2E44] text-white hover:bg-[#254d7a] shadow-md'
                   }`}
@@ -791,16 +889,20 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
                   {saved ? '저장 완료' : '보고서 저장'}
                 </button>
                 <button
-                  onClick={() => { setPdfDone(true); toast.success('PDF가 생성되었습니다.'); }}
+                  onClick={() => {
+                    setPdfDone(true);
+                    downloadSafetyDocumentHtml(generatedDocument);
+                    toast.success('인쇄용 문서가 생성되었습니다. 인쇄 메뉴에서 PDF로 저장할 수 있습니다.');
+                  }}
                   className={`flex items-center justify-center gap-2 px-4 py-3 rounded font-bold text-sm transition-colors ${
                     pdfDone ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-[#1A2E44] text-white hover:bg-[#0F2233] shadow-md shadow-[#1A2E44]/30'
                   }`}
                 >
                   {pdfDone ? <CheckCircle2 className="w-4 h-4" /> : <Printer className="w-4 h-4" />}
-                  {pdfDone ? 'PDF 완료' : 'PDF 생성'}
+                  {pdfDone ? '문서 생성 완료' : '인쇄용 문서 생성'}
                 </button>
                 <button
-                  onClick={() => toast.success('다운로드가 시작됩니다.')}
+                  onClick={downloadGeneratedReport}
                   className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 text-gray-700 rounded font-bold text-sm hover:bg-gray-50 transition-colors"
                 >
                   <Download className="w-4 h-4" /> 다운로드
@@ -810,7 +912,7 @@ export default function AIReportPage({ onNavigate, completedActions, onConsumeAc
               {(saved || pdfDone) && (
                 <div className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
                   <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span><span className="font-medium">저장 위치:</span> /reports/강남복합시설_{templateName}_20260809.pdf</span>
+                  <span><span className="font-medium">저장 위치:</span> /reports/{reportFileName}</span>
                 </div>
               )}
 

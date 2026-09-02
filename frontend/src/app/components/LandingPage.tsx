@@ -1,4 +1,5 @@
 import { Shield, BarChart3, Camera, FileCheck, AlertTriangle, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 
 interface LandingPageProps {
@@ -6,6 +7,14 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ onNavigate }: LandingPageProps) {
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const showDemoInfo = (label: string) => {
+    toast.info(`${label}은 공모전 시연 버전에서 안내 화면으로 제공됩니다.`);
+  };
 
   const features = [
     { icon: Camera, title: 'AI 위험 분석', description: '사진을 업로드하면 AI가 자동으로 위험 요소를 분석합니다' },
@@ -26,10 +35,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <span className="font-bold text-xl text-[#1A2E44]">연결고리</span>
         </div>
         <div className="flex items-center gap-1 sm:gap-3">
-          <button className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
+          <button onClick={() => scrollToSection('features')} className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
             제품 소개
           </button>
-          <button className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
+          <button onClick={() => scrollToSection('pricing')} className="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">
             가격
           </button>
           <button
@@ -157,7 +166,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Benefits Section */}
-      <section className="container mx-auto px-6 py-20">
+      <section id="benefits" className="container mx-auto px-6 py-20 scroll-mt-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-[#1A2E44] mb-4">
             연결고리를 선택해야 하는 이유
@@ -243,7 +252,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Features */}
-      <section className="container mx-auto px-6 py-20">
+      <section id="features" className="container mx-auto px-6 py-20 scroll-mt-20">
         <h2 className="text-4xl font-bold text-[#1A2E44] text-center mb-4">
             연결고리의 핵심 기능
         </h2>
@@ -264,7 +273,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Pricing */}
-      <section className="container mx-auto px-6 py-20">
+      <section id="pricing" className="container mx-auto px-6 py-20 scroll-mt-20">
         <h2 className="text-3xl font-bold text-[#1A2E44] text-center mb-12">
           간편한 요금제
         </h2>
@@ -298,7 +307,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   </li>
                 ))}
               </ul>
-              <button className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+              <button onClick={() => onNavigate(plan.price === '문의' ? 'signup' : 'login')} className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                 plan.popular
                   ? 'bg-[#1A2E44] text-white hover:bg-[#0F2233]'
                   : 'border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44] hover:text-white'
@@ -357,30 +366,30 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             <div>
               <h4 className="font-semibold mb-4">제품</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">기능 소개</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">가격 안내</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">고객 사례</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">업데이트</a></li>
+                <li><a href="#features" className="hover:text-white transition-colors">기능 소개</a></li>
+                <li><a href="#pricing" className="hover:text-white transition-colors">가격 안내</a></li>
+                <li><a href="#benefits" className="hover:text-white transition-colors">고객 사례</a></li>
+                <li><a href="#features" onClick={() => showDemoInfo('업데이트')} className="hover:text-white transition-colors">업데이트</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold mb-4">지원</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">도움말 센터</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">사용 가이드</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">API 문서</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">문의하기</a></li>
+                <li><a href="#features" onClick={() => showDemoInfo('도움말 센터')} className="hover:text-white transition-colors">도움말 센터</a></li>
+                <li><a href="#features" onClick={() => showDemoInfo('사용 가이드')} className="hover:text-white transition-colors">사용 가이드</a></li>
+                <li><a href="#features" onClick={() => showDemoInfo('API 문서')} className="hover:text-white transition-colors">API 문서</a></li>
+                <li><a href="mailto:support@yeongyeolgori.kr" className="hover:text-white transition-colors">문의하기</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold mb-4">회사</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">회사 소개</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">블로그</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">채용</a></li>
-                <li><a href="#" className="hover:text-[#1A2E44] transition-colors">파트너십</a></li>
+                <li><a href="#benefits" className="hover:text-white transition-colors">회사 소개</a></li>
+                <li><a href="#features" onClick={() => showDemoInfo('블로그')} className="hover:text-white transition-colors">블로그</a></li>
+                <li><a href="#benefits" onClick={() => showDemoInfo('채용')} className="hover:text-white transition-colors">채용</a></li>
+                <li><a href="mailto:support@yeongyeolgori.kr?subject=파트너십 문의" className="hover:text-white transition-colors">파트너십</a></li>
               </ul>
             </div>
           </div>
@@ -388,9 +397,9 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-6 text-sm text-gray-400">
-                <a href="#" className="hover:text-white transition-colors">이용약관</a>
-                <a href="#" className="hover:text-white transition-colors">개인정보처리방침</a>
-                <a href="#" className="hover:text-white transition-colors">쿠키 정책</a>
+                <a href="#pricing" onClick={() => showDemoInfo('이용약관')} className="hover:text-white transition-colors">이용약관</a>
+                <a href="#pricing" onClick={() => showDemoInfo('개인정보처리방침')} className="hover:text-white transition-colors">개인정보처리방침</a>
+                <a href="#pricing" onClick={() => showDemoInfo('쿠키 정책')} className="hover:text-white transition-colors">쿠키 정책</a>
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-gray-400 text-sm">고객센터: 1588-1234</span>

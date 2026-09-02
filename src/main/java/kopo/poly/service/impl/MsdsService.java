@@ -1,10 +1,10 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.MsdsAttachRequest;
-import kopo.poly.dto.request.MsdsDetectRequestDto;
-import kopo.poly.dto.response.MsdsDetectResponseDto;
-import kopo.poly.dto.response.MsdsDocumentResponse;
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.request.MsdsAttachRequestDTO;
+import kopo.poly.dto.request.MsdsDetectRequestDTO;
+import kopo.poly.dto.response.MsdsDetectResponseDTO;
+import kopo.poly.dto.response.MsdsDocumentResponseDTO;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.MsdsDocument;
 import kopo.poly.entity.enums.MsdsSourceType;
@@ -40,26 +40,26 @@ public class MsdsService implements IMsdsService {
     }
 
     @Override
-    public MsdsDetectResponseDto detectFromImage(String imageS3Key, String workInfo) {
+    public MsdsDetectResponseDTO detectFromImage(String imageS3Key, String workInfo) {
         if (imageS3Key == null || imageS3Key.isBlank()) {
-            return new MsdsDetectResponseDto(List.of(), List.of());
+            return new MsdsDetectResponseDTO(List.of(), List.of());
         }
-        return aiPipelineClient.detectMsds(new MsdsDetectRequestDto(imageS3Key, workInfo != null ? workInfo : ""));
+        return aiPipelineClient.detectMsds(new MsdsDetectRequestDTO(imageS3Key, workInfo != null ? workInfo : ""));
     }
 
     @Override
-    public MsdsDetectResponseDto detectFromInspection(Long inspectionId) {
+    public MsdsDetectResponseDTO detectFromInspection(Long inspectionId) {
         AiSafetyInspection inspection = getInspection(inspectionId);
         String imageKey = firstImageKey(inspection);
         if (imageKey == null) {
             // 등록된 현장 사진이 없으면 AI 인식은 건너뛰고 빈 후보를 돌려준다(사용자가 직접 검색).
-            return new MsdsDetectResponseDto(List.of(), List.of());
+            return new MsdsDetectResponseDTO(List.of(), List.of());
         }
-        return aiPipelineClient.detectMsds(new MsdsDetectRequestDto(imageKey, inspection.getWorkType()));
+        return aiPipelineClient.detectMsds(new MsdsDetectRequestDTO(imageKey, inspection.getWorkType()));
     }
 
     @Override
-    public List<MsdsSearchResultDto> search(String query) {
+    public List<MsdsSearchResultDTO> search(String query) {
         if (query == null || query.isBlank()) {
             return List.of();
         }
@@ -68,7 +68,7 @@ public class MsdsService implements IMsdsService {
 
     @Override
     @Transactional
-    public MsdsDocumentResponse attach(MsdsAttachRequest request, Long createdBy) {
+    public MsdsDocumentResponseDTO attach(MsdsAttachRequestDTO request, Long createdBy) {
         if (request.chemicalName() == null || request.chemicalName().isBlank()) {
             throw new IllegalArgumentException("물질명은 필수입니다.");
         }
@@ -97,31 +97,31 @@ public class MsdsService implements IMsdsService {
                         .createdBy(createdBy)
                         .build()
         );
-        return MsdsDocumentResponse.from(saved);
+        return MsdsDocumentResponseDTO.from(saved);
     }
 
     @Override
-    public List<MsdsDocumentResponse> findByInspectionId(Long inspectionId) {
+    public List<MsdsDocumentResponseDTO> findByInspectionId(Long inspectionId) {
         AiSafetyInspection inspection = getInspection(inspectionId);
         return msdsDocumentRepository.findByInspectionOrderByCreatedAtDesc(inspection).stream()
-                .map(MsdsDocumentResponse::from)
+                .map(MsdsDocumentResponseDTO::from)
                 .toList();
     }
 
     @Override
-    public List<MsdsDocumentResponse> findMine(Long createdBy) {
+    public List<MsdsDocumentResponseDTO> findMine(Long createdBy) {
         return msdsDocumentRepository.findByCreatedByOrderByCreatedAtDesc(createdBy).stream()
-                .map(MsdsDocumentResponse::from)
+                .map(MsdsDocumentResponseDTO::from)
                 .toList();
     }
 
     @Override
     @Transactional
-    public MsdsDocumentResponse setVerified(Long msdsId, boolean verified) {
+    public MsdsDocumentResponseDTO setVerified(Long msdsId, boolean verified) {
         MsdsDocument doc = msdsDocumentRepository.findById(msdsId)
                 .orElseThrow(() -> new NoSuchElementException("MSDS 문서를 찾을 수 없습니다: " + msdsId));
         doc.markVerified(verified);
-        return MsdsDocumentResponse.from(doc);
+        return MsdsDocumentResponseDTO.from(doc);
     }
 
     private AiSafetyInspection getInspection(Long inspectionId) {

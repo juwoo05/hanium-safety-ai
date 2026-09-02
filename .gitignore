@@ -46,6 +46,11 @@ ai-pipeline/__pycache__/
 ai-pipeline/**/__pycache__/
 ai-pipeline/.env
 
+### 문서/발표자료 생성 산출물 (스크립트로 재생성) ###
+/output/
+/outputs/
+src/main/webapp/images/*-preview.png
+
 ### Frontend (frontend/) ###
 frontend/node_modules/
 frontend/dist/

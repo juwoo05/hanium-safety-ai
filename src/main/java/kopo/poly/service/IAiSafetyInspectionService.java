@@ -1,13 +1,13 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.request.AnalysisRequest;
+import kopo.poly.dto.request.AnalysisRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 
 import java.util.List;
 
 public interface IAiSafetyInspectionService {
 
-    AiSafetyInspection requestAnalysis(AnalysisRequest request);
+    AiSafetyInspection requestAnalysis(AnalysisRequestDTO request);
 
     AiSafetyInspection getById(Long id);
 

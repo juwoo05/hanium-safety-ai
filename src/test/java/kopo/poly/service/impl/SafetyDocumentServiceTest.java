@@ -1,13 +1,18 @@
 package kopo.poly.service.impl;
 
+import kopo.poly.dto.request.DocumentSaveRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
+import kopo.poly.entity.SafetyDocument;
+import kopo.poly.entity.Site;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.DocumentType;
 import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
 import kopo.poly.repository.SafetyDocumentRepository;
+import kopo.poly.repository.SiteMembershipRepository;
+import kopo.poly.repository.SiteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +40,12 @@ class SafetyDocumentServiceTest {
 
     @Mock
     private SafetyActionRepository safetyActionRepository;
+
+    @Mock
+    private SiteRepository siteRepository;
+
+    @Mock
+    private SiteMembershipRepository siteMembershipRepository;
 
     @InjectMocks
     private SafetyDocumentService safetyDocumentService;
@@ -72,7 +84,7 @@ class SafetyDocumentServiceTest {
                 조치("안전모 착용", RiskLevel.SAFE, ActionStatus.COMPLETED, null, null)
         ));
 
-        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.INSPECTION_LOG);
+        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.INSPECTION_LOG, 1L);
 
         assertThat(draft.get("siteName")).isEqualTo("3동 지하 1층");
         assertThat(draft.get("overallResult")).isEqualTo("불량");
@@ -93,7 +105,7 @@ class SafetyDocumentServiceTest {
                 조치("안전모 미착용", RiskLevel.MEDIUM, ActionStatus.REQUESTED, "착용 교육 강화", null)
         ));
 
-        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.ACTION_REPORT);
+        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.ACTION_REPORT, 1L);
 
         assertThat(draft.get("completedAction")).asString().contains("임시 배선 노출").doesNotContain("안전모 미착용");
         assertThat(draft.get("preventionPlan")).asString().contains("배선 보호 커버 설치").contains("착용 교육 강화");
@@ -107,7 +119,7 @@ class SafetyDocumentServiceTest {
                 조치("안전난간 미설치", RiskLevel.HIGH, ActionStatus.REQUESTED, null, "산안법 제38조")
         ));
 
-        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.WORK_PERMIT);
+        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.WORK_PERMIT, 1L);
 
         assertThat(draft.get("workType")).isEqualTo("외벽 마감 작업");
         assertThat(draft.get("workScope")).isEqualTo("3동 지하 1층");
@@ -122,7 +134,7 @@ class SafetyDocumentServiceTest {
                 조치("안전난간 미설치", RiskLevel.HIGH, ActionStatus.REQUESTED, "즉시 설치", "산안법 제38조")
         ));
 
-        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.TBM_LOG);
+        Map<String, Object> draft = safetyDocumentService.buildDraft(1L, DocumentType.TBM_LOG, 1L);
 
         assertThat(draft.get("siteName")).isEqualTo("3동 지하 1층");
         assertThat(draft.get("subType")).isEqualTo("작업 전");
@@ -138,7 +150,7 @@ class SafetyDocumentServiceTest {
 
         for (DocumentType type : List.of(
                 DocumentType.SAFETY_EDU_LOG, DocumentType.PPE_ISSUE_LOG, DocumentType.SAFETY_EXPENSE_LOG)) {
-            Map<String, Object> draft = safetyDocumentService.buildDraft(1L, type);
+            Map<String, Object> draft = safetyDocumentService.buildDraft(1L, type, 1L);
             assertThat(draft.get("siteName")).isEqualTo("3동 지하 1층");
             assertThat(draft.get("summary")).asString().isNotBlank();
         }
@@ -150,7 +162,88 @@ class SafetyDocumentServiceTest {
 
         org.junit.jupiter.api.Assertions.assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> safetyDocumentService.buildDraft(999L, DocumentType.INSPECTION_LOG)
+                () -> safetyDocumentService.buildDraft(999L, DocumentType.INSPECTION_LOG, 1L)
         );
+    }
+
+    @Test
+    void 독립서류를_다시_저장하면_새로_추가하지_않고_기존문서를_갱신한다() {
+        Site site = Site.builder().id(10L).name("강남 복합시설 신축공사").ownerId(1L).build();
+        SafetyDocument existing = SafetyDocument.builder()
+                .id(20L)
+                .site(site)
+                .docType(DocumentType.TBM_LOG)
+                .formData(Map.of("summary", "기존 내용"))
+                .createdBy(1L)
+                .build();
+        DocumentSaveRequestDTO request = new DocumentSaveRequestDTO(
+                null,
+                10L,
+                DocumentType.TBM_LOG,
+                Map.of("summary", "수정 내용"),
+                true
+        );
+        when(siteRepository.findById(10L)).thenReturn(Optional.of(site));
+        when(safetyDocumentRepository.findBySiteAndDocTypeAndCreatedBy(site, DocumentType.TBM_LOG, 1L))
+                .thenReturn(Optional.of(existing));
+
+        SafetyDocument result = safetyDocumentService.save(request, 1L);
+
+        assertThat(result.getId()).isEqualTo(20L);
+        assertThat(result.getFormData()).containsEntry("summary", "수정 내용");
+        assertThat(result.isAiGenerated()).isTrue();
+    }
+
+    @Test
+    void 소유하거나_참여하지_않은_현장의_독립서류는_작성할_수_없다() {
+        Site site = Site.builder().id(10L).name("타사 현장").ownerId(2L).build();
+        when(siteRepository.findById(10L)).thenReturn(Optional.of(site));
+        when(siteMembershipRepository.existsBySiteAndUserId(site, 1L)).thenReturn(false);
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                java.util.NoSuchElementException.class,
+                () -> safetyDocumentService.buildStandaloneDraft(10L, DocumentType.TBM_LOG, 1L)
+        );
+    }
+
+    @Test
+    void 문서유형이나_내용이_없으면_저장을_거부한다() {
+        DocumentSaveRequestDTO request = new DocumentSaveRequestDTO(null, 10L, null, null, false);
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> safetyDocumentService.save(request, 1L)
+        );
+    }
+
+    @Test
+    void 내_보고서_상세를_조회한다() {
+        SafetyDocument document = SafetyDocument.builder()
+                .id(30L)
+                .docType(DocumentType.ACTION_REPORT)
+                .formData(Map.of("completedAction", "안전난간 설치 완료"))
+                .createdBy(1L)
+                .build();
+        when(safetyDocumentRepository.findByIdAndCreatedBy(30L, 1L)).thenReturn(Optional.of(document));
+
+        SafetyDocument result = safetyDocumentService.findMineById(30L, 1L);
+
+        assertThat(result.getId()).isEqualTo(30L);
+        assertThat(result.getDocType()).isEqualTo(DocumentType.ACTION_REPORT);
+    }
+
+    @Test
+    void 내_보고서를_삭제한다() {
+        SafetyDocument document = SafetyDocument.builder()
+                .id(31L)
+                .docType(DocumentType.TBM_LOG)
+                .formData(Map.of("summary", "작업 전 TBM"))
+                .createdBy(1L)
+                .build();
+        when(safetyDocumentRepository.findByIdAndCreatedBy(31L, 1L)).thenReturn(Optional.of(document));
+
+        safetyDocumentService.deleteMine(31L, 1L);
+
+        verify(safetyDocumentRepository).delete(document);
     }
 }

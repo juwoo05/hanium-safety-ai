@@ -1,6 +1,6 @@
 package kopo.poly.controller.api;
 
-import kopo.poly.dto.response.UploadResponse;
+import kopo.poly.dto.response.UploadResponseDTO;
 import kopo.poly.service.AiPipelineClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +19,7 @@ public class UploadApiController {
     }
 
     @PostMapping("/api/uploads")
-    public UploadResponse upload(@RequestParam("file") MultipartFile file) {
-        return new UploadResponse(aiPipelineClient.upload(file).s3Key());
+    public UploadResponseDTO upload(@RequestParam("file") MultipartFile file) {
+        return new UploadResponseDTO(aiPipelineClient.upload(file).s3Key());
     }
 }

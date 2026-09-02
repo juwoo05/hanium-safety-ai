@@ -1,6 +1,6 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.ActionCreateRequest;
+import kopo.poly.dto.request.ActionCreateRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
@@ -38,7 +38,7 @@ public class SafetyActionService implements ISafetyActionService {
 
     @Override
     @Transactional
-    public SafetyAction createManual(ActionCreateRequest request) {
+    public SafetyAction createManual(ActionCreateRequestDTO request) {
         AiSafetyInspection inspection = request.inspectionId() != null
                 ? inspectionRepository.findById(request.inspectionId())
                         .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + request.inspectionId()))

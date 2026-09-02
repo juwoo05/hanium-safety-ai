@@ -34,6 +34,7 @@ import java.util.Map;
         name = "safety_documents",
         indexes = {
                 @Index(name = "idx_safety_documents_inspection_id", columnList = "inspection_id"),
+                @Index(name = "idx_safety_documents_site_id", columnList = "site_id"),
                 @Index(name = "idx_safety_documents_doc_type", columnList = "doc_type")
         }
 )
@@ -51,6 +52,12 @@ public class SafetyDocument {
     @JoinColumn(name = "inspection_id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private AiSafetyInspection inspection;
+
+    // TBM·교육일지·보호구대장처럼 검사 결과와 무관하게 작성하는 독립 현장 서류의 기준 현장.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "site_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Site site;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "doc_type", nullable = false, length = 30)

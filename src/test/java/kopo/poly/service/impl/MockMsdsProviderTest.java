@@ -1,6 +1,6 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 import kopo.poly.entity.enums.MsdsSourceType;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +15,10 @@ class MockMsdsProviderTest {
 
     @Test
     void 물질명으로_검색하면_KOSHA_상세페이지_링크로_결과를_반환한다() {
-        List<MsdsSearchResultDto> results = provider.search("톨루엔");
+        List<MsdsSearchResultDTO> results = provider.search("톨루엔");
 
         assertThat(results).isNotEmpty();
-        MsdsSearchResultDto first = results.get(0);
+        MsdsSearchResultDTO first = results.get(0);
         assertThat(first.chemicalName()).isEqualTo("톨루엔");
         assertThat(first.casNo()).isEqualTo("108-88-3");
         assertThat(first.sourceType()).isEqualTo(MsdsSourceType.KOSHA);

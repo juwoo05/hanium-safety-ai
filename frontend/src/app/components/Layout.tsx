@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import {
   LayoutDashboard, Camera, ClipboardList, BarChart2,
-  FileText, MessageSquare, Bell, LogOut, ChevronDown,
+  FileText, FileCheck2, MessageSquare, Bell, LogOut, ChevronDown,
   Settings,
 } from 'lucide-react';
 
@@ -16,8 +16,9 @@ const NAV_ITEMS = [
   { label: '대시보드',    path: 'dashboard',     icon: LayoutDashboard },
   { label: '사진 분석',   path: 'upload',         icon: Camera },
   { label: '조치관리',    path: 'actions',        icon: ClipboardList },
+  { label: '안전 서류',   path: 'documents',      icon: FileText },
+  { label: '완료된 보고서', path: 'saved-reports', icon: FileCheck2 },
   { label: '분석 리포트', path: 'analytics',      icon: BarChart2 },
-  { label: '안전 서류',   path: 'actions-detail', icon: FileText },
   { label: '신고 게시판', path: 'report-board',   icon: MessageSquare },
 ];
 
@@ -35,7 +36,7 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
     : NAV_ITEMS;
 
   const isActive = (path: string): boolean => {
-    if (path === 'actions-detail') return currentPath === 'actions-detail';
+    if (path === 'documents') return currentPath === 'documents' || currentPath === 'ai-report' || currentPath === 'actions-detail';
     if (path === 'actions') return currentPath === 'actions' || currentPath === 'actions-new';
     if (path === 'report-board') return currentPath === 'report-board' || currentPath === 'report-board-detail';
     return currentPath === path;
@@ -151,12 +152,12 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
                   }
                 }}
               >
+                {item.label}
                 <item.icon
                   size={14}
                   strokeWidth={active ? 2 : 1.5}
                   color={active ? '#4A90D9' : '#5E7A94'}
                 />
-                {item.label}
               </button>
             );
           })}
@@ -179,8 +180,8 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
               el.style.color = '#7A8FA6';
             }}
           >
-            <Bell size={14} strokeWidth={1.5} color="#5E7A94" />
             알림
+            <Bell size={14} strokeWidth={1.5} color="#5E7A94" />
             <span
               style={{
                 marginLeft: 'auto',
@@ -209,8 +210,8 @@ export default function Layout({ children, currentPath = '', onNavigate, userTyp
               el.style.color = '#7A8FA6';
             }}
           >
-            <Settings size={14} strokeWidth={1.5} color="#5E7A94" />
             설정
+            <Settings size={14} strokeWidth={1.5} color="#5E7A94" />
           </button>
 
           {/* User */}

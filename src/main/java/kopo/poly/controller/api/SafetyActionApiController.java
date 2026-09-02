@@ -1,9 +1,9 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.request.ActionCreateRequest;
-import kopo.poly.dto.request.ActionStatusUpdateRequest;
-import kopo.poly.dto.response.ActionResponse;
+import kopo.poly.dto.request.ActionCreateRequestDTO;
+import kopo.poly.dto.request.ActionStatusUpdateRequestDTO;
+import kopo.poly.dto.response.ActionResponseDTO;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
@@ -38,7 +38,7 @@ public class SafetyActionApiController {
 
     // 조치 관리 목록 화면: 필터/검색 결과에 현장명·담당자 실명까지 채워서 반환한다.
     @GetMapping("/api/actions/search")
-    public List<ActionResponse> search(
+    public List<ActionResponseDTO> search(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ActionStatus status,
             @RequestParam(required = false) RiskLevel riskLevel,
@@ -47,62 +47,62 @@ public class SafetyActionApiController {
     ) {
         requireLoginUserId(session);
         return safetyActionService.search(keyword, status, riskLevel, siteName).stream()
-                .map(action -> ActionResponse.from(action, safetyActionService.resolveUserName(action.getReporterId())))
+                .map(action -> ActionResponseDTO.from(action, safetyActionService.resolveUserName(action.getReporterId())))
                 .toList();
     }
 
     @PostMapping("/api/actions")
     @ResponseStatus(HttpStatus.CREATED)
-    public ActionResponse create(@RequestBody ActionCreateRequest request) {
-        return ActionResponse.from(safetyActionService.createManual(request));
+    public ActionResponseDTO create(@RequestBody ActionCreateRequestDTO request) {
+        return ActionResponseDTO.from(safetyActionService.createManual(request));
     }
 
     @GetMapping("/api/actions")
-    public List<ActionResponse> getByStatus(@RequestParam ActionStatus status) {
+    public List<ActionResponseDTO> getByStatus(@RequestParam ActionStatus status) {
         return safetyActionService.findByStatus(status).stream()
-                .map(ActionResponse::from)
+                .map(ActionResponseDTO::from)
                 .toList();
     }
 
     @GetMapping("/api/actions/overdue")
-    public List<ActionResponse> getOverdue() {
+    public List<ActionResponseDTO> getOverdue() {
         return safetyActionService.findOverdue().stream()
-                .map(ActionResponse::from)
+                .map(ActionResponseDTO::from)
                 .toList();
     }
 
     // 조치전 카드를 인스펙션 없이(수동 등록) 클릭했을 때의 단건 상세 조회
     @GetMapping("/api/actions/{id}")
-    public ActionResponse getById(@PathVariable Long id, HttpSession session) {
+    public ActionResponseDTO getById(@PathVariable Long id, HttpSession session) {
         requireLoginUserId(session);
         var action = safetyActionService.findById(id);
-        return ActionResponse.from(action, safetyActionService.resolveUserName(action.getReporterId()));
+        return ActionResponseDTO.from(action, safetyActionService.resolveUserName(action.getReporterId()));
     }
 
     @PatchMapping("/api/actions/{id}/status")
-    public ActionResponse updateStatus(@PathVariable Long id, @RequestBody ActionStatusUpdateRequest request) {
-        return ActionResponse.from(safetyActionService.updateStatus(id, request.status()));
+    public ActionResponseDTO updateStatus(@PathVariable Long id, @RequestBody ActionStatusUpdateRequestDTO request) {
+        return ActionResponseDTO.from(safetyActionService.updateStatus(id, request.status()));
     }
 
     // 하청: 조치 완료를 원청에게 승인 요청한다.
     @PostMapping("/api/actions/{id}/submit-approval")
-    public ActionResponse submitForApproval(@PathVariable Long id, HttpSession session) {
+    public ActionResponseDTO submitForApproval(@PathVariable Long id, HttpSession session) {
         requireLoginUserId(session);
-        return ActionResponse.from(safetyActionService.submitForApproval(id));
+        return ActionResponseDTO.from(safetyActionService.submitForApproval(id));
     }
 
     // 원청 전용: 승인 요청을 승인해 완료 처리한다.
     @PostMapping("/api/actions/{id}/approve")
-    public ActionResponse approve(@PathVariable Long id, HttpSession session) {
+    public ActionResponseDTO approve(@PathVariable Long id, HttpSession session) {
         requirePrimeContractor(session);
-        return ActionResponse.from(safetyActionService.approveCompletion(id));
+        return ActionResponseDTO.from(safetyActionService.approveCompletion(id));
     }
 
     // 원청 전용: 승인 요청을 반려해 다시 진행중으로 되돌린다.
     @PostMapping("/api/actions/{id}/reject")
-    public ActionResponse reject(@PathVariable Long id, HttpSession session) {
+    public ActionResponseDTO reject(@PathVariable Long id, HttpSession session) {
         requirePrimeContractor(session);
-        return ActionResponse.from(safetyActionService.rejectCompletion(id));
+        return ActionResponseDTO.from(safetyActionService.rejectCompletion(id));
     }
 
     // 원청 전용: 조치 항목을 영구 삭제한다.

@@ -1,11 +1,11 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.request.MsdsAttachRequest;
-import kopo.poly.dto.request.MsdsDetectApiRequest;
-import kopo.poly.dto.response.MsdsDetectResponseDto;
-import kopo.poly.dto.response.MsdsDocumentResponse;
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.request.MsdsAttachRequestDTO;
+import kopo.poly.dto.request.MsdsDetectApiRequestDTO;
+import kopo.poly.dto.response.MsdsDetectResponseDTO;
+import kopo.poly.dto.response.MsdsDocumentResponseDTO;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 import kopo.poly.service.IMsdsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +38,7 @@ public class MsdsApiController {
 
     // 업로드/촬영한 사진(또는 점검 사진)에서 물질/제품/경고표지 키워드와 화학물질 후보를 인식한다.
     @PostMapping("/api/msds/detect")
-    public MsdsDetectResponseDto detect(@RequestBody MsdsDetectApiRequest request, HttpSession session) {
+    public MsdsDetectResponseDTO detect(@RequestBody MsdsDetectApiRequestDTO request, HttpSession session) {
         requireLoginUserId(session);
         if (request.imageS3Key() != null && !request.imageS3Key().isBlank()) {
             return msdsService.detectFromImage(request.imageS3Key(), request.workInfo());
@@ -51,7 +51,7 @@ public class MsdsApiController {
 
     // 물질명/CAS/제품명으로 MSDS 후보를 검색한다.
     @GetMapping("/api/msds/search")
-    public List<MsdsSearchResultDto> search(@RequestParam String query, HttpSession session) {
+    public List<MsdsSearchResultDTO> search(@RequestParam String query, HttpSession session) {
         requireLoginUserId(session);
         return msdsService.search(query);
     }
@@ -59,28 +59,28 @@ public class MsdsApiController {
     // 선택한 MSDS를 점검 또는 조치에 첨부한다.
     @PostMapping("/api/msds/attach")
     @ResponseStatus(HttpStatus.CREATED)
-    public MsdsDocumentResponse attach(@RequestBody MsdsAttachRequest request, HttpSession session) {
+    public MsdsDocumentResponseDTO attach(@RequestBody MsdsAttachRequestDTO request, HttpSession session) {
         Long loginUserId = requireLoginUserId(session);
         return msdsService.attach(request, loginUserId);
     }
 
     // 해당 점검에 첨부된 MSDS 목록.
     @GetMapping("/api/msds/inspection/{inspectionId}")
-    public List<MsdsDocumentResponse> byInspection(@PathVariable Long inspectionId, HttpSession session) {
+    public List<MsdsDocumentResponseDTO> byInspection(@PathVariable Long inspectionId, HttpSession session) {
         requireLoginUserId(session);
         return msdsService.findByInspectionId(inspectionId);
     }
 
     // 내가 저장한 MSDS 전체(독립 MSDS 조회 화면의 "내 자료함").
     @GetMapping("/api/msds/mine")
-    public List<MsdsDocumentResponse> mine(HttpSession session) {
+    public List<MsdsDocumentResponseDTO> mine(HttpSession session) {
         Long loginUserId = requireLoginUserId(session);
         return msdsService.findMine(loginUserId);
     }
 
     // 첨부된 MSDS 확인 상태 토글.
     @PatchMapping("/api/msds/{msdsId}/verify")
-    public MsdsDocumentResponse verify(
+    public MsdsDocumentResponseDTO verify(
             @PathVariable Long msdsId,
             @RequestBody Map<String, Boolean> body,
             HttpSession session

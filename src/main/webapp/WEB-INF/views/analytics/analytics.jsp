@@ -27,7 +27,13 @@
           <p style="font-size:11px;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-bottom:5px">통계 현황</p>
           <h1 style="font-size:22px;font-weight:600;color:#0F172A;letter-spacing:-0.02em;line-height:1">분석 리포트</h1>
         </div>
-        <div id="periodToggle" class="flex items-center" style="background:#F3F4F6;border-radius:4px;padding:3px;gap:1px"></div>
+        <div class="flex items-center gap-2">
+          <div id="periodToggle" class="flex items-center" style="background:#F3F4F6;border-radius:4px;padding:3px;gap:1px"></div>
+          <button type="button" id="exportBtn" class="flex items-center gap-1.5" style="padding:7px 12px;background:white;color:#374151;border:1px solid #E5E7EB;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            내보내기
+          </button>
+        </div>
       </div>
 
       <!-- KPI Row -->
@@ -106,11 +112,47 @@
         <div id="companyRanking" class="space-y-3"></div>
       </div>
 
-      <!-- Manager leaderboard -->
+      <!-- 담당자별 처리 현황 -->
       <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;padding:18px 20px">
-        <h3 style="font-size:14px;font-weight:600;color:#0F172A;margin-bottom:16px">담당자 성과 순위</h3>
-        <div id="managerLeaderboard" class="space-y-3">
+        <div class="flex items-center justify-between" style="margin-bottom:16px">
+          <h3 style="font-size:14px;font-weight:600;color:#0F172A">담당자별 처리 현황</h3>
+          <span style="font-size:11px;color:#9CA3AF">완료율 기준</span>
+        </div>
+        <div id="managerLeaderboard" style="overflow-x:auto">
           <p class="text-sm text-gray-400">불러오는 중...</p>
+        </div>
+      </div>
+
+      <!-- 상세 위치별 조치 현황 -->
+      <div style="background:white;border:1px solid #E5E7EB;border-radius:4px;overflow:hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2" style="padding:14px 20px;border-bottom:1px solid #F3F4F6">
+          <h3 style="font-size:14px;font-weight:600;color:#0F172A">상세 위치별 조치 현황</h3>
+          <span id="siteStatsMainSite" style="font-size:11px;color:#9CA3AF">메인 현장</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:#F9FAFB;border-bottom:1px solid #F3F4F6">
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">상세 위치</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">전체</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">조치 전</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">조치 중</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">검증 중</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">완료</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap;min-width:160px">조치 비율</th>
+                <th style="padding:9px 20px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">완료율</th>
+              </tr>
+            </thead>
+            <tbody id="siteStatsBody">
+              <tr><td colspan="8" style="padding:24px;text-align:center;color:#9CA3AF;font-size:13px">불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex items-center flex-wrap gap-4" style="padding:10px 20px;border-top:1px solid #F3F4F6">
+          <span class="flex items-center gap-1.5" style="font-size:11px;color:#6B7280"><span style="width:8px;height:8px;border-radius:2px;background:#22c55e;display:inline-block"></span>완료</span>
+          <span class="flex items-center gap-1.5" style="font-size:11px;color:#6B7280"><span style="width:8px;height:8px;border-radius:2px;background:#3b82f6;display:inline-block"></span>검증 중</span>
+          <span class="flex items-center gap-1.5" style="font-size:11px;color:#6B7280"><span style="width:8px;height:8px;border-radius:2px;background:#f97316;display:inline-block"></span>조치 중</span>
+          <span class="flex items-center gap-1.5" style="font-size:11px;color:#6B7280"><span style="width:8px;height:8px;border-radius:2px;background:#ef4444;display:inline-block"></span>조치 전</span>
         </div>
       </div>
     </div>
@@ -124,7 +166,7 @@
   var RISK_COLORS = { '고위험': '#ef4444', '중위험': '#f97316', '안전': '#eab308' };
   var STATUS_COLORS = { REQUESTED: '#ef4444', IN_PROGRESS: '#f97316', PENDING_APPROVAL: '#3b82f6', COMPLETED: '#22c55e' };
   var STATUS_LABEL = { REQUESTED: '조치 전', IN_PROGRESS: '조치 중', PENDING_APPROVAL: '검증 중', COMPLETED: '완료' };
-  var PERIODS = [{ key: '3개월', months: 3 }, { key: '6개월', months: 6 }, { key: '1년', months: 12 }];
+  var PERIODS = [{ key: '1개월', months: 1 }, { key: '3개월', months: 3 }, { key: '6개월', months: 6 }, { key: '1년', months: 12 }];
   var fullMonthlyTrend = [];
   var currentPeriod = '6개월';
   var activeMetric = 'risk';
@@ -178,6 +220,21 @@
     return monthlyTrend.map(function (m) { return { month: m.month, completed: counts[m.month] }; });
   }
 
+  var exportBtn = qs('#exportBtn');
+  if (exportBtn) exportBtn.addEventListener('click', function () { window.print(); });
+
+  // 상세 위치별 표의 부제로 쓸 "메인 현장" 이름
+  fetch('/api/sites', { credentials: 'same-origin' })
+    .then(function (res) { return res.ok ? res.json() : []; })
+    .then(function (sites) {
+      var el = qs('#siteStatsMainSite');
+      if (!el) return;
+      if (Array.isArray(sites) && sites.length) {
+        el.textContent = '메인 현장 · ' + sites[0].name + (sites.length > 1 ? ' 외 ' + (sites.length - 1) + '곳' : '');
+      }
+    })
+    .catch(function () {});
+
   fetch('/api/users/me')
     .then(function (res) { return res.ok ? res.json() : null; })
     .then(function (user) {
@@ -201,6 +258,7 @@
     .then(function (actions) {
       allActionsGlobal = actions;
       renderActionDerived(actions);
+      renderSiteStats(actions);
       if (activeMetric === 'completed' && fullMonthlyTrend.length) {
         var months = PERIODS.filter(function (p) { return p.key === currentPeriod; })[0].months;
         renderTrendLine(fullMonthlyTrend.slice(-months));
@@ -209,6 +267,7 @@
     .catch(function () {
       qs('#statusDonut').innerHTML = '<p class="text-sm text-red-400">불러오지 못했습니다.</p>';
       qs('#managerLeaderboard').innerHTML = '<p class="text-sm text-red-400">불러오지 못했습니다.</p>';
+      qs('#siteStatsBody').innerHTML = '<tr><td colspan="8" style="padding:24px;text-align:center;color:#f87171;font-size:13px">불러오지 못했습니다.</td></tr>';
     });
 
   function render(data) {
@@ -389,16 +448,26 @@
       return { name: STATUS_LABEL[k], value: statusCounts[k], color: STATUS_COLORS[k] };
     }));
 
-    // 담당자 성과 순위
+    // 담당자별 처리 현황 (완료율 + 기한 준수율)
     var byReporter = {};
     actions.forEach(function (a) {
       var key = a.reporterName || '미배정';
-      if (!byReporter[key]) byReporter[key] = { name: key, assigned: 0, completed: 0 };
+      if (!byReporter[key]) byReporter[key] = { name: key, assigned: 0, completed: 0, onTimeCompleted: 0 };
       byReporter[key].assigned++;
-      if (a.status === 'COMPLETED') byReporter[key].completed++;
+      if (a.status === 'COMPLETED') {
+        byReporter[key].completed++;
+        // 완료 시각(updatedAt)이 마감일(dueDate) 이내면 기한 준수로 집계
+        if (a.dueDate && a.updatedAt && new Date(a.updatedAt) <= new Date(a.dueDate + 'T23:59:59')) {
+          byReporter[key].onTimeCompleted++;
+        }
+      }
     });
     var ranking = Object.values(byReporter)
-      .map(function (r) { r.rate = r.assigned ? Math.round(r.completed * 100 / r.assigned) : 0; return r; })
+      .map(function (r) {
+        r.rate = r.assigned ? Math.round(r.completed * 100 / r.assigned) : 0;
+        r.onTime = r.completed ? Math.round(r.onTimeCompleted * 100 / r.completed) : 0;
+        return r;
+      })
       .sort(function (a, b) { return b.rate - a.rate || b.assigned - a.assigned; })
       .slice(0, 5);
 
@@ -406,17 +475,76 @@
       qs('#managerLeaderboard').innerHTML = '<p class="text-sm text-gray-400">데이터가 없습니다.</p>';
       return;
     }
-    var medals = ['1위', '2위', '3위'];
-    qs('#managerLeaderboard').innerHTML = ranking.map(function (m, i) {
-      return '<div class="flex items-center gap-4 p-4 rounded border ' + (i === 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 bg-gray-50') + '">' +
-        '<span class="text-xl flex-shrink-0 w-7 text-center">' + (medals[i] || (i + 1)) + '</span>' +
-        '<div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style="background:' + (i === 0 ? '#1A2E44' : '#1A2E44') + '">' +
-        m.name.charAt(0) + '</div>' +
-        '<div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-1.5">' +
-        '<span class="font-semibold text-gray-900 text-sm">' + m.name + '</span>' +
-        '<span class="ml-auto text-xs text-gray-500">담당 ' + m.assigned + '건 · 완료 ' + m.completed + '건</span></div>' +
-        '<div class="h-1.5 bg-gray-200 rounded-full"><div class="h-full rounded-full" style="width:' + m.rate + '%;background:#1A2E44"></div></div>' +
-        '</div><span class="text-sm font-bold text-gray-900 flex-shrink-0">' + m.rate + '%</span></div>';
+    var mHead = ['순위', '담당자', '담당', '완료', '완료율', '기한 준수'].map(function (h) {
+      return '<th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:0.04em;white-space:nowrap">' + h + '</th>';
+    }).join('');
+    function miniBar(pct, color) {
+      return '<div class="flex items-center gap-2"><div style="width:48px;height:4px;background:#F3F4F6;border-radius:2px">' +
+        '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:2px"></div></div>' +
+        '<span style="font-size:11px;font-weight:700;color:#0F172A">' + pct + '%</span></div>';
+    }
+    qs('#managerLeaderboard').innerHTML =
+      '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#F9FAFB;border-bottom:1px solid #F3F4F6">' + mHead + '</tr></thead><tbody>' +
+      ranking.map(function (m, i) {
+        return '<tr style="border-bottom:1px solid #F9FAFB">' +
+          '<td style="padding:10px 14px"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;background:' + (i === 0 ? '#1A2E44' : '#F3F4F6') + ';color:' + (i === 0 ? 'white' : '#6B7280') + '">' + (i + 1) + '</span></td>' +
+          '<td style="padding:10px 14px;font-weight:500;color:#0F172A">' + m.name + '</td>' +
+          '<td style="padding:10px 14px;color:#6B7280">' + m.assigned + '건</td>' +
+          '<td style="padding:10px 14px;color:#6B7280">' + m.completed + '건</td>' +
+          '<td style="padding:10px 14px">' + miniBar(m.rate, '#1A2E44') + '</td>' +
+          '<td style="padding:10px 14px">' + miniBar(m.onTime, '#374151') + '</td>' +
+          '</tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  // 현장(location)별 조치 상태 집계 표
+  function renderSiteStats(actions) {
+    var bySite = {};
+    actions.forEach(function (a) {
+      var key = a.location || '미지정';
+      if (!bySite[key]) bySite[key] = { name: key, total: 0, REQUESTED: 0, IN_PROGRESS: 0, PENDING_APPROVAL: 0, COMPLETED: 0 };
+      bySite[key].total++;
+      if (bySite[key][a.status] !== undefined) bySite[key][a.status]++;
+    });
+    var rows = Object.keys(bySite).map(function (k) {
+      var s = bySite[k];
+      s.rate = s.total ? Math.round(s.COMPLETED * 100 / s.total) : 0;
+      return s;
+    }).sort(function (a, b) { return b.total - a.total; });
+
+    if (!rows.length) {
+      qs('#siteStatsBody').innerHTML = '<tr><td colspan="8" style="padding:24px;text-align:center;color:#9CA3AF;font-size:13px">데이터가 없습니다.</td></tr>';
+      return;
+    }
+    // 상태별 비율(%)을 채운 스택 막대. 세그먼트에 커서를 올리면 "완료 62%"처럼 표시된다.
+    function ratioBar(s) {
+      var segs = [
+        { v: s.COMPLETED,         c: '#22c55e', l: '완료' },
+        { v: s.PENDING_APPROVAL,  c: '#3b82f6', l: '검증 중' },
+        { v: s.IN_PROGRESS,       c: '#f97316', l: '조치 중' },
+        { v: s.REQUESTED,         c: '#ef4444', l: '조치 전' }
+      ];
+      var inner = segs.map(function (g) {
+        if (!g.v) return '';
+        var p = Math.round(g.v * 100 / s.total);
+        return '<div title="' + g.l + ' ' + p + '% (' + g.v + '건)" style="height:100%;width:' + (g.v * 100 / s.total) + '%;background:' + g.c + '"></div>';
+      }).join('');
+      return '<div style="display:flex;width:100%;max-width:180px;height:8px;border-radius:4px;overflow:hidden;background:#F3F4F6">' + inner + '</div>';
+    }
+    qs('#siteStatsBody').innerHTML = rows.map(function (s) {
+      var rc = s.rate >= 70 ? '#166534' : '#B45309';
+      return '<tr style="border-bottom:1px solid #F9FAFB">' +
+        '<td style="padding:10px 20px;font-weight:600;color:#0F172A">' + s.name + '</td>' +
+        '<td style="padding:10px 20px;color:#374151;font-weight:500">' + s.total + '</td>' +
+        '<td style="padding:10px 20px;color:#991B1B;font-weight:600">' + s.REQUESTED + '</td>' +
+        '<td style="padding:10px 20px;color:#B45309;font-weight:600">' + s.IN_PROGRESS + '</td>' +
+        '<td style="padding:10px 20px;color:#1D4ED8;font-weight:600">' + s.PENDING_APPROVAL + '</td>' +
+        '<td style="padding:10px 20px;color:#166534;font-weight:600">' + s.COMPLETED + '</td>' +
+        '<td style="padding:10px 20px">' + ratioBar(s) + '</td>' +
+        '<td style="padding:10px 20px"><div class="flex items-center gap-2"><div style="width:48px;height:4px;background:#F3F4F6;border-radius:2px">' +
+        '<div style="width:' + s.rate + '%;height:100%;border-radius:2px;background:' + rc + '"></div></div>' +
+        '<span style="font-size:11px;font-weight:700;color:' + rc + '">' + s.rate + '%</span></div></td>' +
+        '</tr>';
     }).join('');
   }
 })();

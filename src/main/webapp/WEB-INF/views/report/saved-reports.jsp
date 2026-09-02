@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>저장된 보고서 - 연결고리</title>
+  <title>완료된 보고서 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* 이 페이지 전용 스타일. 다른 화면과 클래스명이 겹치지 않도록 srp- 접두사를 사용한다. */
@@ -12,6 +12,8 @@
     .srp-filter-tab { padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; border:1px solid #E5E7EB; color:#6B7280; background:#fff; cursor:pointer; transition:all .15s; white-space:nowrap; }
     .srp-filter-tab:hover { background:#F9FAFB; }
     .srp-filter-tab.srp-active { border-color:#2563EB; color:#2563EB; background:#EFF6FF; }
+    .srp-danger-btn { padding:6px 10px; border:1px solid #FECACA; border-radius:8px; font-size:12px; font-weight:600; color:#DC2626; background:#fff; }
+    .srp-danger-btn:hover { background:#FEF2F2; }
     .srp-table-wrap { overflow-x:auto; }
     .srp-row:hover { background:#F5F8FF; }
     @media (max-width: 720px) {
@@ -43,8 +45,8 @@
       <div class="bg-white rounded-xl p-6 mb-5" style="box-shadow:0 1px 2px rgba(16,24,40,0.04)">
         <div class="flex flex-wrap items-start justify-between gap-4 mb-1">
           <div>
-            <h1 class="text-xl font-bold text-gray-900 mb-1">저장된 보고서</h1>
-            <p class="text-sm text-gray-500">작성된 보고서를 확인하고 관리할 수 있습니다. · <span id="srpTotalCount">총 6건</span></p>
+            <h1 class="text-xl font-bold text-gray-900 mb-1">완료된 보고서</h1>
+            <p class="text-sm text-gray-500">작성이 완료된 보고서를 확인하고 관리할 수 있습니다. · <span id="srpTotalCount">불러오는 중...</span></p>
           </div>
           <div class="flex items-center gap-2">
             <div class="relative">
@@ -91,10 +93,50 @@
   </main>
 </div>
 
-<script src="/js/saved-reports-data.js"></script>
 <script>
-// 목록/상세 화면이 공유하는 더미 데이터(js/saved-reports-data.js)를 그대로 쓴다.
-var reports = SAVED_REPORTS;
+var reports = [];
+
+var SRP_TYPE_LABELS = {
+  INSPECTION_LOG: '안전점검일지',
+  RISK_ASSESSMENT: '위험성평가서',
+  ACTION_REPORT: '조치결과보고서',
+  WORK_PERMIT: '작업허가서',
+  SAFETY_EDU_LOG: '안전보건교육일지',
+  TBM_LOG: 'TBM 일지',
+  PPE_ISSUE_LOG: '보호구 지급대장',
+  SAFETY_EXPENSE_LOG: '산업안전보건관리비 사용내역서'
+};
+
+var SRP_TYPE_ORDER = [
+  'INSPECTION_LOG',
+  'RISK_ASSESSMENT',
+  'ACTION_REPORT',
+  'WORK_PERMIT',
+  'SAFETY_EDU_LOG',
+  'TBM_LOG',
+  'PPE_ISSUE_LOG',
+  'SAFETY_EXPENSE_LOG'
+];
+
+function srpFormatDate(value) {
+  if (!value) return '-';
+  var date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  return date.getFullYear() + '.' + pad(date.getMonth() + 1) + '.' + pad(date.getDate())
+    + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+}
+
+function srpFromDocument(doc) {
+  return {
+    id: doc.id,
+    docType: doc.docType,
+    type: SRP_TYPE_LABELS[doc.docType] || doc.docType,
+    siteName: doc.location || (doc.formData && doc.formData.siteName) || '',
+    generationType: doc.aiGenerated ? 'AI 자동 작성' : '직접 작성',
+    updatedAt: srpFormatDate(doc.updatedAt)
+  };
+}
 
 var srpState = { filter: 'ALL', keyword: '', sort: 'latest' };
 
@@ -113,10 +155,9 @@ var SRP_TYPE_BADGE = {
 function srpFilterTabsHtml() {
   var total = reports.length;
   var counts = {};
-  reports.forEach(function (r) { counts[r.type] = (counts[r.type] || 0) + 1; });
-  var types = Object.keys(counts);
+  reports.forEach(function (r) { counts[r.docType] = (counts[r.docType] || 0) + 1; });
   var tabs = [{ key: 'ALL', label: '전체', count: total }].concat(
-    types.map(function (t) { return { key: t, label: t, count: counts[t] }; })
+    SRP_TYPE_ORDER.map(function (t) { return { key: t, label: SRP_TYPE_LABELS[t] || t, count: counts[t] || 0 }; })
   );
   return tabs.map(function (tab) {
     var active = srpState.filter === tab.key ? ' srp-active' : '';
@@ -138,14 +179,14 @@ function srpRowHtml(r) {
     '<td class="py-3 px-5 text-gray-500">' + srpEsc(r.updatedAt) + '</td>' +
     '<td class="py-3 px-5"><div class="flex items-center gap-2">' +
     '<button type="button" class="srp-view-btn px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50" data-id="' + r.id + '">보기</button>' +
-    '<button type="button" class="p-1.5 text-gray-300 hover:text-gray-500 hover:bg-gray-50 rounded-lg" aria-label="더보기" title="더보기"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>' +
+    '<button type="button" class="srp-delete-btn srp-danger-btn" data-id="' + r.id + '">삭제</button>' +
     '</div></td></tr>';
 }
 
 function srpApplyFilters() {
   var keyword = srpState.keyword.trim().toLowerCase();
   var filtered = reports.filter(function (r) {
-    var matchesType = srpState.filter === 'ALL' || r.type === srpState.filter;
+    var matchesType = srpState.filter === 'ALL' || r.docType === srpState.filter;
     var matchesKeyword = !keyword || (r.siteName || '').toLowerCase().indexOf(keyword) !== -1;
     return matchesType && matchesKeyword;
   });
@@ -185,6 +226,9 @@ function srpRender() {
     qsa('.srp-view-btn').forEach(function (btn) {
       btn.addEventListener('click', function (e) { e.stopPropagation(); srpGoToDetail(Number(btn.dataset.id)); });
     });
+    qsa('.srp-delete-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) { e.stopPropagation(); srpDeleteReport(Number(btn.dataset.id)); });
+    });
     qsa('.srp-row').forEach(function (row) {
       row.addEventListener('click', function () { srpGoToDetail(Number(row.dataset.id)); });
     });
@@ -193,6 +237,26 @@ function srpRender() {
 
 function srpGoToDetail(id) {
   window.location.href = '/reports/detail?id=' + id;
+}
+
+function srpDeleteReport(id) {
+  var report = reports.find(function (r) { return r.id === id; });
+  var title = report ? report.type + ' · ' + (report.siteName || '현장 정보 없음') : '선택한 보고서';
+  if (!confirm(title + '을(를) 삭제하시겠습니까?')) return;
+
+  fetch('/api/documents/' + encodeURIComponent(id), {
+    method: 'DELETE',
+    credentials: 'same-origin'
+  })
+    .then(function (res) {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
+      if (!res.ok) throw new Error('보고서 삭제에 실패했습니다.');
+      reports = reports.filter(function (r) { return r.id !== id; });
+      srpRender();
+    })
+    .catch(function (err) {
+      if (err.message !== '로그인이 필요합니다.') alert(err.message);
+    });
 }
 
 function qs(sel) { return document.querySelector(sel); }
@@ -206,7 +270,22 @@ qs('#srpSortSelect').addEventListener('change', function (e) {
   srpState.sort = e.target.value;
   srpRender();
 });
-srpRender();
+fetch('/api/documents/mine', { credentials: 'same-origin' })
+  .then(function (res) {
+    if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
+    if (!res.ok) throw new Error('저장된 보고서를 불러오지 못했습니다.');
+    return res.json();
+  })
+  .then(function (documents) {
+    reports = documents.map(srpFromDocument);
+    srpRender();
+  })
+  .catch(function (err) {
+    if (err.message === '로그인이 필요합니다.') return;
+    srpRender();
+    qs('#srpTotalCount').textContent = '불러오기 실패';
+    qs('#srpEmptyState p').textContent = err.message;
+  });
 
 /* 헤더 사용자 정보 표시 (공통 헤더와 동일한 방식) */
 fetch('/api/users/me')

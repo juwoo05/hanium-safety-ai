@@ -1,7 +1,7 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.EvidenceItemDto;
-import kopo.poly.dto.request.EvidenceRequestDto;
+import kopo.poly.dto.response.EvidenceItemDTO;
+import kopo.poly.dto.request.EvidenceRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.repository.AiSafetyInspectionRepository;
@@ -33,12 +33,12 @@ public class EvidenceService implements IEvidenceService {
 
     // 해당 리포트에서 AI가 감지한 위험요소명을 검색어로 삼아 KB에서 관련 법규/사고사례/지침을 찾는다.
     @Override
-    public List<EvidenceItemDto> searchForInspection(Long inspectionId, String category) {
+    public List<EvidenceItemDTO> searchForInspection(Long inspectionId, String category) {
         AiSafetyInspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + inspectionId));
 
         String query = buildQuery(inspection);
-        return aiPipelineClient.searchEvidence(new EvidenceRequestDto(query, category)).items();
+        return aiPipelineClient.searchEvidence(new EvidenceRequestDTO(query, category)).items();
     }
 
     private String buildQuery(AiSafetyInspection inspection) {

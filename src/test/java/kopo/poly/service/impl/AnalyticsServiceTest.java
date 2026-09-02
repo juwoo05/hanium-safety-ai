@@ -1,6 +1,6 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.AnalyticsSummaryResponse;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ActionStatus;
@@ -63,7 +63,7 @@ class AnalyticsServiceTest {
                 User.builder().id(2L).username("lee").password("x").role(UserRole.하청).companyName("대성철골").build()
         ));
 
-        AnalyticsSummaryResponse result = analyticsService.summarize(2026);
+        AnalyticsSummaryResponseDTO result = analyticsService.summarize(2026);
 
         assertThat(result.totalUploads()).isEqualTo(2L);
         assertThat(result.totalDetections()).isEqualTo(3L);
@@ -93,7 +93,7 @@ class AnalyticsServiceTest {
         when(inspectionRepository.count()).thenReturn(0L);
         when(userRepository.findAllById(List.of())).thenReturn(List.of());
 
-        AnalyticsSummaryResponse result = analyticsService.summarize(2026);
+        AnalyticsSummaryResponseDTO result = analyticsService.summarize(2026);
 
         assertThat(result.completionRate()).isEqualTo(0.0);
         assertThat(result.avgActionDays()).isEqualTo(0.0);

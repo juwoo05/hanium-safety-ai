@@ -57,17 +57,19 @@
 
 <script>
 const STEPS = [
-  { number: 1, label: '위치 선택',     icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z' },
+  { number: 1, label: '구역 선택',     icon: 'M3 6h18M3 12h18M3 18h18' },
   { number: 2, label: '이미지 업로드', icon: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12' },
   { number: 3, label: '질문 입력',     icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
   { number: 4, label: 'AI 분석',       icon: 'M5 3l14 9-14 9V3z' },
   { number: 5, label: '조치 등록',     icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2' },
 ];
 
-// 서버(/api/sites)에서 실제 등록된 현장 목록을 불러와 채운다. 로드 전까지는 빈 배열.
+// 현장은 마이페이지의 "건설사 및 현장 연동"에서 선택하고, 여기서는 해당 현장의 구역만 관리한다.
 let SITES = [];
 let sitesLoading = true;
 let sitesError = false;
+let ZONES = [];
+let selectedZone = '';
 
 const QUESTION_PRESETS = [
   '이 사진에서 안전난간이 제대로 설치되어 있나요?',
@@ -132,38 +134,65 @@ function renderStepIndicator() {
   }).join('');
 }
 
-// ─── Step 1: 위치 선택 ───
+// ─── Step 1: 구역 선택 ───
 function renderStep1() {
-  const siteCards = SITES.map(site => {
-    const sel = selectedSite && selectedSite.id === site.id;
-    const badge = site.riskBadgeKey
-      ? `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${riskBadge[site.riskBadgeKey]}">${riskLabel[site.riskBadgeKey]}</span>`
-      : `<span class="inline-flex items-center mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-gray-50 text-gray-400 border-gray-200">점검 이력 없음</span>`;
+  if (sitesLoading) {
     return `
-      <button onclick="selectSite(${site.id})" class="flex items-start gap-3 p-4 rounded border-2 text-left transition-all ${sel ? 'border-[#1A2E44] bg-[#1A2E44]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
-        <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${sel ? 'bg-[#1A2E44] text-white' : 'bg-gray-100 text-gray-500'}">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      <div class="flex-1 flex items-center justify-center text-sm text-gray-400">
+        마이페이지에서 선택한 현장을 확인하는 중...
+      </div>`;
+  }
+
+  if (sitesError) {
+    return `
+      <div class="flex-1 flex flex-col items-center justify-center text-center gap-3">
+        <p class="text-sm font-semibold text-red-500">현장 정보를 불러오지 못했습니다.</p>
+        <button onclick="loadSites()" class="px-4 py-2 bg-[#1A2E44] text-white rounded text-sm font-semibold">다시 불러오기</button>
+      </div>`;
+  }
+
+  if (!selectedSite) {
+    return `
+      <div class="flex-1 flex flex-col items-center justify-center text-center gap-4">
+        <div class="w-12 h-12 bg-[#1A2E44]/10 rounded flex items-center justify-center">
+          <svg class="w-6 h-6 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-gray-900 text-sm">${site.name}</p>
-          <p class="text-xs text-gray-500 mt-0.5">${site.zone || '구역 미지정'}</p>
-          ${badge}
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">선택된 현장이 없습니다</h2>
+          <p class="text-sm text-gray-500 mt-1">마이페이지의 건설사 및 현장 연동에서 검사할 현장을 먼저 선택해주세요.</p>
         </div>
-        ${sel ? '<svg class="w-5 h-5 text-[#1A2E44] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
-      </button>`;
+        <a href="/mypage" class="px-4 py-2 bg-[#1A2E44] text-white rounded text-sm font-semibold hover:bg-[#0F2233]">마이페이지로 이동</a>
+      </div>`;
+  }
+
+  const zoneCards = ZONES.map((zone, index) => {
+    const sel = selectedZone === zone;
+    return `
+      <div class="group flex items-center gap-3 p-4 rounded border-2 transition-all ${sel ? 'border-[#1A2E44] bg-[#1A2E44]/5 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">
+        <button onclick="selectZone(${index})" class="flex items-center gap-3 text-left flex-1 min-w-0">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${sel ? 'bg-[#1A2E44] text-white' : 'bg-gray-100 text-gray-500'}">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-gray-900 text-sm truncate">${zone}</p>
+            <p class="text-xs text-gray-500 mt-0.5">점검 구역</p>
+          </div>
+        </button>
+        <button onclick="deleteZone(${index})" class="p-1.5 rounded text-gray-300 hover:bg-red-50 hover:text-red-500 transition-colors" title="구역 삭제">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>`;
   }).join('');
 
-  const selectedInfo = selectedSite ? `
-    <div class="mt-4 p-3 bg-[#1A2E44]/5 rounded border border-[#1A2E44]/20 flex items-center gap-3">
-      <svg class="w-4 h-4 text-[#1A2E44] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#1A2E44]">${selectedSite.name}</span> <span class="text-gray-500">(${selectedSite.zone || '구역 미지정'})</span></p>
-    </div>` : '';
+  const listArea = ZONES.length
+    ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">${zoneCards}</div>`
+    : `<div class="flex-1 flex items-center justify-center py-8 text-sm text-gray-400 border-2 border-dashed border-gray-200 rounded">등록된 구역이 없습니다. 아래에서 구역을 추가하세요.</div>`;
 
-  const listArea = sitesLoading
-    ? `<div class="flex-1 flex items-center justify-center text-sm text-gray-400">현장 목록을 불러오는 중...</div>`
-    : sitesError
-      ? `<div class="flex-1 flex items-center justify-center text-sm text-red-400">현장 목록을 불러오지 못했습니다.</div>`
-      : `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">${siteCards || '<p class="text-sm text-gray-400 col-span-2">등록된 현장이 없습니다. 아래에서 새 현장을 추가하세요.</p>'}</div>`;
+  const selectedInfo = selectedZone ? `
+    <div class="mt-4 p-3 bg-[#1A2E44]/5 rounded border border-[#1A2E44]/20 flex items-center gap-3">
+      <svg class="w-4 h-4 text-[#1A2E44] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      <p class="text-sm text-gray-700">선택됨: <span class="font-semibold text-[#1A2E44]">${selectedSite.name}</span> <span class="text-gray-500">/ ${selectedZone}</span></p>
+    </div>` : '';
 
   return `
     <div class="flex-1 flex flex-col">
@@ -172,18 +201,25 @@ function renderStep1() {
           <svg class="w-5 h-5 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         </div>
         <div>
-          <h2 class="text-lg font-bold text-gray-900">위치 선택</h2>
-          <p class="text-sm text-gray-500">검사할 현장 위치를 선택하세요</p>
+          <h2 class="text-lg font-bold text-gray-900">구역 선택</h2>
+          <p class="text-sm text-gray-500">마이페이지에서 선택한 현장의 점검 구역을 선택하세요</p>
         </div>
+      </div>
+      <div class="mb-4 p-4 bg-gray-50 rounded border border-gray-100 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-xs text-gray-400">선택된 현장</p>
+          <p class="text-sm font-semibold text-gray-900 truncate">${selectedSite.name}</p>
+          <p class="text-xs text-gray-500 mt-0.5">${selectedSite.address || selectedSite.workType || '상세 정보 없음'}</p>
+        </div>
+        <a href="/mypage" class="text-xs font-semibold text-[#1A2E44] hover:underline whitespace-nowrap">현장 변경</a>
       </div>
       ${listArea}
       ${selectedInfo}
       <div class="mt-4 pt-4 border-t border-gray-100">
-        <p class="text-xs font-semibold text-gray-500 mb-2">목록에 없는 현장인가요?</p>
+        <p class="text-xs font-semibold text-gray-500 mb-2">새 구역 추가</p>
         <div class="flex gap-2">
-          <input id="newSiteName" type="text" placeholder="현장명 (예: 3동 건물 외벽)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
-          <input id="newSiteZone" type="text" placeholder="구역 (선택)" class="w-28 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
-          <button onclick="addSite()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-900">추가</button>
+          <input id="newZoneName" type="text" placeholder="구역명 (예: 3동 건물 외벽)" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1A2E44] outline-none"/>
+          <button onclick="addZone()" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-semibold hover:bg-gray-900">추가</button>
         </div>
       </div>
     </div>`;
@@ -373,7 +409,7 @@ function renderStep4() {
           <div class="w-8 h-8 bg-[#1A2E44]/10 rounded-lg flex items-center justify-center flex-shrink-0">
             <svg class="w-4 h-4 text-[#1A2E44]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
           </div>
-          <div class="flex-1"><p class="text-xs text-gray-400">위치</p><p class="text-sm font-semibold text-gray-800">${selectedSite ? selectedSite.name + ' (' + selectedSite.zone + ')' : '-'}</p></div>
+          <div class="flex-1"><p class="text-xs text-gray-400">위치</p><p class="text-sm font-semibold text-gray-800">${selectedSite ? selectedSite.name + ' (' + selectedZone + ')' : '-'}</p></div>
           <button onclick="goToStep(1)" class="text-xs text-gray-400 hover:text-[#1A2E44]">수정</button>
         </div>
         <div class="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-100">
@@ -498,7 +534,7 @@ function renderNavButtons() {
   if (currentStep === 4 && (analyzing || results.length > 0)) return '';
 
   const canNext =
-    (currentStep === 1 && selectedSite !== null) ||
+    (currentStep === 1 && selectedSite !== null && selectedZone.trim().length > 0) ||
     (currentStep === 2 && uploadedFiles.length > 0) ||
     (currentStep === 3 && question.trim().length > 0) ||
     currentStep === 4;
@@ -529,8 +565,53 @@ function renderStep() {
 }
 
 // ─── Actions ───
-function selectSite(id) {
-  selectedSite = SITES.find(s => s.id === id);
+function selectedSiteFromStorage() {
+  try {
+    const raw = localStorage.getItem('selectedInspectionSite');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function zonesStorageKey() {
+  return selectedSite ? 'inspectionZones:' + selectedSite.id : 'inspectionZones:none';
+}
+
+function loadZonesForSelectedSite() {
+  if (!selectedSite) {
+    ZONES = [];
+    selectedZone = '';
+    return;
+  }
+
+  try {
+    ZONES = JSON.parse(localStorage.getItem(zonesStorageKey()) || '[]')
+      .filter(z => typeof z === 'string' && z.trim())
+      .map(z => z.trim());
+  } catch (e) {
+    ZONES = [];
+  }
+
+  if (!ZONES.length && selectedSite.zone) {
+    ZONES = [selectedSite.zone];
+    saveZones();
+  }
+
+  if (!ZONES.includes(selectedZone)) {
+    selectedZone = '';
+  }
+}
+
+function saveZones() {
+  if (!selectedSite) return;
+  localStorage.setItem(zonesStorageKey(), JSON.stringify(ZONES));
+}
+
+function selectZone(index) {
+  const zone = ZONES[index];
+  if (!zone) return;
+  selectedZone = zone;
   renderStep();
 }
 
@@ -547,32 +628,37 @@ function loadSites() {
     })
     .then(sites => {
       SITES = sites.map(s => ({ id: s.id, name: s.name, zone: s.zone, riskBadgeKey: s.lastRiskLevel ? RISK_LEVEL_TO_BADGE[s.lastRiskLevel] : null }));
+      const saved = selectedSiteFromStorage();
+      const serverSite = saved ? SITES.find(s => String(s.id) === String(saved.id)) : null;
+      selectedSite = serverSite ? { ...saved, ...serverSite } : null;
+      loadZonesForSelectedSite();
       sitesLoading = false;
     })
     .catch(() => { sitesError = true; sitesLoading = false; })
     .finally(() => { if (currentStep === 1) renderStep(); });
 }
 
-function addSite() {
-  const nameEl = document.getElementById('newSiteName');
-  const zoneEl = document.getElementById('newSiteZone');
-  const name = nameEl.value.trim();
-  if (!name) { alert('현장 이름을 입력해주세요.'); return; }
+function addZone() {
+  const zoneEl = document.getElementById('newZoneName');
+  const zone = zoneEl.value.trim();
+  if (!selectedSite) { alert('마이페이지에서 현장을 먼저 선택해주세요.'); return; }
+  if (!zone) { alert('구역 이름을 입력해주세요.'); return; }
+  if (ZONES.includes(zone)) { alert('이미 등록된 구역입니다.'); return; }
 
-  fetch('/api/sites', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, zone: zoneEl.value.trim() || null }),
-  })
-    .then(res => res.json().then(body => ({ ok: res.ok, body })))
-    .then(({ ok, body }) => {
-      if (!ok) throw new Error(body.error || '현장 추가에 실패했습니다.');
-      const newSite = { id: body.id, name: body.name, zone: body.zone, riskBadgeKey: null };
-      SITES = [...SITES, newSite].sort((a, b) => a.name.localeCompare(b.name));
-      selectedSite = newSite;
-      renderStep();
-    })
-    .catch(err => alert(err.message));
+  ZONES = [...ZONES, zone].sort((a, b) => a.localeCompare(b));
+  selectedZone = zone;
+  saveZones();
+  renderStep();
+}
+
+function deleteZone(index) {
+  const zone = ZONES[index];
+  if (!zone) return;
+  if (!confirm('이 구역을 삭제할까요?')) return;
+  ZONES = ZONES.filter(z => z !== zone);
+  if (selectedZone === zone) selectedZone = '';
+  saveZones();
+  renderStep();
 }
 
 function loadAssignees() {
@@ -685,7 +771,7 @@ function startAnalysis() {
       imageS3Key: readyFile.s3Key,
       workInfo: question,
       location: selectedSite.name,
-      workType: selectedSite.zone || '미지정',
+      workType: selectedZone || '미지정',
       requestedBy: CURRENT_USER_ID,
     }),
   })

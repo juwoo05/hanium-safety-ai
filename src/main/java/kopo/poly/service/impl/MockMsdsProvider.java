@@ -1,6 +1,6 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 import kopo.poly.entity.enums.MsdsSourceType;
 import kopo.poly.service.MsdsProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,13 +52,13 @@ public class MockMsdsProvider implements MsdsProvider {
     }
 
     @Override
-    public List<MsdsSearchResultDto> search(String query) {
+    public List<MsdsSearchResultDTO> search(String query) {
         if (query == null || query.isBlank()) {
             return List.of();
         }
         String q = query.toLowerCase(Locale.KOREA).trim();
 
-        List<MsdsSearchResultDto> results = new ArrayList<>();
+        List<MsdsSearchResultDTO> results = new ArrayList<>();
         for (Entry e : CATALOG) {
             boolean hit = e.name().toLowerCase(Locale.KOREA).contains(q)
                     || q.contains(e.name().toLowerCase(Locale.KOREA))
@@ -67,7 +67,7 @@ public class MockMsdsProvider implements MsdsProvider {
             if (!hit) {
                 continue;
             }
-            results.add(new MsdsSearchResultDto(
+            results.add(new MsdsSearchResultDTO(
                     e.name(),
                     e.cas(),
                     e.product(),

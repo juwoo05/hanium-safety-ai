@@ -1,9 +1,9 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.AnalyticsSummaryResponse;
-import kopo.poly.dto.response.AnalyticsSummaryResponse.CategoryCount;
-import kopo.poly.dto.response.AnalyticsSummaryResponse.CompanyCompletion;
-import kopo.poly.dto.response.AnalyticsSummaryResponse.MonthlyRiskCount;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO.CategoryCount;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO.CompanyCompletion;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO.MonthlyRiskCount;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ActionStatus;
@@ -43,13 +43,13 @@ public class AnalyticsService implements IAnalyticsService {
     }
 
     @Override
-    public AnalyticsSummaryResponse summarize(int year) {
+    public AnalyticsSummaryResponseDTO summarize(int year) {
         List<SafetyAction> actions = safetyActionRepository.findAll();
 
         long total = actions.size();
         long completed = actions.stream().filter(a -> a.getStatus() == ActionStatus.COMPLETED).count();
 
-        return new AnalyticsSummaryResponse(
+        return new AnalyticsSummaryResponseDTO(
                 inspectionRepository.count(),
                 total,
                 total == 0 ? 0.0 : completed * 100.0 / total,

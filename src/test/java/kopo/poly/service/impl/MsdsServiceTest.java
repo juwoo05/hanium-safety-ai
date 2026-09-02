@@ -1,10 +1,10 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.MsdsAttachRequest;
-import kopo.poly.dto.response.ChemicalCandidateDto;
-import kopo.poly.dto.response.MsdsDetectResponseDto;
-import kopo.poly.dto.response.MsdsDocumentResponse;
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.request.MsdsAttachRequestDTO;
+import kopo.poly.dto.response.ChemicalCandidateDTO;
+import kopo.poly.dto.response.MsdsDetectResponseDTO;
+import kopo.poly.dto.response.MsdsDocumentResponseDTO;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.MsdsDocument;
 import kopo.poly.entity.enums.MsdsSourceType;
@@ -47,11 +47,11 @@ class MsdsServiceTest {
 
     @Test
     void 업로드한_사진키로_FastAPI에_물질_인식을_요청한다() {
-        MsdsDetectResponseDto expected = new MsdsDetectResponseDto(
-                List.of("톨루엔"), List.of(new ChemicalCandidateDto("톨루엔", "108-88-3", "락카 신너", 88)));
+        MsdsDetectResponseDTO expected = new MsdsDetectResponseDTO(
+                List.of("톨루엔"), List.of(new ChemicalCandidateDTO("톨루엔", "108-88-3", "락카 신너", 88)));
         when(aiPipelineClient.detectMsds(any())).thenReturn(expected);
 
-        MsdsDetectResponseDto result = msdsService.detectFromImage("site-photos/a.jpg", "도장 작업");
+        MsdsDetectResponseDTO result = msdsService.detectFromImage("site-photos/a.jpg", "도장 작업");
 
         assertThat(result.chemicalCandidates()).hasSize(1);
         assertThat(result.chemicalCandidates().get(0).casNo()).isEqualTo("108-88-3");
@@ -59,7 +59,7 @@ class MsdsServiceTest {
 
     @Test
     void 사진키가_없으면_FastAPI를_호출하지_않고_빈_결과를_반환한다() {
-        MsdsDetectResponseDto result = msdsService.detectFromImage("  ", null);
+        MsdsDetectResponseDTO result = msdsService.detectFromImage("  ", null);
 
         assertThat(result.chemicalCandidates()).isEmpty();
         verify(aiPipelineClient, never()).detectMsds(any());
@@ -68,7 +68,7 @@ class MsdsServiceTest {
     @Test
     void 점검_사진으로도_물질_인식을_요청한다() {
         when(inspectionRepository.findById(1L)).thenReturn(Optional.of(점검(List.of("site-photos/a.jpg"))));
-        when(aiPipelineClient.detectMsds(any())).thenReturn(new MsdsDetectResponseDto(List.of(), List.of()));
+        when(aiPipelineClient.detectMsds(any())).thenReturn(new MsdsDetectResponseDTO(List.of(), List.of()));
 
         msdsService.detectFromInspection(1L);
 
@@ -79,7 +79,7 @@ class MsdsServiceTest {
     void 등록된_사진이_없으면_FastAPI를_호출하지_않고_빈_결과를_반환한다() {
         when(inspectionRepository.findById(1L)).thenReturn(Optional.of(점검(List.of())));
 
-        MsdsDetectResponseDto result = msdsService.detectFromInspection(1L);
+        MsdsDetectResponseDTO result = msdsService.detectFromInspection(1L);
 
         assertThat(result.detectedKeywords()).isEmpty();
         assertThat(result.chemicalCandidates()).isEmpty();
@@ -88,7 +88,7 @@ class MsdsServiceTest {
 
     @Test
     void 검색은_provider에_위임하고_빈_검색어는_빈_목록을_반환한다() {
-        when(msdsProvider.search("톨루엔")).thenReturn(List.of(new MsdsSearchResultDto(
+        when(msdsProvider.search("톨루엔")).thenReturn(List.of(new MsdsSearchResultDTO(
                 "톨루엔", "108-88-3", "락카 신너", MsdsSourceType.KOSHA, "안전보건공단 MSDS",
                 "http://x", "http://x", null, 95, false)));
 
@@ -102,11 +102,11 @@ class MsdsServiceTest {
         when(inspectionRepository.findById(1L)).thenReturn(Optional.of(점검(List.of())));
         when(msdsDocumentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        MsdsAttachRequest req = new MsdsAttachRequest(
+        MsdsAttachRequestDTO req = new MsdsAttachRequestDTO(
                 1L, null, "톨루엔", "108-88-3", "락카 신너",
                 MsdsSourceType.KOSHA, "안전보건공단 MSDS", "http://s", "http://d", null, 250, null);
 
-        MsdsDocumentResponse res = msdsService.attach(req, 7L);
+        MsdsDocumentResponseDTO res = msdsService.attach(req, 7L);
 
         assertThat(res.chemicalName()).isEqualTo("톨루엔");
         assertThat(res.sourceTypeLabel()).isEqualTo("KOSHA 참고자료");
@@ -117,7 +117,7 @@ class MsdsServiceTest {
     @Test
     void 물질명이_없으면_첨부에_실패한다() {
         assertThatThrownBy(() -> msdsService.attach(
-                new MsdsAttachRequest(1L, null, " ", null, null, null, null, null, null, null, null, null), 7L))
+                new MsdsAttachRequestDTO(1L, null, " ", null, null, null, null, null, null, null, null, null), 7L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -125,8 +125,8 @@ class MsdsServiceTest {
     void 대상_없이도_내_자료함에_저장할_수_있다() {
         when(msdsDocumentRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        MsdsDocumentResponse res = msdsService.attach(
-                new MsdsAttachRequest(null, null, "아세톤", "67-64-1", null,
+        MsdsDocumentResponseDTO res = msdsService.attach(
+                new MsdsAttachRequestDTO(null, null, "아세톤", "67-64-1", null,
                         MsdsSourceType.KOSHA, null, null, "http://d", null, 80, null), 7L);
 
         assertThat(res.chemicalName()).isEqualTo("아세톤");
@@ -146,7 +146,7 @@ class MsdsServiceTest {
         MsdsDocument doc = MsdsDocument.builder().id(5L).chemicalName("톨루엔").createdBy(1L).build();
         when(msdsDocumentRepository.findById(5L)).thenReturn(Optional.of(doc));
 
-        MsdsDocumentResponse res = msdsService.setVerified(5L, true);
+        MsdsDocumentResponseDTO res = msdsService.setVerified(5L, true);
 
         assertThat(res.verified()).isTrue();
     }

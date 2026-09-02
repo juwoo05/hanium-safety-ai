@@ -7,6 +7,7 @@ import {
   BarChart2, Eye, AlertCircle, Check, Image as ImageIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadReportHtml } from '../utils/demoFiles';
 
 interface AIAnalysisPageProps {
   onNavigate: (page: string) => void;
@@ -652,10 +653,10 @@ export default function AIAnalysisPage({ onNavigate }: AIAnalysisPageProps) {
                                 <button onClick={() => saveEdit(it.id)} className="flex items-center gap-1.5 px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-xs font-medium hover:bg-[#254d7a] transition-colors">
                                   <Save className="w-3.5 h-3.5" /> 저장
                                 </button>
-                                <button className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-white transition-colors">
+                                <button onClick={() => inputRef.current?.click()} className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-white transition-colors">
                                   <Plus className="w-3.5 h-3.5" /> 보완 사진 추가
                                 </button>
-                                <button className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-white transition-colors">
+                                <button onClick={() => { closeEdit(it.id); toast.success(`${it.label} 항목의 AI 재검증을 요청했습니다.`); }} className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-white transition-colors">
                                   <RefreshCw className="w-3.5 h-3.5" /> 재검증 요청
                                 </button>
                               </div>
@@ -740,7 +741,7 @@ export default function AIAnalysisPage({ onNavigate }: AIAnalysisPageProps) {
                       <Check className="w-4 h-4" />
                       모두 최종 승인 (100%)
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                    <button onClick={() => { setFinalDone(false); toast.success('전체 항목의 AI 재검증을 요청했습니다.'); }} className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50 transition-colors">
                       <RefreshCw className="w-4 h-4" />
                       재검증 요청
                     </button>
@@ -1366,7 +1367,21 @@ export default function AIAnalysisPage({ onNavigate }: AIAnalysisPageProps) {
                     {pdfDone ? 'PDF 생성 완료' : 'PDF 생성'}
                   </button>
                   <button
-                    onClick={() => toast.success('다운로드가 시작됩니다.')}
+                    onClick={() => {
+                      downloadReportHtml({
+                        id: 'AI-2026-0902-001',
+                        title: '안전점검 AI 결과보고서',
+                        site: '강남 복합시설 신축공사',
+                        author: '이조치',
+                        createdAt: new Date().toISOString().slice(0, 10),
+                        actionCount: items.length,
+                        details: [
+                          { label: 'AI 조치 완료율', value: `${completionRate}%` },
+                          { label: '검증 결과', value: '전후 사진과 관리자 검토 결과를 반영한 시연용 보고서입니다.' },
+                        ],
+                      });
+                      toast.success('AI 결과보고서 파일을 내려받았습니다.');
+                    }}
                     className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 transition-colors"
                   >
                     <Download className="w-4 h-4" /> 다운로드

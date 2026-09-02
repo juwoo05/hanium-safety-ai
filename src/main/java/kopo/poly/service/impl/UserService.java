@@ -1,8 +1,8 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.CompanyProfileUpdateRequest;
+import kopo.poly.dto.request.CompanyProfileUpdateRequestDTO;
 import kopo.poly.dto.request.SignupRequestDTO;
-import kopo.poly.dto.response.MyActivityStatsResponse;
+import kopo.poly.dto.response.MyActivityStatsResponseDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
@@ -116,7 +116,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public MyActivityStatsResponse getMyStats(Long userId) {
+    public MyActivityStatsResponseDTO getMyStats(Long userId) {
         List<AiSafetyInspection> myInspections = inspectionRepository.findByRequestedByOrderByCreatedAtDesc(userId);
         List<SafetyAction> myActions = safetyActionRepository.findByReporterId(userId);
 
@@ -139,7 +139,7 @@ public class UserService implements IUserService {
         }
         long thisMonthUploads = monthlyUploads.get(LocalDate.now().getMonthValue() - 1);
 
-        return new MyActivityStatsResponse(
+        return new MyActivityStatsResponseDTO(
                 totalUploads, riskDetected, actionsCompleted, safetyScore,
                 thisMonthUploads, actionCompletionRate, monthlyUploads
         );
@@ -166,7 +166,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public User updateCompanyProfile(Long userId, CompanyProfileUpdateRequest request) {
+    public User updateCompanyProfile(Long userId, CompanyProfileUpdateRequestDTO request) {
         if (request.companyName() == null || request.companyName().isBlank()) {
             throw new IllegalArgumentException("건설사명을 입력해주세요.");
         }

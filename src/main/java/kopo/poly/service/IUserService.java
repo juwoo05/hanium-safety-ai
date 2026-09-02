@@ -1,8 +1,8 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.request.CompanyProfileUpdateRequest;
+import kopo.poly.dto.request.CompanyProfileUpdateRequestDTO;
 import kopo.poly.dto.request.SignupRequestDTO;
-import kopo.poly.dto.response.MyActivityStatsResponse;
+import kopo.poly.dto.response.MyActivityStatsResponseDTO;
 import kopo.poly.entity.User;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public interface IUserService {
     void changePassword(Long userId, String currentPassword, String newPassword);
 
     // 마이페이지: 업로드/위험감지/조치완료 등 활동 통계
-    MyActivityStatsResponse getMyStats(Long userId);
+    MyActivityStatsResponseDTO getMyStats(Long userId);
 
     // 마이페이지: 2단계 인증 사용 여부 변경
     void setTwoFactorEnabled(Long userId, boolean enabled);
@@ -38,5 +38,5 @@ public interface IUserService {
     void withdraw(Long userId, String currentPassword);
 
     // 마이페이지: 원청 건설사 정보(사업자번호/대표자/주소) 수정
-    User updateCompanyProfile(Long userId, CompanyProfileUpdateRequest request);
+    User updateCompanyProfile(Long userId, CompanyProfileUpdateRequestDTO request);
 }

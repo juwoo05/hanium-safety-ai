@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>보고서 상세 - 연결고리</title>
+  <title>완료된 보고서 상세 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @media print {
@@ -35,9 +35,14 @@
 
       <div class="flex items-center justify-between mb-4 no-print">
         <a href="/reports" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>목록으로</a>
-        <button onclick="window.print()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 bg-white flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
-        </button>
+        <div class="flex items-center gap-2">
+          <button id="srdDeleteBtn" type="button" class="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 bg-white flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>삭제
+          </button>
+          <button onclick="window.print()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 bg-white flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF
+          </button>
+        </div>
       </div>
 
       <div id="srdNotFound" class="hidden bg-white rounded-2xl p-10 text-center border border-gray-100">
@@ -52,7 +57,6 @@
   </main>
 </div>
 
-<script src="/js/saved-reports-data.js"></script>
 <script>
 function srdEsc(s) { return (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function qs(sel) { return document.querySelector(sel); }
@@ -63,19 +67,64 @@ var SRD_TYPE_BADGE = {
 };
 
 var DRAFT_FIELD_LABELS = {
+  subType: '기록 구분',
+  summary: '주요 내용',
+  note: '비고',
+  assessmentPurpose: '평가 목적',
   completedAction: '완료된 조치 사항',
   preventionPlan: '재발 방지 대책',
-  overallResult: '종합 점검 결과'
+  overallResult: '종합 점검 결과',
+  inspectionType: '점검 구분',
+  weather: '날씨',
+  workerCount: '작업 인원',
+  workType: '작업 종류',
+  workScope: '작업 범위',
+  safetyPrecaution: '안전 주의사항'
 };
+
+var SRD_TYPE_LABELS = {
+  INSPECTION_LOG: '안전점검일지',
+  RISK_ASSESSMENT: '위험성평가서',
+  ACTION_REPORT: '조치결과보고서',
+  WORK_PERMIT: '작업허가서',
+  SAFETY_EDU_LOG: '안전보건교육일지',
+  TBM_LOG: 'TBM 일지',
+  PPE_ISSUE_LOG: '보호구 지급대장',
+  SAFETY_EXPENSE_LOG: '산업안전보건관리비 사용내역서'
+};
+
+function srdFormatDate(value) {
+  if (!value) return '-';
+  var date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  return date.getFullYear() + '.' + pad(date.getMonth() + 1) + '.' + pad(date.getDate())
+    + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+}
+
+function srdFromDocument(doc) {
+  return {
+    id: doc.id,
+    type: SRD_TYPE_LABELS[doc.docType] || doc.docType,
+    siteName: doc.location || (doc.formData && doc.formData.siteName) || '',
+    generationType: doc.aiGenerated ? 'AI 자동 작성' : '직접 작성',
+    updatedAt: srdFormatDate(doc.updatedAt),
+    detail: doc.formData || {}
+  };
+}
+
+function srdShowNotFound(message) {
+  qs('#srdNotFound').classList.remove('hidden');
+  qs('#srdNotFound p').textContent = message || '보고서를 찾을 수 없습니다';
+  qs('#srdContent').classList.add('hidden');
+}
 
 var params = new URLSearchParams(window.location.search);
 var reportId = Number(params.get('id'));
-var report = SAVED_REPORTS.find(function (r) { return r.id === reportId; });
+var currentReport = null;
 
-if (!report) {
-  qs('#srdNotFound').classList.remove('hidden');
-  qs('#srdContent').classList.add('hidden');
-} else {
+function srdRender(report) {
+  currentReport = report;
   var detail = report.detail || {};
   var typeStyle = SRD_TYPE_BADGE[report.type] || 'background:#F3F4F6;color:#374151';
 
@@ -123,6 +172,46 @@ if (!report) {
       return '<div class="border border-gray-200 rounded-xl p-4 text-center"><p class="text-xs font-semibold text-gray-700 mb-6">' + r + '</p><p class="text-[10px] text-gray-400 border-t border-gray-200 pt-1">(서명 또는 인)</p></div>';
     }).join('') +
     '</div>';
+}
+
+function srdDeleteCurrentReport() {
+  if (!currentReport) return;
+  var title = currentReport.type + ' · ' + (currentReport.siteName || '현장 정보 없음');
+  if (!confirm(title + '을(를) 삭제하시겠습니까?')) return;
+
+  fetch('/api/documents/' + encodeURIComponent(currentReport.id), {
+    method: 'DELETE',
+    credentials: 'same-origin'
+  })
+    .then(function (res) {
+      if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
+      if (!res.ok) throw new Error('보고서 삭제에 실패했습니다.');
+      alert('보고서가 삭제되었습니다.');
+      window.location.href = '/reports';
+    })
+    .catch(function (err) {
+      if (err.message !== '로그인이 필요합니다.') alert(err.message);
+    });
+}
+
+qs('#srdDeleteBtn').addEventListener('click', srdDeleteCurrentReport);
+
+if (!reportId) {
+  srdShowNotFound('보고서 번호가 없습니다.');
+} else {
+fetch('/api/documents/' + encodeURIComponent(reportId), { credentials: 'same-origin' })
+  .then(function (res) {
+    if (res.status === 401) { window.location.href = '/login'; throw new Error('로그인이 필요합니다.'); }
+    if (res.status === 404) throw new Error('보고서를 찾을 수 없습니다.');
+    if (!res.ok) throw new Error('보고서를 불러오지 못했습니다.');
+    return res.json();
+  })
+  .then(function (document) {
+    srdRender(srdFromDocument(document));
+  })
+  .catch(function (err) {
+    if (err.message !== '로그인이 필요합니다.') srdShowNotFound(err.message);
+  });
 }
 
 fetch('/api/users/me')

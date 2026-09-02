@@ -1,6 +1,6 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.response.MsdsSearchResultDto;
+import kopo.poly.dto.response.MsdsSearchResultDTO;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
 // (msds.provider 설정값으로 활성 구현을 선택한다)
 public interface MsdsProvider {
 
-    List<MsdsSearchResultDto> search(String query);
+    List<MsdsSearchResultDTO> search(String query);
 
     // 로그/화면 표시용 공급자 이름
     String name();

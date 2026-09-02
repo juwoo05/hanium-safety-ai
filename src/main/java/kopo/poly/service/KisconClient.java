@@ -3,7 +3,7 @@ package kopo.poly.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import kopo.poly.dto.response.KisconCompanyResponse;
+import kopo.poly.dto.response.KisconCompanyResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class KisconClient {
         this.serviceKey = serviceKey;
     }
 
-    public List<KisconCompanyResponse> searchByCompanyName(String keyword) {
+    public List<KisconCompanyResponseDTO> searchByCompanyName(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new IllegalArgumentException("검색할 건설업체명을 입력해주세요.");
         }
@@ -90,7 +90,7 @@ public class KisconClient {
 
         return items.stream()
                 .filter(item -> item.ncrGsKname() != null && item.ncrGsKname().contains(needle))
-                .map(item -> new KisconCompanyResponse(
+                .map(item -> new KisconCompanyResponseDTO(
                         item.ncrGsKname(),
                         formatBizNo(item.ncrMasterNum()),
                         item.ncrGsMaster(),

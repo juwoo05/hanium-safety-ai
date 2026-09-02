@@ -1,13 +1,13 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.request.AnalyzeRequestDto;
-import kopo.poly.dto.response.AnalyzeResponseDto;
-import kopo.poly.dto.response.ErrorResponseDto;
-import kopo.poly.dto.request.EvidenceRequestDto;
-import kopo.poly.dto.response.EvidenceResponseDto;
-import kopo.poly.dto.request.MsdsDetectRequestDto;
-import kopo.poly.dto.response.MsdsDetectResponseDto;
-import kopo.poly.dto.response.UploadResponseDto;
+import kopo.poly.dto.request.AnalyzeRequestDTO;
+import kopo.poly.dto.response.AnalyzeResponseDTO;
+import kopo.poly.dto.response.ErrorResponseDTO;
+import kopo.poly.dto.request.EvidenceRequestDTO;
+import kopo.poly.dto.response.EvidenceResponseDTO;
+import kopo.poly.dto.request.MsdsDetectRequestDTO;
+import kopo.poly.dto.response.MsdsDetectResponseDTO;
+import kopo.poly.dto.response.AiUploadResponseDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Component;
@@ -27,13 +27,13 @@ public class AiPipelineClient {
         this.aiPipelineRestClient = aiPipelineRestClient;
     }
 
-    public AnalyzeResponseDto analyze(AnalyzeRequestDto request) {
+    public AnalyzeResponseDTO analyze(AnalyzeRequestDTO request) {
         try {
             return aiPipelineRestClient.post()
                     .uri("/analyze")
                     .body(request)
                     .retrieve()
-                    .body(AnalyzeResponseDto.class);
+                    .body(AnalyzeResponseDTO.class);
         } catch (RestClientResponseException e) {
             throw new AiPipelineException("AI 분석 요청이 실패했습니다: " + extractDetail(e), e);
         } catch (RestClientException e) {
@@ -42,13 +42,13 @@ public class AiPipelineClient {
         }
     }
 
-    public EvidenceResponseDto searchEvidence(EvidenceRequestDto request) {
+    public EvidenceResponseDTO searchEvidence(EvidenceRequestDTO request) {
         try {
             return aiPipelineRestClient.post()
                     .uri("/evidence")
                     .body(request)
                     .retrieve()
-                    .body(EvidenceResponseDto.class);
+                    .body(EvidenceResponseDTO.class);
         } catch (RestClientResponseException e) {
             throw new AiPipelineException("증거자료 검색이 실패했습니다: " + extractDetail(e), e);
         } catch (RestClientException e) {
@@ -56,13 +56,13 @@ public class AiPipelineClient {
         }
     }
 
-    public MsdsDetectResponseDto detectMsds(MsdsDetectRequestDto request) {
+    public MsdsDetectResponseDTO detectMsds(MsdsDetectRequestDTO request) {
         try {
             return aiPipelineRestClient.post()
                     .uri("/msds/detect")
                     .body(request)
                     .retrieve()
-                    .body(MsdsDetectResponseDto.class);
+                    .body(MsdsDetectResponseDTO.class);
         } catch (RestClientResponseException e) {
             throw new AiPipelineException("MSDS 물질 인식이 실패했습니다: " + extractDetail(e), e);
         } catch (RestClientException e) {
@@ -70,7 +70,7 @@ public class AiPipelineClient {
         }
     }
 
-    public UploadResponseDto upload(MultipartFile file) {
+    public AiUploadResponseDTO upload(MultipartFile file) {
         try {
             MultipartBodyBuilder builder = new MultipartBodyBuilder();
             builder.part("file", file.getBytes())
@@ -82,7 +82,7 @@ public class AiPipelineClient {
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(builder.build())
                     .retrieve()
-                    .body(UploadResponseDto.class);
+                    .body(AiUploadResponseDTO.class);
         } catch (IOException e) {
             throw new AiPipelineException("업로드할 파일을 읽는 중 오류가 발생했습니다: " + e.getMessage(), e);
         } catch (RestClientResponseException e) {
@@ -94,7 +94,7 @@ public class AiPipelineClient {
 
     private String extractDetail(RestClientResponseException e) {
         try {
-            ErrorResponseDto error = e.getResponseBodyAs(ErrorResponseDto.class);
+            ErrorResponseDTO error = e.getResponseBodyAs(ErrorResponseDTO.class);
             return error != null ? error.error() + " - " + error.detail() : e.getMessage();
         } catch (Exception parseFailure) {
             return e.getMessage();

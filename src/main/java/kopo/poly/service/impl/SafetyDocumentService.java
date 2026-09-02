@@ -1,15 +1,18 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.DocumentSaveRequest;
+import kopo.poly.dto.request.DocumentSaveRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.SafetyDocument;
+import kopo.poly.entity.Site;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.DocumentType;
 import kopo.poly.entity.enums.RiskLevel;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
 import kopo.poly.repository.SafetyDocumentRepository;
+import kopo.poly.repository.SiteMembershipRepository;
+import kopo.poly.repository.SiteRepository;
 import kopo.poly.service.ISafetyDocumentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,30 +31,55 @@ public class SafetyDocumentService implements ISafetyDocumentService {
     private final SafetyDocumentRepository safetyDocumentRepository;
     private final AiSafetyInspectionRepository inspectionRepository;
     private final SafetyActionRepository safetyActionRepository;
+    private final SiteRepository siteRepository;
+    private final SiteMembershipRepository siteMembershipRepository;
 
     public SafetyDocumentService(
             SafetyDocumentRepository safetyDocumentRepository,
             AiSafetyInspectionRepository inspectionRepository,
-            SafetyActionRepository safetyActionRepository
+            SafetyActionRepository safetyActionRepository,
+            SiteRepository siteRepository,
+            SiteMembershipRepository siteMembershipRepository
     ) {
         this.safetyDocumentRepository = safetyDocumentRepository;
         this.inspectionRepository = inspectionRepository;
         this.safetyActionRepository = safetyActionRepository;
+        this.siteRepository = siteRepository;
+        this.siteMembershipRepository = siteMembershipRepository;
     }
 
     // 같은 리포트·같은 양식 종류는 최신 내용으로 덮어써서 저장(업서트)한다.
     // createdBy는 컨트롤러가 세션에서 확인한 로그인 사용자 ID를 전달한다(클라이언트가 위조 불가).
     @Override
     @Transactional
-    public SafetyDocument save(DocumentSaveRequest request, Long createdBy) {
+    public SafetyDocument save(DocumentSaveRequestDTO request, Long createdBy) {
+        validateSaveRequest(request, createdBy);
+
         AiSafetyInspection inspection = request.inspectionId() != null
                 ? inspectionRepository.findById(request.inspectionId())
                         .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + request.inspectionId()))
                 : null;
+        Site site = request.siteId() != null
+                ? siteRepository.findById(request.siteId())
+                        .orElseThrow(() -> new NoSuchElementException("현장을 찾을 수 없습니다: " + request.siteId()))
+                : null;
+
+        if (inspection == null && site == null) {
+            throw new IllegalArgumentException("점검 또는 현장 정보가 필요합니다.");
+        }
+        if (inspection != null) {
+            requireInspectionAccess(inspection, createdBy);
+        }
+        if (site != null) {
+            requireSiteAccess(site, createdBy);
+        }
+        if (inspection == null && !isStandaloneType(request.docType())) {
+            throw new IllegalArgumentException("이 서류는 조치관리의 점검 결과에서 작성해주세요.");
+        }
 
         Optional<SafetyDocument> existing = inspection != null
-                ? safetyDocumentRepository.findByInspectionAndDocType(inspection, request.docType())
-                : Optional.empty();
+                ? safetyDocumentRepository.findByInspectionAndDocTypeAndCreatedBy(inspection, request.docType(), createdBy)
+                : safetyDocumentRepository.findBySiteAndDocTypeAndCreatedBy(site, request.docType(), createdBy);
 
         if (existing.isPresent()) {
             SafetyDocument document = existing.get();
@@ -62,6 +90,7 @@ public class SafetyDocumentService implements ISafetyDocumentService {
         return safetyDocumentRepository.save(
                 SafetyDocument.builder()
                         .inspection(inspection)
+                        .site(site)
                         .docType(request.docType())
                         .formData(request.formData())
                         .aiGenerated(request.aiGenerated())
@@ -71,10 +100,11 @@ public class SafetyDocumentService implements ISafetyDocumentService {
     }
 
     @Override
-    public List<SafetyDocument> findByInspectionId(Long inspectionId) {
+    public List<SafetyDocument> findByInspectionId(Long inspectionId, Long userId) {
         AiSafetyInspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + inspectionId));
-        return safetyDocumentRepository.findByInspectionOrderByCreatedAtDesc(inspection);
+        requireInspectionAccess(inspection, userId);
+        return safetyDocumentRepository.findByInspectionAndCreatedByOrderByCreatedAtDesc(inspection, userId);
     }
 
     @Override
@@ -82,12 +112,29 @@ public class SafetyDocumentService implements ISafetyDocumentService {
         return safetyDocumentRepository.findByCreatedByOrderByUpdatedAtDesc(userId);
     }
 
+    @Override
+    public SafetyDocument findMineById(Long id, Long userId) {
+        return safetyDocumentRepository.findByIdAndCreatedBy(id, userId)
+                .orElseThrow(() -> new NoSuchElementException("보고서를 찾을 수 없습니다: " + id));
+    }
+
+    @Override
+    @Transactional
+    public void deleteMine(Long id, Long userId) {
+        SafetyDocument document = findMineById(id, userId);
+        safetyDocumentRepository.delete(document);
+    }
+
     // "AI 자동 작성" 버튼: 이 리포트에 실제로 저장된 감지 위험요소/조치 데이터를 양식 필드로 매핑한다.
     // 담당자명·회사명처럼 이 도메인에 저장돼 있지 않은 값은 지어내지 않고 비워둔다.
     @Override
-    public Map<String, Object> buildDraft(Long inspectionId, DocumentType docType) {
+    public Map<String, Object> buildDraft(Long inspectionId, DocumentType docType, Long userId) {
+        if (docType == null) {
+            throw new IllegalArgumentException("문서 유형을 선택해주세요.");
+        }
         AiSafetyInspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new NoSuchElementException("검사 결과를 찾을 수 없습니다: " + inspectionId));
+        requireInspectionAccess(inspection, userId);
         List<SafetyAction> actions = safetyActionRepository.findByInspectionOrderByCreatedAtDesc(inspection);
 
         Map<String, Object> draft = new LinkedHashMap<>();
@@ -188,6 +235,89 @@ public class SafetyDocumentService implements ISafetyDocumentService {
         return draft;
     }
 
+    @Override
+    public Map<String, Object> buildStandaloneDraft(Long siteId, DocumentType docType, Long userId) {
+        Site site = siteRepository.findById(siteId)
+                .orElseThrow(() -> new NoSuchElementException("현장을 찾을 수 없습니다: " + siteId));
+        requireSiteAccess(site, userId);
+
+        if (!isStandaloneType(docType)) {
+            throw new IllegalArgumentException("조치 연계 서류는 조치관리에서 작성해야 합니다.");
+        }
+
+        Map<String, Object> draft = new LinkedHashMap<>();
+        draft.put("siteName", site.getName());
+        draft.put("workType", nullToDash(site.getWorkType()));
+
+        switch (docType) {
+            case TBM_LOG -> {
+                draft.put("subType", "작업 전 TBM");
+                draft.put("summary", "오늘 작업: " + nullToDash(site.getWorkType()));
+                draft.put("note", "작업 전 위험요소와 안전수칙을 공유하고 참석자 서명을 확인한다.");
+            }
+            case SAFETY_EDU_LOG -> {
+                draft.put("subType", "정기 교육");
+                draft.put("summary", site.getName() + " 현장 안전보건교육 실시");
+                draft.put("note", "교육 대상자, 교육 시간과 참석자 서명을 확인한다.");
+            }
+            case PPE_ISSUE_LOG -> {
+                draft.put("subType", "정기 지급");
+                draft.put("summary", "안전모·안전화·안전대 등 개인 보호구 지급 내역");
+                draft.put("note", "지급 품목·수량·수령자 서명을 입력한다.");
+            }
+            case WORK_PERMIT -> {
+                draft.put("workType", nullToDash(site.getWorkType()));
+                draft.put("workScope", site.getName());
+                draft.put("safetyPrecaution", "작업 전 위험요인, 보호구, 작업구역 통제 및 승인 조건을 확인한다.");
+            }
+            case SAFETY_EXPENSE_LOG -> {
+                draft.put("subType", "안전용품 구입");
+                draft.put("summary", site.getName() + " 현장 산업안전보건관리비 집행 내역");
+                draft.put("note", "품목·금액·용도와 세금계산서 또는 현장 사진을 첨부한다.");
+            }
+            default -> throw new IllegalArgumentException("지원하지 않는 독립 서류입니다.");
+        }
+        return draft;
+    }
+
+    private boolean isStandaloneType(DocumentType docType) {
+        return docType == DocumentType.TBM_LOG
+                || docType == DocumentType.SAFETY_EDU_LOG
+                || docType == DocumentType.PPE_ISSUE_LOG
+                || docType == DocumentType.WORK_PERMIT
+                || docType == DocumentType.SAFETY_EXPENSE_LOG;
+    }
+
+    private void validateSaveRequest(DocumentSaveRequestDTO request, Long createdBy) {
+        if (request == null) {
+            throw new IllegalArgumentException("저장할 문서 정보가 없습니다.");
+        }
+        if (createdBy == null) {
+            throw new IllegalArgumentException("로그인 사용자 정보가 없습니다.");
+        }
+        if (request.docType() == null) {
+            throw new IllegalArgumentException("문서 유형을 선택해주세요.");
+        }
+        if (request.formData() == null) {
+            throw new IllegalArgumentException("문서 내용을 입력해주세요.");
+        }
+    }
+
+    private void requireInspectionAccess(AiSafetyInspection inspection, Long userId) {
+        if (userId == null || !userId.equals(inspection.getRequestedBy())) {
+            throw new NoSuchElementException("검사 결과를 찾을 수 없습니다.");
+        }
+    }
+
+    private void requireSiteAccess(Site site, Long userId) {
+        boolean legacySite = site.getOwnerId() == null;
+        boolean owner = userId != null && userId.equals(site.getOwnerId());
+        boolean member = userId != null && siteMembershipRepository.existsBySiteAndUserId(site, userId);
+        if (!legacySite && !owner && !member) {
+            throw new NoSuchElementException("현장을 찾을 수 없습니다.");
+        }
+    }
+
     private String nullToDash(String value) {
         return value == null || value.isBlank() ? "-" : value;
     }
@@ -201,9 +331,9 @@ public class SafetyDocumentService implements ISafetyDocumentService {
     }
 
     private String buildNote(SafetyAction action) {
-        String note = action.getDescription();
+        String note = action.getDescription() == null ? "" : action.getDescription();
         if (action.getRecommendation() != null && !action.getRecommendation().isBlank()) {
-            note += " — 권장조치: " + action.getRecommendation();
+            note += (note.isBlank() ? "" : " — ") + "권장조치: " + action.getRecommendation();
         }
         return note;
     }

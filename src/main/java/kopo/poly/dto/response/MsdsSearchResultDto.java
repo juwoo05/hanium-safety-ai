@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 // MSDS provider(KOSHA/제조사/내부/mock)가 반환하는 검색 결과 1건.
 // 화면에는 물질명, CAS No., 개정일, 출처명, 문서 URL, 신뢰도, 확인 상태를 보여준다.
-public record MsdsSearchResultDto(
+public record MsdsSearchResultDTO(
         String chemicalName,
         String casNo,
         String productName,

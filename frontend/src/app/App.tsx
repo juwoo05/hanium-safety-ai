@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import LandingPage from './components/LandingPage';
 import LoginPage from './components/LoginPage';
@@ -19,6 +19,9 @@ import ReportBoardDetail from './components/ReportBoardDetail';
 import QuickNav from './components/QuickNav';
 import AIAnalysisPage from './components/AIAnalysisPage';
 import AIReportPage from './components/AIReportPage';
+import SavedReports from './components/SavedReports';
+import SafetyDocuments from './components/SafetyDocuments';
+import { createSafetyDocumentSnapshot, type SafetyDocumentSnapshot } from './components/SafetyDocumentTemplate';
 
 type UserType = 'contractor' | 'subcontractor' | null;
 
@@ -41,6 +44,25 @@ export interface CompletedAction {
   confidence: number;
 }
 
+export interface SavedReport {
+  id: string;
+  title: string;
+  site: string;
+  author: string;
+  createdAt: string;
+  actionCount: number;
+  aiGenerated: boolean;
+  snapshot: SafetyDocumentSnapshot;
+}
+
+const INITIAL_SAVED_REPORTS: SavedReport[] = [
+  { id: 'SR-2026-006', title: '조치결과보고서', site: '강남 복합시설 신축공사', author: '김현장', createdAt: '2026.08.28', actionCount: 4, aiGenerated: true, snapshot: createSafetyDocumentSnapshot({ templateId: 'action', siteName: '강남 복합시설 신축공사', documentDate: '2026-08-28', writer: '김현장', documentNumber: 'SR-2026-006' }) },
+  { id: 'SR-2026-005', title: '안전점검일지', site: '강남 복합시설 신축공사', author: '박안전', createdAt: '2026.08.25', actionCount: 7, aiGenerated: true, snapshot: createSafetyDocumentSnapshot({ templateId: 'inspection', siteName: '강남 복합시설 신축공사', documentDate: '2026-08-25', writer: '박안전', documentNumber: 'SR-2026-005' }) },
+  { id: 'SR-2026-004', title: 'TBM 일지', site: '강남 복합시설 신축공사', author: '이관리', createdAt: '2026.08.21', actionCount: 3, aiGenerated: true, snapshot: createSafetyDocumentSnapshot({ templateId: 'tbm', siteName: '강남 복합시설 신축공사', documentDate: '2026-08-21', writer: '이관리', documentNumber: 'SR-2026-004' }) },
+];
+
+const SAVED_REPORTS_KEY = 'safety-link-saved-reports-v2';
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -48,6 +70,20 @@ export default function App() {
   const [aiActions, setAiActions] = useState<AiAction[]>([]);
   const [registeredImages, setRegisteredImages] = useState<string[]>([]);
   const [pendingReportActions, setPendingReportActions] = useState<CompletedAction[]>([]);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>(() => {
+    try {
+      const stored = localStorage.getItem(SAVED_REPORTS_KEY);
+      const parsed = stored ? JSON.parse(stored) as SavedReport[] : null;
+      return parsed?.every(report => report.snapshot) ? parsed : INITIAL_SAVED_REPORTS;
+    } catch {
+      return INITIAL_SAVED_REPORTS;
+    }
+  });
+  const [standaloneTemplate, setStandaloneTemplate] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem(SAVED_REPORTS_KEY, JSON.stringify(savedReports));
+  }, [savedReports]);
 
   const publicPages = new Set(['landing', 'login', 'signup', 'find-id', 'find-password']);
 
@@ -91,8 +127,10 @@ export default function App() {
         return <ReportDetail
           onNavigate={handleNavigation}
           beforeImages={registeredImages}
-          onStartReport={(actions) => { setPendingReportActions(actions); handleNavigation('ai-report'); }}
+          onStartReport={(actions) => { setStandaloneTemplate(null); setPendingReportActions(actions); handleNavigation('ai-report'); }}
         />;
+      case 'documents':
+        return <SafetyDocuments onNavigate={handleNavigation} onCreate={(templateId) => { setPendingReportActions([]); setStandaloneTemplate(templateId); handleNavigation('ai-report'); }} />;
       case 'analytics':
         return <Analytics onNavigate={handleNavigation} />;
       case 'ai-analysis':
@@ -102,7 +140,24 @@ export default function App() {
           onNavigate={handleNavigation}
           completedActions={pendingReportActions.length ? pendingReportActions : undefined}
           onConsumeActions={() => setPendingReportActions([])}
+          initialStandaloneTemplate={standaloneTemplate ?? undefined}
+          onReportSaved={({ title, actionCount, site, author, createdAt, snapshot }) => {
+            const id = `SR-2026-${String(savedReports.length + 7).padStart(3, '0')}`;
+            setSavedReports(prev => [{
+              id,
+              title,
+              site,
+              author,
+              createdAt,
+              actionCount,
+              aiGenerated: true,
+              snapshot: { ...snapshot, documentNumber: id },
+            }, ...prev]);
+            setStandaloneTemplate(null);
+          }}
         />;
+      case 'saved-reports':
+        return <SavedReports onNavigate={handleNavigation} reports={savedReports} />;
       case 'notifications':
         return <Notifications onNavigate={handleNavigation} />;
       case 'mypage':

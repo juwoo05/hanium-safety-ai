@@ -1,10 +1,10 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.SiteCreateRequest;
-import kopo.poly.dto.request.SiteDetailRequest;
-import kopo.poly.dto.response.SiteConnectionResponse;
-import kopo.poly.dto.response.SiteOwnerResponse;
-import kopo.poly.dto.response.SiteResponse;
+import kopo.poly.dto.request.SiteCreateRequestDTO;
+import kopo.poly.dto.request.SiteDetailRequestDTO;
+import kopo.poly.dto.response.SiteConnectionResponseDTO;
+import kopo.poly.dto.response.SiteOwnerResponseDTO;
+import kopo.poly.dto.response.SiteResponseDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.Site;
 import kopo.poly.entity.SiteMembership;
@@ -54,7 +54,7 @@ class SiteServiceTest {
         when(inspectionRepository.findFirstByLocationOrderByCreatedAtDesc("3동 건물 외벽"))
                 .thenReturn(Optional.of(AiSafetyInspection.builder().riskLevel(RiskLevel.HIGH).build()));
 
-        List<SiteResponse> result = siteService.list();
+        List<SiteResponseDTO> result = siteService.list(10L);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).lastRiskLevel()).isEqualTo(RiskLevel.HIGH);
@@ -66,14 +66,14 @@ class SiteServiceTest {
         when(siteRepository.findAllByOrderByNameAsc()).thenReturn(List.of(site));
         when(inspectionRepository.findFirstByLocationOrderByCreatedAtDesc("신규 현장")).thenReturn(Optional.empty());
 
-        List<SiteResponse> result = siteService.list();
+        List<SiteResponseDTO> result = siteService.list(10L);
 
         assertThat(result.get(0).lastRiskLevel()).isNull();
     }
 
     @Test
     void 이름이_비어있으면_현장_등록에_실패한다() {
-        assertThrows(IllegalArgumentException.class, () -> siteService.create(new SiteCreateRequest("  ", "A구역")));
+        assertThrows(IllegalArgumentException.class, () -> siteService.create(new SiteCreateRequestDTO("  ", "A구역"), 10L));
     }
 
     @Test
@@ -82,7 +82,7 @@ class SiteServiceTest {
         when(siteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         Site created = siteService.createWithDetail(
-                new SiteDetailRequest("3동 외벽", "서울시 강남구", "건축공사", null, null), 10L);
+                new SiteDetailRequestDTO("3동 외벽", "서울시 강남구", "건축공사", null, null), 10L);
 
         assertThat(created.getOwnerId()).isEqualTo(10L);
         assertThat(created.getInviteCode()).startsWith("SITE-");
@@ -93,7 +93,7 @@ class SiteServiceTest {
         Site mine = Site.builder().id(1L).name("내 현장").ownerId(10L).inviteCode("SITE-ABC123").build();
         when(siteRepository.findByOwnerIdOrderByNameAsc(10L)).thenReturn(List.of(mine));
 
-        List<SiteOwnerResponse> result = siteService.myOwnedSites(10L);
+        List<SiteOwnerResponseDTO> result = siteService.myOwnedSites(10L);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).inviteCode()).isEqualTo("SITE-ABC123");
@@ -115,7 +115,7 @@ class SiteServiceTest {
         when(userRepository.findById(10L)).thenReturn(Optional.of(
                 User.builder().id(10L).role(UserRole.원청).companyName("대한안전건설").build()));
 
-        SiteConnectionResponse result = siteService.joinByInviteCode("site-abc123", 20L);
+        SiteConnectionResponseDTO result = siteService.joinByInviteCode("site-abc123", 20L);
 
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.ownerCompanyName()).isEqualTo("대한안전건설");
@@ -136,7 +136,7 @@ class SiteServiceTest {
         when(userRepository.findById(10L)).thenReturn(Optional.of(
                 User.builder().id(10L).role(UserRole.원청).companyName("대한안전건설").build()));
 
-        List<SiteConnectionResponse> result = siteService.joinedSites(20L);
+        List<SiteConnectionResponseDTO> result = siteService.joinedSites(20L);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).name()).isEqualTo("3동 외벽");

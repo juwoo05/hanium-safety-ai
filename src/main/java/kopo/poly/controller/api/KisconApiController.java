@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.response.KisconCompanyResponse;
+import kopo.poly.dto.response.KisconCompanyResponseDTO;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.UserRole;
 import kopo.poly.repository.UserRepository;
@@ -27,7 +27,7 @@ public class KisconApiController {
     }
 
     @GetMapping("/api/kiscon/companies")
-    public List<KisconCompanyResponse> search(@RequestParam String keyword, HttpSession session) {
+    public List<KisconCompanyResponseDTO> search(@RequestParam String keyword, HttpSession session) {
         Long loginUserId = requireLoginUserId(session);
         if (!isPrimeContractor(loginUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "원청만 조회할 수 있습니다.");

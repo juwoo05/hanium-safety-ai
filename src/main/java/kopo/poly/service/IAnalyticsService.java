@@ -1,8 +1,8 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.response.AnalyticsSummaryResponse;
+import kopo.poly.dto.response.AnalyticsSummaryResponseDTO;
 
 public interface IAnalyticsService {
 
-    AnalyticsSummaryResponse summarize(int year);
+    AnalyticsSummaryResponseDTO summarize(int year);
 }

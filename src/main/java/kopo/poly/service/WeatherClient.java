@@ -3,7 +3,7 @@ package kopo.poly.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import kopo.poly.dto.response.WeatherResponse;
+import kopo.poly.dto.response.WeatherResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class WeatherClient {
         this.ny = ny;
     }
 
-    public WeatherResponse getTodayForecast() {
+    public WeatherResponseDTO getTodayForecast() {
         // 초단기예보는 매시 30분에 발표되고 약 10~15분 뒤 조회 가능하다.
         LocalDateTime baseDateTime = LocalDateTime.now().minusMinutes(45);
         String baseDate = baseDateTime.format(DATE_FORMAT);
@@ -111,7 +111,7 @@ public class WeatherClient {
                 .orElse(slots.keySet().iterator().next());
         Map<String, String> chosen = slots.get(chosenKey);
 
-        return new WeatherResponse(
+        return new WeatherResponseDTO(
                 skyConditionLabel(chosen.get("SKY")),
                 precipitationTypeLabel(chosen.get("PTY")),
                 chosen.getOrDefault("RN1", "-"),

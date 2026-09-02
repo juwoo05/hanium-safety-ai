@@ -1,7 +1,7 @@
 package kopo.poly.controller.api;
 
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.response.WeatherResponse;
+import kopo.poly.dto.response.WeatherResponseDTO;
 import kopo.poly.service.WeatherClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class WeatherApiController {
     }
 
     @GetMapping("/api/weather/today")
-    public WeatherResponse today(HttpSession session) {
+    public WeatherResponseDTO today(HttpSession session) {
         if (session.getAttribute("LOGIN_USER_ID") == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }

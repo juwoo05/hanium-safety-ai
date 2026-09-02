@@ -3,6 +3,7 @@ import type { AiAction } from '../App';
 import Layout from './Layout';
 import { Search, ChevronRight, Download, Plus, Pencil, Trash2, X, Save, AlertTriangle, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadCsv } from '../utils/demoFiles';
 
 type RiskLevel = 'high' | 'medium' | 'low';
 type ActionStatus = 'pending' | 'inProgress' | 'verification' | 'completed';
@@ -197,7 +198,22 @@ export default function ActionManagementAdvanced({ onNavigate, incomingActions, 
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => toast.success('Excel 다운로드 완료')}
+            onClick={() => {
+              downloadCsv(
+                `조치관리_${new Date().toISOString().slice(0, 10)}.csv`,
+                ['리포트 ID', '위험요소', '현장', '담당자', '위험등급', '상태', '기한'],
+                filteredActions.map(action => [
+                  action.reportId,
+                  action.title,
+                  action.site,
+                  action.manager,
+                  RISK_LABEL[action.risk],
+                  STATUS_LABEL[action.status],
+                  action.deadline,
+                ])
+              );
+              toast.success(`${filteredActions.length}건을 CSV로 내보냈습니다.`);
+            }}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '7px 12px', fontSize: 12, fontWeight: 500,
@@ -509,14 +525,20 @@ export default function ActionManagementAdvanced({ onNavigate, incomingActions, 
                               상세 보기
                             </button>
                             <button
-                              onClick={() => onNavigate('ai-report')}
+                              onClick={() => onNavigate('actions-detail')}
+                              disabled={action.status !== 'completed'}
+                              title={action.status === 'completed' ? '완료 조치로 안전서류 작성' : '조치 완료 후 작성할 수 있습니다'}
                               style={{
                                 padding: '5px 12px', fontSize: 12, fontWeight: 500,
-                                background: 'white', color: '#374151', border: '1px solid #E5E7EB',
-                                borderRadius: 3, cursor: 'pointer',
+                                background: 'white',
+                                color: action.status === 'completed' ? '#1D4ED8' : '#9CA3AF',
+                                border: `1px solid ${action.status === 'completed' ? '#BFDBFE' : '#E5E7EB'}`,
+                                borderRadius: 3,
+                                cursor: action.status === 'completed' ? 'pointer' : 'not-allowed',
+                                opacity: action.status === 'completed' ? 1 : 0.65,
                               }}
                             >
-                              보고서 생성
+                              안전서류 작성
                             </button>
                           </div>
                         </td>

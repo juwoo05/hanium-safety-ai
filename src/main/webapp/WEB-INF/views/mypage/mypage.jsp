@@ -363,6 +363,15 @@ var CURRENT_ROLE = null;
 var mySites = [];
 var selectedSite = null;
 
+function selectedInspectionSiteFromStorage() {
+  try {
+    var raw = localStorage.getItem('selectedInspectionSite');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function switchMenu(name, btn) {
   ['profile','account','sites','stats','settings','security'].forEach(function (m) {
     document.getElementById('panel-' + m).classList.add('hidden');
@@ -489,8 +498,14 @@ function loadMySites() {
       var select = document.getElementById('siteSelect');
       select.innerHTML = '<option value="">현장을 선택하세요</option>' +
         sites.map(function (s) { return '<option value="' + s.id + '">' + s.name + '</option>'; }).join('');
+      if (!selectedSite) {
+        var saved = selectedInspectionSiteFromStorage();
+        if (saved) {
+          selectedSite = sites.find(function (s) { return String(s.id) === String(saved.id); }) || null;
+        }
+      }
       if (selectedSite) {
-        var stillExists = sites.find(function (s) { return s.id === selectedSite.id; });
+        var stillExists = sites.find(function (s) { return String(s.id) === String(selectedSite.id); });
         if (stillExists) { select.value = stillExists.id; onSiteSelected(stillExists.id, stillExists); }
       }
     })
@@ -502,12 +517,20 @@ function onSiteSelected(siteId, siteObj) {
   selectedSite = site || null;
 
   if (!site) {
+    localStorage.removeItem('selectedInspectionSite');
     document.getElementById('siteEmptyHint').classList.remove('hidden');
     document.getElementById('siteDetailCard').classList.add('hidden');
     document.getElementById('codeSectionHint').classList.remove('hidden');
     document.getElementById('codeSectionBody').classList.add('hidden');
     return;
   }
+
+  localStorage.setItem('selectedInspectionSite', JSON.stringify({
+    id: site.id,
+    name: site.name,
+    address: site.address || null,
+    workType: site.workType || null
+  }));
 
   document.getElementById('siteEmptyHint').classList.add('hidden');
   document.getElementById('siteDetailCard').classList.remove('hidden');

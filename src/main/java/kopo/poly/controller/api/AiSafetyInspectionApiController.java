@@ -1,8 +1,8 @@
 package kopo.poly.controller.api;
 
-import kopo.poly.dto.request.AnalysisRequest;
-import kopo.poly.dto.response.ActionResponse;
-import kopo.poly.dto.response.InspectionResponse;
+import kopo.poly.dto.request.AnalysisRequestDTO;
+import kopo.poly.dto.response.ActionResponseDTO;
+import kopo.poly.dto.response.InspectionResponseDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.service.IAiSafetyInspectionService;
 import kopo.poly.service.ISafetyActionService;
@@ -33,29 +33,29 @@ public class AiSafetyInspectionApiController {
 
     @PostMapping("/api/inspections/analyze")
     @ResponseStatus(HttpStatus.CREATED)
-    public InspectionResponse analyze(@RequestBody AnalysisRequest request) {
+    public InspectionResponseDTO analyze(@RequestBody AnalysisRequestDTO request) {
         AiSafetyInspection inspection = inspectionService.requestAnalysis(request);
-        return InspectionResponse.from(inspection);
+        return InspectionResponseDTO.from(inspection);
     }
 
     @GetMapping("/api/inspections/{id}")
-    public InspectionResponse getById(@PathVariable Long id) {
+    public InspectionResponseDTO getById(@PathVariable Long id) {
         AiSafetyInspection inspection = inspectionService.getById(id);
         String requestedByName = inspectionService.resolveUserName(inspection.getRequestedBy());
-        return InspectionResponse.from(inspection, requestedByName);
+        return InspectionResponseDTO.from(inspection, requestedByName);
     }
 
     @GetMapping("/api/inspections")
-    public List<InspectionResponse> getByRequestedBy(@RequestParam Long requestedBy) {
+    public List<InspectionResponseDTO> getByRequestedBy(@RequestParam Long requestedBy) {
         return inspectionService.findByRequestedBy(requestedBy).stream()
-                .map(InspectionResponse::from)
+                .map(InspectionResponseDTO::from)
                 .toList();
     }
 
     @GetMapping("/api/inspections/{id}/actions")
-    public List<ActionResponse> getActions(@PathVariable Long id) {
+    public List<ActionResponseDTO> getActions(@PathVariable Long id) {
         return safetyActionService.findByInspectionId(id).stream()
-                .map(ActionResponse::from)
+                .map(ActionResponseDTO::from)
                 .toList();
     }
 }

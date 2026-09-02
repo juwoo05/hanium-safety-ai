@@ -1,8 +1,8 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.response.EvidenceItemDto;
-import kopo.poly.dto.request.EvidenceRequestDto;
-import kopo.poly.dto.response.EvidenceResponseDto;
+import kopo.poly.dto.response.EvidenceItemDTO;
+import kopo.poly.dto.request.EvidenceRequestDTO;
+import kopo.poly.dto.response.EvidenceResponseDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.enums.ActionStatus;
@@ -54,13 +54,13 @@ class EvidenceServiceTest {
                 .description("설치 안 됨").status(ActionStatus.REQUESTED).createdBy(1L).build();
         when(safetyActionRepository.findByInspectionOrderByCreatedAtDesc(inspection)).thenReturn(List.of(action));
 
-        EvidenceItemDto item = new EvidenceItemDto("산업안전보건법", "요약", "산업안전보건법", "law", 98);
+        EvidenceItemDTO item = new EvidenceItemDTO("산업안전보건법", "요약", "산업안전보건법", "law", 98);
         when(aiPipelineClient.searchEvidence(org.mockito.ArgumentMatchers.any()))
-                .thenReturn(new EvidenceResponseDto(List.of(item)));
+                .thenReturn(new EvidenceResponseDTO(List.of(item)));
 
-        List<EvidenceItemDto> result = evidenceService.searchForInspection(1L, "law");
+        List<EvidenceItemDTO> result = evidenceService.searchForInspection(1L, "law");
 
-        ArgumentCaptor<EvidenceRequestDto> captor = ArgumentCaptor.forClass(EvidenceRequestDto.class);
+        ArgumentCaptor<EvidenceRequestDTO> captor = ArgumentCaptor.forClass(EvidenceRequestDTO.class);
         verify(aiPipelineClient).searchEvidence(captor.capture());
         assertThat(captor.getValue().query()).contains("안전난간 미설치");
         assertThat(captor.getValue().category()).isEqualTo("law");

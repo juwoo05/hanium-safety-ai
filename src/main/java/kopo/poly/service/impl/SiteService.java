@@ -1,11 +1,11 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.SiteCreateRequest;
-import kopo.poly.dto.request.SiteDetailRequest;
-import kopo.poly.dto.response.ConnectedSubcontractorResponse;
-import kopo.poly.dto.response.SiteConnectionResponse;
-import kopo.poly.dto.response.SiteOwnerResponse;
-import kopo.poly.dto.response.SiteResponse;
+import kopo.poly.dto.request.SiteCreateRequestDTO;
+import kopo.poly.dto.request.SiteDetailRequestDTO;
+import kopo.poly.dto.response.ConnectedSubcontractorResponseDTO;
+import kopo.poly.dto.response.SiteConnectionResponseDTO;
+import kopo.poly.dto.response.SiteOwnerResponseDTO;
+import kopo.poly.dto.response.SiteResponseDTO;
 import kopo.poly.entity.Site;
 import kopo.poly.entity.SiteMembership;
 import kopo.poly.entity.User;
@@ -50,24 +50,31 @@ public class SiteService implements ISiteService {
     // 각 현장의 최근 위험도는 그 현장에서 가장 최근에 실시된 점검 결과를 보여준다.
     // 점검 이력이 없는 신규 현장은 null(위험도 배지 없음)로 내려간다.
     @Override
-    public List<SiteResponse> list() {
+    @Transactional(readOnly = true)
+    public List<SiteResponseDTO> list(Long userId) {
         return siteRepository.findAllByOrderByNameAsc().stream()
+                .filter(site -> canAccess(site, userId))
                 .map(this::toSiteResponse)
                 .toList();
     }
 
     @Override
     @Transactional
-    public Site create(SiteCreateRequest request) {
+    public Site create(SiteCreateRequestDTO request, Long ownerId) {
         if (request.name() == null || request.name().isBlank()) {
             throw new IllegalArgumentException("현장 이름을 입력해주세요.");
         }
-        return siteRepository.save(Site.builder().name(request.name().trim()).zone(request.zone()).build());
+        return siteRepository.save(Site.builder()
+                .name(request.name().trim())
+                .zone(request.zone())
+                .ownerId(ownerId)
+                .inviteCode(generateUniqueInviteCode())
+                .build());
     }
 
     @Override
     @Transactional
-    public Site createWithDetail(SiteDetailRequest request, Long ownerId) {
+    public Site createWithDetail(SiteDetailRequestDTO request, Long ownerId) {
         if (request.name() == null || request.name().isBlank()) {
             throw new IllegalArgumentException("현장 이름을 입력해주세요.");
         }
@@ -84,23 +91,23 @@ public class SiteService implements ISiteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SiteOwnerResponse> myOwnedSites(Long ownerId) {
+    public List<SiteOwnerResponseDTO> myOwnedSites(Long ownerId) {
         return siteRepository.findByOwnerIdOrderByNameAsc(ownerId).stream()
-                .map(SiteOwnerResponse::from)
+                .map(SiteOwnerResponseDTO::from)
                 .toList();
     }
 
     @Override
     @Transactional
-    public SiteOwnerResponse regenerateInviteCode(Long siteId, Long ownerId) {
+    public SiteOwnerResponseDTO regenerateInviteCode(Long siteId, Long ownerId) {
         Site site = requireOwnedSite(siteId, ownerId);
         site.regenerateInviteCode(generateUniqueInviteCode());
-        return SiteOwnerResponse.from(siteRepository.save(site));
+        return SiteOwnerResponseDTO.from(siteRepository.save(site));
     }
 
     @Override
     @Transactional
-    public SiteConnectionResponse joinByInviteCode(String inviteCode, Long userId) {
+    public SiteConnectionResponseDTO joinByInviteCode(String inviteCode, Long userId) {
         if (inviteCode == null || inviteCode.isBlank()) {
             throw new IllegalArgumentException("공유 코드를 입력해주세요.");
         }
@@ -115,7 +122,7 @@ public class SiteService implements ISiteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SiteConnectionResponse> joinedSites(Long userId) {
+    public List<SiteConnectionResponseDTO> joinedSites(Long userId) {
         return siteMembershipRepository.findByUserIdOrderByJoinedAtDesc(userId).stream()
                 .map(SiteMembership::getSite)
                 .map(this::toConnectionResponse)
@@ -124,7 +131,7 @@ public class SiteService implements ISiteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ConnectedSubcontractorResponse> connectedSubcontractors(Long ownerId) {
+    public List<ConnectedSubcontractorResponseDTO> connectedSubcontractors(Long ownerId) {
         List<SiteMembership> memberships = siteMembershipRepository.findBySiteOwnerIdOrderByJoinedAtDesc(ownerId);
         List<Long> userIds = memberships.stream().map(SiteMembership::getUserId).distinct().toList();
         var usersById = userRepository.findAllById(userIds).stream()
@@ -133,7 +140,7 @@ public class SiteService implements ISiteService {
         return memberships.stream()
                 .map(m -> {
                     User u = usersById.get(m.getUserId());
-                    return new ConnectedSubcontractorResponse(
+                    return new ConnectedSubcontractorResponseDTO(
                             u != null ? u.getCompanyName() : "알 수 없음",
                             u != null ? u.getUsername() : "알 수 없음",
                             m.getSite().getName(),
@@ -166,8 +173,8 @@ public class SiteService implements ISiteService {
         return site;
     }
 
-    private SiteResponse toSiteResponse(Site site) {
-        return SiteResponse.from(
+    private SiteResponseDTO toSiteResponse(Site site) {
+        return SiteResponseDTO.from(
                 site,
                 inspectionRepository.findFirstByLocationOrderByCreatedAtDesc(site.getName())
                         .map(inspection -> inspection.getRiskLevel())
@@ -175,10 +182,16 @@ public class SiteService implements ISiteService {
         );
     }
 
-    private SiteConnectionResponse toConnectionResponse(Site site) {
+    private boolean canAccess(Site site, Long userId) {
+        return site.getOwnerId() == null
+                || site.getOwnerId().equals(userId)
+                || siteMembershipRepository.existsBySiteAndUserId(site, userId);
+    }
+
+    private SiteConnectionResponseDTO toConnectionResponse(Site site) {
         String ownerCompanyName = site.getOwnerId() == null ? null
                 : userRepository.findById(site.getOwnerId()).map(User::getCompanyName).orElse(null);
-        return SiteConnectionResponse.from(site, ownerCompanyName);
+        return SiteConnectionResponseDTO.from(site, ownerCompanyName);
     }
 
     private String normalizeCode(String code) {

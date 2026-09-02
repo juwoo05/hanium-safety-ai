@@ -1,6 +1,6 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.request.ActionCreateRequest;
+import kopo.poly.dto.request.ActionCreateRequestDTO;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ISafetyActionService {
 
-    SafetyAction createManual(ActionCreateRequest request);
+    SafetyAction createManual(ActionCreateRequestDTO request);
 
     List<SafetyAction> findByStatus(ActionStatus status);
 

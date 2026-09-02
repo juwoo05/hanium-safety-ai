@@ -1,7 +1,7 @@
 package kopo.poly.service.impl;
 
-import kopo.poly.dto.request.CompanyProfileUpdateRequest;
-import kopo.poly.dto.response.MyActivityStatsResponse;
+import kopo.poly.dto.request.CompanyProfileUpdateRequestDTO;
+import kopo.poly.dto.response.MyActivityStatsResponseDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
 import kopo.poly.entity.User;
@@ -126,7 +126,7 @@ class UserServiceTest {
         when(inspectionRepository.findByRequestedByOrderByCreatedAtDesc(1L)).thenReturn(inspections);
         when(safetyActionRepository.findByReporterId(1L)).thenReturn(actions);
 
-        MyActivityStatsResponse stats = userService.getMyStats(1L);
+        MyActivityStatsResponseDTO stats = userService.getMyStats(1L);
 
         assertThat(stats.totalUploads()).isEqualTo(2);
         assertThat(stats.riskDetected()).isEqualTo(1);
@@ -141,7 +141,7 @@ class UserServiceTest {
         when(inspectionRepository.findByRequestedByOrderByCreatedAtDesc(1L)).thenReturn(List.of());
         when(safetyActionRepository.findByReporterId(1L)).thenReturn(List.of());
 
-        MyActivityStatsResponse stats = userService.getMyStats(1L);
+        MyActivityStatsResponseDTO stats = userService.getMyStats(1L);
 
         assertThat(stats.safetyScore()).isEqualTo(100);
     }
@@ -186,7 +186,7 @@ class UserServiceTest {
         when(userRepository.save(any())).thenReturn(user);
 
         User result = userService.updateCompanyProfile(1L,
-                new CompanyProfileUpdateRequest("대한안전건설", "123-45-67890", "김현장", "서울시 강남구"));
+                new CompanyProfileUpdateRequestDTO("대한안전건설", "123-45-67890", "김현장", "서울시 강남구"));
 
         assertThat(result.getCompanyName()).isEqualTo("대한안전건설");
         assertThat(result.getCompanyBizNo()).isEqualTo("123-45-67890");
@@ -197,6 +197,6 @@ class UserServiceTest {
     @Test
     void 건설사명이_비어있으면_수정에_실패한다() {
         assertThrows(IllegalArgumentException.class, () -> userService.updateCompanyProfile(1L,
-                new CompanyProfileUpdateRequest("  ", null, null, null)));
+                new CompanyProfileUpdateRequestDTO("  ", null, null, null)));
     }
 }
