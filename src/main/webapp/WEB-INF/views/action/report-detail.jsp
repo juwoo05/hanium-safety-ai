@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AI 서류 작성 - 연결고리</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+          integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     @media print {
       #sidebar, header, #evidenceCard, #formTypeCard, #aiAssistCard, #formFileCard, .no-print { display: none !important; }
@@ -13,6 +16,9 @@
       #genericPhotoGrid > div { break-inside: avoid; }
       #genericPhotoGrid .photo-cap-input { border: none !important; padding-left: 0 !important; }
     }
+
+    /* 양식 파일 읽기로 채워진 입력칸 표시 */
+    .form-input.file-filled { background-color: #EEF6FF; border-color: #1A2E44 !important; }
 
     /* 안전양식 탭 — 섹션형 사이드 메뉴 */
     #formTypeCard { position: sticky; top: 92px; }
@@ -310,7 +316,7 @@
                   </button>
                   <button class="form-type-btn w-full text-left px-3 py-2.5 rounded-xl border border-transparent bg-white/70 hover:bg-white flex items-start gap-3 transition-all" data-type="ACTION_REPORT">
                     <svg class="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    <span class="min-w-0"><span class="block text-sm font-bold text-gray-900">조치결과보고서</span><span class="form-desc block text-[11px] text-gray-500">완료 결과 및 재발방지 계획</span></span>
+                    <span class="min-w-0"><span class="block text-sm font-bold text-gray-900">시정조치 보고서</span><span class="form-desc block text-[11px] text-gray-500">위험요소·조치 전후 사진·최종판정까지 기록</span></span>
                   </button>
                 </div>
               </section>
@@ -366,7 +372,7 @@
             </button>
             <div id="aiGenProgressWrap" class="hidden mt-3">
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-xs text-white/80">AI 양식 생성 중...</span>
+                <span id="aiGenProgressLabel" class="text-xs text-white/80">AI 양식 생성 중...</span>
                 <span id="aiGenProgressPct" class="text-xs font-bold">0%</span>
               </div>
               <div class="h-2 bg-white/20 rounded-full overflow-hidden">
@@ -378,13 +384,17 @@
 
           <div id="formFileCard" class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
             <h3 class="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>양식 파일 읽기</h3>
-            <p class="text-xs text-gray-500 mb-3">PDF·이미지·Excel·Word 형식의 안전양식을 업로드하면 AI가 내용을 읽어 자동 입력합니다.</p>
-            <label class="block border-2 border-dashed border-gray-200 rounded-xl py-6 text-center cursor-pointer hover:border-[#1A2E44] transition-colors">
-              <input type="file" class="hidden"/>
+            <p class="text-xs text-gray-500 mb-3">Excel·텍스트 파일에서 "항목명: 내용" 형식의 줄을 찾아, 비어 있는 입력칸을 채웁니다.</p>
+            <label id="formFileDrop" class="block border-2 border-dashed border-gray-200 rounded-xl py-6 text-center cursor-pointer hover:border-[#1A2E44] transition-colors">
+              <input id="formFileInput" type="file" accept=".txt,.xlsx,.xls" class="hidden"/>
               <svg class="w-6 h-6 text-gray-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p class="text-xs text-gray-500">파일을 드래그하거나 클릭</p>
-              <p class="text-[10px] text-gray-400 mt-1">PDF · 이미지 · Excel · Word</p>
+              <p class="text-[10px] text-gray-400 mt-1">Excel(.xlsx) · 텍스트(.txt)</p>
             </label>
+            <p id="formFileStatus" class="hidden text-xs font-medium mt-3 flex items-center gap-1.5">
+              <svg id="formFileStatusSpinner" class="w-3.5 h-3.5 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <span id="formFileStatusText">파일 내용을 분석하고 있습니다...</span>
+            </p>
           </div>
         </div>
 
@@ -393,11 +403,17 @@
             <div class="flex items-center justify-between mb-1">
               <h2 id="formTitle" class="text-lg font-bold text-gray-900">안전점검일지</h2>
               <div class="flex items-center gap-2 no-print">
-                <button id="saveFormBtn" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#15304d] flex items-center gap-2">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>저장
+                <button id="draftSaveBtn" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>임시저장
                 </button>
-                <button onclick="window.print()" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#0F2233] flex items-center gap-2">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>출력·PDF
+                <button id="saveFormBtn" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#15304d] flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>최종저장
+                </button>
+                <button id="pdfPreviewBtn" onclick="window.print()" class="px-4 py-2 bg-[#1A2E44] text-white rounded-lg text-sm font-semibold hover:bg-[#0F2233] flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>PDF 미리보기
+                </button>
+                <button id="downloadFormBtn" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>다운로드
                 </button>
               </div>
             </div>
@@ -464,14 +480,73 @@
               </div>
             </div>
 
-            <!-- 조치결과보고서 -->
+            <!-- 시정조치 보고서 -->
             <div class="field-action mb-6 hidden">
-              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">조치 내용 요약</h4>
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3">위험요소</h4>
+              <div class="grid grid-cols-2 gap-4 mb-2">
+                <div class="col-span-2">
+                  <label class="block text-xs text-gray-500 mb-1">AI 판독 위험요소</label>
+                  <input type="text" data-field="riskFactor" placeholder="예) 작업구간 안전난간 미설치" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"/>
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">위험등급</label>
+                  <select data-field="riskLevel" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] bg-white">
+                    <option value="낮음">낮음</option>
+                    <option value="중간">중간</option>
+                    <option value="높음">높음</option>
+                  </select>
+                </div>
+              </div>
+
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">조치 내용 요약</h4>
               <label class="block text-xs text-gray-500 mb-1">완료된 조치 사항</label>
               <textarea data-field="completedAction" rows="3" placeholder="어떤 조치를 취했는지 서술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
               <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">재발 방지 계획</h4>
               <label class="block text-xs text-gray-500 mb-1">재발 방지 대책</label>
               <textarea data-field="preventionPlan" rows="3" placeholder="향후 재발 방지를 위한 계획을 기술하세요" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44]"></textarea>
+
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">조치 전·후 사진</h4>
+              <div class="grid grid-cols-2 gap-4 mb-2">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">조치 전 사진</label>
+                  <div class="action-photo-slot relative border-2 border-dashed border-gray-200 rounded-xl h-36 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1A2E44] transition-colors" data-photo-field="beforePhoto">
+                    <input type="file" accept="image/*" class="hidden action-photo-input"/>
+                    <img class="action-photo-img hidden w-full h-full object-cover"/>
+                    <span class="action-photo-placeholder text-xs text-gray-400 text-center px-2">클릭해서 사진 업로드<br/>(또는 AI 자동 작성)</span>
+                    <button type="button" class="action-photo-remove hidden absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 text-white rounded-full text-xs leading-6 text-center no-print">×</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">조치 후 사진</label>
+                  <div class="action-photo-slot relative border-2 border-dashed border-gray-200 rounded-xl h-36 flex items-center justify-center overflow-hidden cursor-pointer hover:border-[#1A2E44] transition-colors" data-photo-field="afterPhoto">
+                    <input type="file" accept="image/*" class="hidden action-photo-input"/>
+                    <img class="action-photo-img hidden w-full h-full object-cover"/>
+                    <span class="action-photo-placeholder text-xs text-gray-400 text-center px-2">클릭해서 사진 업로드<br/>(또는 AI 자동 작성)</span>
+                    <button type="button" class="action-photo-remove hidden absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 text-white rounded-full text-xs leading-6 text-center no-print">×</button>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="text-sm font-bold text-gray-900 border-l-4 border-[#1A2E44] pl-2 mb-3 mt-5">조치 결과</h4>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">조치상태</label>
+                  <select data-field="actionStatus" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] bg-white">
+                    <option value="조치필요">조치필요</option>
+                    <option value="진행중">진행중</option>
+                    <option value="조치완료">조치완료</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">원청 최종판정</label>
+                  <select data-field="finalDecision" class="form-input w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1A2E44] bg-white">
+                    <option value="검토중">검토중</option>
+                    <option value="적합">적합</option>
+                    <option value="부적합">부적합</option>
+                    <option value="보류">보류</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             <!-- 작업허가서 -->
@@ -652,7 +727,7 @@
   var FORM_META = {
     INSPECTION_LOG:     { title: '안전점검일지',                 fieldClass: 'field-inspection' },
     RISK_ASSESSMENT:    { title: '위험성평가서',                 fieldClass: 'field-risk' },
-    ACTION_REPORT:      { title: '조치결과보고서',               fieldClass: 'field-action' },
+    ACTION_REPORT:      { title: '시정조치 보고서',               fieldClass: 'field-action' },
     WORK_PERMIT:        { title: '작업허가서',                   fieldClass: 'field-workpermit' },
     SAFETY_EDU_LOG:     { title: '안전보건교육일지',             fieldClass: 'field-generic',
                           subTypes: ['신규채용자 교육', '정기 교육', '특별 안전보건교육'],
@@ -892,6 +967,198 @@
     });
   })();
 
+  // 시정조치 보고서: 조치 전/후 사진 슬롯 (각각 이미지 1장, dataURL로 보관)
+  function actionPhotoSlot(fieldName) {
+    return qs('.action-photo-slot[data-photo-field="' + fieldName + '"]');
+  }
+  function setActionPhoto(fieldName, src) {
+    var slot = actionPhotoSlot(fieldName);
+    if (!slot) return;
+    var img = qs('.action-photo-img', slot);
+    var placeholder = qs('.action-photo-placeholder', slot);
+    var removeBtn = qs('.action-photo-remove', slot);
+    if (src) {
+      img.src = src;
+      img.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+      removeBtn.classList.remove('hidden');
+    } else {
+      img.removeAttribute('src');
+      img.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+      removeBtn.classList.add('hidden');
+    }
+  }
+  function getActionPhoto(fieldName) {
+    var slot = actionPhotoSlot(fieldName);
+    if (!slot) return '';
+    var img = qs('.action-photo-img', slot);
+    return img.classList.contains('hidden') ? '' : img.src;
+  }
+  qsa('.action-photo-slot').forEach(function (slot) {
+    var fieldName = slot.dataset.photoField;
+    var input = qs('.action-photo-input', slot);
+    slot.addEventListener('click', function (e) {
+      if (e.target.closest('.action-photo-remove')) return;
+      input.click();
+    });
+    input.addEventListener('change', function (e) {
+      var file = e.target.files[0];
+      input.value = '';
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () { setActionPhoto(fieldName, reader.result); };
+      reader.readAsDataURL(file);
+    });
+    qs('.action-photo-remove', slot).addEventListener('click', function (e) {
+      e.stopPropagation();
+      setActionPhoto(fieldName, '');
+    });
+  });
+
+  // ── 양식 파일 읽기: Excel(.xlsx/.xls)·텍스트(.txt) 안의 "항목명: 내용" 줄을 읽어
+  // 지금 화면에 "비어 있는" 입력칸만 채운다(AI 자동 작성이나 사용자가 이미 입력한 값은 덮어쓰지 않는다).
+  // 임의 파일을 AI가 해석하는 기능이 아니라, 라벨 문자열을 그대로 매칭하는 단순 파서다.
+  var FORM_FILE_FIELD_MAPPINGS = {
+    '건설사명': 'companyName', '회사명': 'companyName', '업체명': 'companyName', '원청회사': 'companyName',
+    '현장명': 'siteName',
+    '점검일시': 'inspectedAt', '점검일': 'inspectedAt',
+    '점검자': 'inspector',
+    '관리감독자': 'supervisor', '감독자': 'supervisor',
+    '기상상태': 'weather', '날씨': 'weather',
+    '작업종류': 'workType', '공종': 'workType',
+    '점검유형': 'inspectionType',
+    '작업인원수': 'workerCount', '작업인원': 'workerCount',
+    '평가목적': 'assessmentPurpose',
+    '완료된조치사항': 'completedAction', '조치내용': 'completedAction', '조치사항': 'completedAction',
+    '재발방지대책': 'preventionPlan', '재발방지계획': 'preventionPlan',
+    '작업범위': 'workScope',
+    '안전조치사항': 'safetyPrecaution', '안전대책': 'safetyPrecaution',
+    '세부유형': 'subType',
+    '작성일': 'conductedAt', '실시일': 'conductedAt',
+    '주요내용': 'summary', '교육내용': 'summary',
+    '참석자': 'participants', '대상자': 'participants',
+    '비고': 'note',
+    '작성자': 'signWriter',
+    '검토자': 'signReviewer',
+    '승인자': 'signApprover',
+    '위험요인': 'riskFactor', '위험요소': 'riskFactor',
+    '위험등급': 'riskLevel',
+    '조치상태': 'actionStatus',
+    '원청최종판정': 'finalDecision', '최종판정': 'finalDecision'
+  };
+  var FORM_FILE_SELECT_FIELDS = { inspectionType: 1, subType: 1, riskLevel: 1, actionStatus: 1, finalDecision: 1 };
+
+  function normalizeLabel(label) {
+    return label.replace(/\s+/g, '').replace(/[·:：]+$/, '');
+  }
+
+  function parseFormFileText(text) {
+    var result = {};
+    text.split(/\r?\n/).forEach(function (line) {
+      var sepIndex = line.indexOf(':');
+      if (sepIndex === -1) sepIndex = line.indexOf('：');
+      if (sepIndex === -1) return;
+      var label = normalizeLabel(line.substring(0, sepIndex));
+      var value = line.substring(sepIndex + 1).trim();
+      var fieldId = FORM_FILE_FIELD_MAPPINGS[label];
+      if (fieldId && value) result[fieldId] = value;
+    });
+    return result;
+  }
+
+  function readFormFileAsText(file) {
+    var name = file.name.toLowerCase();
+    if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
+      return file.arrayBuffer().then(function (buffer) {
+        var workbook = XLSX.read(buffer, { type: 'array' });
+        var lines = [];
+        workbook.SheetNames.forEach(function (sheetName) {
+          var rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, blankrows: false });
+          rows.forEach(function (row) {
+            // 한 행이 [라벨, 값] 형태면 "라벨: 값"으로, 한 셀에 이미 "라벨: 값"이 들어있으면 그대로 이어붙인다.
+            if (row.length >= 2 && row[0] != null && row[1] != null) {
+              lines.push(String(row[0]) + ': ' + String(row[1]));
+            } else if (row.length === 1 && row[0] != null) {
+              lines.push(String(row[0]));
+            }
+          });
+        });
+        return lines.join('\n');
+      });
+    }
+    return file.text();
+  }
+
+  function applyFormFileData(data) {
+    var filledCount = 0;
+    Object.keys(data).forEach(function (fieldId) {
+      var el = qs('[data-field="' + fieldId + '"]');
+      if (!el) return;
+      var isSelect = !!FORM_FILE_SELECT_FIELDS[fieldId];
+      // select는 옵션이 있으면 항상 첫 값이 기본 선택돼 있어 "비어 있음"을 판별할 수 없으므로
+      // 텍스트/textarea 입력칸만 "이미 값이 있으면 건너뛴다"는 규칙을 적용한다.
+      if (!isSelect && el.value && el.value.trim()) return;
+      if (isSelect) {
+        setSelectValue('[data-field="' + fieldId + '"]', data[fieldId]);
+      } else {
+        el.value = data[fieldId];
+      }
+      el.classList.add('file-filled');
+      ['input', 'change'].forEach(function (evt) {
+        el.addEventListener(evt, function onEdit() { el.classList.remove('file-filled'); el.removeEventListener(evt, onEdit); });
+      });
+      filledCount++;
+    });
+    return filledCount;
+  }
+
+  (function () {
+    var input = qs('#formFileInput');
+    var drop = qs('#formFileDrop');
+    var statusEl = qs('#formFileStatus');
+    var statusText = qs('#formFileStatusText');
+    var statusSpinner = qs('#formFileStatusSpinner');
+    if (!input || !drop) return;
+
+    function handleFile(file) {
+      if (!file) return;
+      statusEl.classList.remove('hidden', 'text-emerald-600', 'text-red-600');
+      statusEl.classList.add('text-[#1A2E44]');
+      statusSpinner.classList.remove('hidden');
+      statusText.textContent = '파일 내용을 분석하고 있습니다...';
+
+      readFormFileAsText(file)
+        .then(function (text) {
+          var data = parseFormFileText(text);
+          var filledCount = applyFormFileData(data);
+          statusSpinner.classList.add('hidden');
+          statusEl.classList.remove('text-[#1A2E44]');
+          if (filledCount > 0) {
+            statusEl.classList.add('text-emerald-600');
+            statusText.textContent = '✓ 빈 입력칸 ' + filledCount + '개를 채웠습니다.';
+          } else {
+            statusEl.classList.add('text-red-600');
+            statusText.textContent = '일치하는 항목을 찾지 못했거나, 채울 빈 칸이 없습니다.';
+          }
+        })
+        .catch(function (err) {
+          statusSpinner.classList.add('hidden');
+          statusEl.classList.remove('text-[#1A2E44]');
+          statusEl.classList.add('text-red-600');
+          statusText.textContent = '파일을 읽지 못했습니다: ' + err.message;
+        });
+    }
+
+    input.addEventListener('change', function (e) { handleFile(e.target.files[0]); input.value = ''; });
+    drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('border-[#1A2E44]'); });
+    drop.addEventListener('dragleave', function () { drop.classList.remove('border-[#1A2E44]'); });
+    drop.addEventListener('drop', function (e) {
+      e.preventDefault(); drop.classList.remove('border-[#1A2E44]');
+      handleFile(e.dataTransfer.files[0]);
+    });
+  })();
+
   qsa('.result-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       qsa('.result-btn').forEach(function (b) { b.classList.remove('border-green-500', 'bg-green-50', 'border-red-500', 'bg-red-50', 'border-yellow-500', 'bg-yellow-50'); b.classList.add('border-gray-200'); });
@@ -943,8 +1210,14 @@
         }).join('');
       }
     } else if (type === 'ACTION_REPORT') {
+      qs('[data-field="riskFactor"]').value = data.riskFactor || '';
+      if (data.riskLevel) setSelectValue('[data-field="riskLevel"]', data.riskLevel);
       qs('[data-field="completedAction"]').value = data.completedAction || '';
       qs('[data-field="preventionPlan"]').value = data.preventionPlan || '';
+      if (data.actionStatus) setSelectValue('[data-field="actionStatus"]', data.actionStatus);
+      if (data.finalDecision) setSelectValue('[data-field="finalDecision"]', data.finalDecision);
+      setActionPhoto('beforePhoto', data.beforePhoto || '');
+      setActionPhoto('afterPhoto', data.afterPhoto || '');
     } else if (type === 'WORK_PERMIT') {
       qs('[data-field="workType"]').value = data.workType || '';
       qs('[data-field="workScope"]').value = data.workScope || '';
@@ -983,8 +1256,14 @@
       var savedRisk = state.documents.RISK_ASSESSMENT;
       data.items = savedRisk ? savedRisk.formData.items : [];
     } else if (type === 'ACTION_REPORT') {
+      data.riskFactor = qs('[data-field="riskFactor"]').value;
+      data.riskLevel = qs('[data-field="riskLevel"]').value;
       data.completedAction = qs('[data-field="completedAction"]').value;
       data.preventionPlan = qs('[data-field="preventionPlan"]').value;
+      data.actionStatus = qs('[data-field="actionStatus"]').value;
+      data.finalDecision = qs('[data-field="finalDecision"]').value;
+      data.beforePhoto = getActionPhoto('beforePhoto');
+      data.afterPhoto = getActionPhoto('afterPhoto');
     } else if (type === 'WORK_PERMIT') {
       data.workType = qs('[data-field="workType"]').value;
       data.workScope = qs('[data-field="workScope"]').value;
@@ -1005,8 +1284,29 @@
     });
   }
 
+  // 시정조치 보고서 전용 더미 데이터(백엔드/외부 API 미사용, 시연용 고정 값)
+  var ACTION_REPORT_DUMMY = {
+    companyName: '대한안전건설',
+    siteName: '강남구 공동주택 신축공사',
+    inspector: '최준영',
+    supervisor: '박안전',
+    riskFactor: '작업구간 안전난간 미설치',
+    riskLevel: '높음',
+    completedAction: '작업구간에 안전난간 및 추락방지망 설치',
+    preventionPlan: '작업 전 위험성평가 시 개구부·단부 안전난간 설치 여부를 필수 확인 항목으로 반영',
+    actionStatus: '조치완료',
+    finalDecision: '적합',
+    beforePhoto: '/images/site-photos/safety-helmet-missing.png',
+    afterPhoto: '/images/site-photos/safety-helmet-missing-detected.png'
+  };
+
   qs('#aiAutoFillBtn').addEventListener('click', function () {
     var type = state.currentType;
+
+    if (type === 'ACTION_REPORT') {
+      runActionReportDummyAutoFill();
+      return;
+    }
 
     if (IS_STANDALONE && !SITE_ID) {
       alert('작성할 현장을 먼저 선택해주세요.');
@@ -1069,6 +1369,49 @@
       });
   });
 
+  // 시정조치 보고서: 실제 백엔드 호출 없이 더미 데이터로 자동 작성한다.
+  // (다른 서류는 기존과 동일하게 /api/documents/draft 를 그대로 사용한다.)
+  function runActionReportDummyAutoFill() {
+    var type = 'ACTION_REPORT';
+    var btn = qs('#aiAutoFillBtn');
+    btn.disabled = true;
+    btn.classList.add('hidden');
+    qs('#aiAssistStatus').classList.add('hidden');
+
+    var progressWrap = qs('#aiGenProgressWrap');
+    var progressBar = qs('#aiGenProgressBar');
+    var progressPct = qs('#aiGenProgressPct');
+    var progressLabel = qs('#aiGenProgressLabel');
+    var originalLabel = progressLabel.textContent;
+    progressLabel.textContent = 'AI가 점검 데이터를 분석하여 서류를 작성하고 있습니다...';
+    progressWrap.classList.remove('hidden');
+
+    var pct = 0;
+    var progressTimer = setInterval(function () {
+      pct = Math.min(pct + Math.random() * 18, 92);
+      progressBar.style.width = pct + '%';
+      progressPct.textContent = Math.round(pct) + '%';
+    }, 180);
+
+    setTimeout(function () {
+      clearInterval(progressTimer);
+      progressBar.style.width = '100%';
+      progressPct.textContent = '100%';
+
+      var draft = Object.assign({}, ACTION_REPORT_DUMMY);
+      state.documents[type] = { formData: draft, aiGenerated: true };
+      renderForm(type, draft, true);
+
+      setTimeout(function () {
+        progressWrap.classList.add('hidden');
+        progressLabel.textContent = originalLabel;
+        btn.disabled = false;
+        btn.classList.remove('hidden');
+        qs('#aiAssistStatus').classList.remove('hidden');
+      }, 400);
+    }, 1500 + Math.random() * 500);
+  }
+
   // 저장
   qs('#saveFormBtn').addEventListener('click', function () {
     var type = state.currentType;
@@ -1103,6 +1446,52 @@
       saveBtn.disabled = false;
       saveBtn.innerHTML = saveBtnContent;
     });
+  });
+
+  // 임시저장: 백엔드로 보내지 않고 이 브라우저에만 보관한다(작성 중인 내용을 잃지 않기 위한 용도).
+  function draftStorageKey(type) {
+    return 'safetyDocDraft:' + type + ':' + (INSPECTION_ID || SITE_ID || 'standalone');
+  }
+  qs('#draftSaveBtn').addEventListener('click', function () {
+    var type = state.currentType;
+    var formData = collectForm(type);
+    var wasAiGenerated = state.documents[type] ? state.documents[type].aiGenerated : false;
+    state.documents[type] = { formData: formData, aiGenerated: wasAiGenerated };
+    try {
+      localStorage.setItem(draftStorageKey(type), JSON.stringify({ formData: formData, aiGenerated: wasAiGenerated, savedAt: new Date().toISOString() }));
+      alert('임시저장되었습니다. (이 브라우저에만 보관되며, 서버에는 저장되지 않습니다)');
+    } catch (e) {
+      alert('임시저장에 실패했습니다: ' + e.message);
+    }
+  });
+
+  // PDF/다운로드는 실제 파일 변환 없이(백엔드·외부 API 미사용) 지금 화면 내용을
+  // 인쇄용 스타일 그대로 담은 HTML 스냅샷으로 내려받는다. PDF 저장은 브라우저 인쇄창의
+  // "PDF로 저장"을 이용한다(위 "PDF 미리보기" 버튼이 그 인쇄창을 연다).
+  qs('#downloadFormBtn').addEventListener('click', function () {
+    var title = qs('#formTitle').textContent + ' - ' + (qs('[data-field="siteName"]').value || '무제');
+    var printCss = Array.prototype.map.call(document.querySelectorAll('style'), function (s) { return s.outerHTML; }).join('\n');
+    var bodyClone = document.querySelector('.lg\\:col-span-3 .bg-white.rounded-2xl').cloneNode(true);
+    bodyClone.querySelectorAll('.no-print').forEach(function (el) { el.remove(); });
+    bodyClone.querySelectorAll('input, textarea, select').forEach(function (el) {
+      var span = document.createElement('div');
+      span.className = el.tagName === 'TEXTAREA' ? 'whitespace-pre-wrap' : '';
+      span.textContent = el.tagName === 'SELECT' ? (el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : '') : el.value;
+      span.style.cssText = 'padding:6px 2px;font-size:14px;border-bottom:1px solid #e5e7eb;min-height:1.4em';
+      el.replaceWith(span);
+    });
+    var html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"/><title>' + title + '</title>'
+      + '<script src="https://cdn.tailwindcss.com"><\/script>' + printCss
+      + '</head><body style="padding:24px;max-width:900px;margin:0 auto">' + bodyClone.outerHTML + '</body></html>';
+    var blob = new Blob([html], { type: 'text/html' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = title.replace(/[\\/:*?"<>|]/g, '_') + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 
   var RISK_LEVEL_META = {
