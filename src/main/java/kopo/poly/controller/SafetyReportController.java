@@ -68,6 +68,13 @@ public class SafetyReportController {
         return "redirect:/report-board/detail?id=" + id;
     }
 
+    // 댓글 작성자 본인 또는 원청만 삭제 가능 (서비스 계층에서 검증).
+    @PostMapping("/{id}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Long id, @PathVariable Long commentId, HttpSession session) {
+        reportService.deleteComment(id, commentId, loginUserId(session));
+        return "redirect:/report-board/detail?id=" + id;
+    }
+
     @PostMapping("/{id}/status")
     public String changeStatus(@PathVariable Long id, @ModelAttribute SafetyReportStatusChangeRequestDTO request, HttpSession session) {
         Long loginUserId = loginUserId(session);

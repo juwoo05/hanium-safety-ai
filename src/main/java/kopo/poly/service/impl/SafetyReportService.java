@@ -179,6 +179,25 @@ public class SafetyReportService implements ISafetyReportService {
 
     @Override
     @Transactional
+    public void deleteComment(Long reportId, Long commentId, Long actorUserId) {
+        SafetyReportComment comment = safetyReportCommentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException("댓글을 찾을 수 없습니다. id=" + commentId));
+        if (!comment.getReport().getId().equals(reportId)) {
+            throw new NoSuchElementException("댓글을 찾을 수 없습니다. id=" + commentId);
+        }
+
+        User actor = actorUserId != null ? userRepository.findById(actorUserId).orElse(null) : null;
+        boolean isWriter = actor != null && comment.getWriter() != null && comment.getWriter().getId().equals(actor.getId());
+        boolean isPrimeContractor = actor != null && actor.getRole() == UserRole.원청;
+        if (!isWriter && !isPrimeContractor) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "댓글을 삭제할 권한이 없습니다.");
+        }
+
+        safetyReportCommentRepository.delete(comment);
+    }
+
+    @Override
+    @Transactional
     public void changeStatus(Long reportId, ReportStatus newStatus, Long actorUserId) {
         User actor = actorUserId != null ? userRepository.findById(actorUserId).orElse(null) : null;
         if (actor == null || actor.getRole() != UserRole.원청) {

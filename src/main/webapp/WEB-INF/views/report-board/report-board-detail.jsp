@@ -142,6 +142,15 @@
                     <span class="text-sm font-semibold text-gray-900">${c.writerName}</span>
                     <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${c.official ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-600'}">${c.writerRole}</span>
                     <span class="text-xs text-gray-400 ml-auto">${c.createdAtLabel}</span>
+                    <c:if test="${canManageStatus}">
+                      <form method="post" action="${pageContext.request.contextPath}/report-board/${report.id}/comments/${c.id}/delete"
+                            onsubmit="return confirm('이 댓글을 삭제하시겠습니까?')" style="margin:0">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <button type="submit" class="text-gray-300 hover:text-red-500" title="댓글 삭제" style="background:none;border:none;cursor:pointer;padding:0">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+                        </button>
+                      </form>
+                    </c:if>
                   </div>
                   <p class="text-sm text-gray-700 leading-relaxed">${c.content}</p>
                 </div>

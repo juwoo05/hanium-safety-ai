@@ -31,5 +31,8 @@ public interface ISafetyReportService {
 
     void addComment(Long reportId, SafetyReportCommentRequestDTO request, Long writerUserId);
 
+    // 댓글 작성자 본인 또는 원청(운영 관리 목적)만 삭제할 수 있다.
+    void deleteComment(Long reportId, Long commentId, Long actorUserId);
+
     void changeStatus(Long reportId, ReportStatus newStatus, Long actorUserId);
 }
