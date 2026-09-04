@@ -16,6 +16,16 @@ INTERNAL_API_KEY = os.environ.get("INTERNAL_API_KEY")
 # on-demand invoke가 막혀 있다. on-demand로 바로 호출 가능한 버전을 기본값으로 사용한다.
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20240620-v1:0")
 KNOWLEDGE_BASE_ID = os.environ.get("KNOWLEDGE_BASE_ID")
+# Bedrock Knowledge Base가 물려있던 OpenSearch Serverless(AOSS) 컬렉션이 삭제되어(비용 문제)
+# KB 자체가 무용지물이 됐다. EC2에 Docker로 직접 띄운 OpenSearch를 대신 사용한다.
+# scripts/ingest_opensearch.py가 이 인덱스에 문서를 색인한다.
+OPENSEARCH_HOST = os.environ.get("OPENSEARCH_HOST")
+OPENSEARCH_PORT = int(os.environ.get("OPENSEARCH_PORT", "9200"))
+OPENSEARCH_USER = os.environ.get("OPENSEARCH_USER", "admin")
+OPENSEARCH_PASSWORD = os.environ.get("OPENSEARCH_PASSWORD")
+OPENSEARCH_INDEX = os.environ.get("OPENSEARCH_INDEX", "safety-index")
+EMBED_MODEL_ID = os.environ.get("EMBED_MODEL_ID", "amazon.titan-embed-text-v2:0")
+EMBED_DIMENSION = int(os.environ.get("EMBED_DIMENSION", "1024"))
 # Cohere Rerank 3.5는 AWS_REGION(ap-northeast-2)에서 제공되지 않아 별도 리전을 사용한다.
 # rerank는 이미 검색된 텍스트(INLINE 소스)만 넘겨 재순위화하므로 KB/S3와 리전이 달라도 무방하다.
 RERANK_REGION = os.environ.get("RERANK_REGION", "ap-northeast-1")
@@ -67,3 +77,16 @@ def get_rerank_client():
 
 def get_translate_client():
     return _session.client("translate", region_name=AWS_REGION)
+
+
+def get_opensearch_client():
+    from opensearchpy import OpenSearch
+
+    return OpenSearch(
+        hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
+        http_auth=(OPENSEARCH_USER, OPENSEARCH_PASSWORD),
+        use_ssl=True,
+        verify_certs=False,
+        ssl_show_warn=False,
+        timeout=10,
+    )

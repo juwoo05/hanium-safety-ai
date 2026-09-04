@@ -63,21 +63,42 @@ def test_Bedrock_멀티모달_응답을_받으면_이미지_요약을_state에_�
     assert result["image_summary"] == "안전난간 미설치 추락 위험"
 
 
-def test_KnowledgeBase_검색결과가_있으면_candidate_docs에_텍스트를_담는다(monkeypatch):
-    mock_client = MagicMock()
-    mock_client.retrieve.return_value = {
-        "retrievalResults": [
-            {"content": {"text": "산업안전보건법 제38조"}},
-            {"content": {"text": "유사 사고사례 A"}},
-        ]
+def test_OpenSearch_검색결과가_있으면_candidate_docs에_텍스트를_담는다(monkeypatch):
+    mock_bedrock = MagicMock()
+    mock_bedrock.invoke_model.return_value = {
+        "body": MagicMock(read=lambda: json.dumps({"embedding": [0.1] * 1024}).encode())
     }
-    monkeypatch.setattr("graph.get_bedrock_agent_runtime_client", lambda: mock_client)
+    monkeypatch.setattr("graph.get_bedrock_runtime_client", lambda: mock_bedrock)
+
+    mock_opensearch = MagicMock()
+    mock_opensearch.search.return_value = {
+        "hits": {
+            "hits": [
+                {"_source": {"text": "산업안전보건법 제38조"}},
+                {"_source": {"text": "유사 사고사례 A"}},
+            ]
+        }
+    }
+    monkeypatch.setattr("graph.get_opensearch_client", lambda: mock_opensearch)
 
     state = {"image_summary": "추락 위험", "candidate_docs": []}
 
     result = search_knowledge_base(state)
 
     assert result["candidate_docs"] == ["산업안전보건법 제38조", "유사 사고사례 A"]
+
+
+def test_OpenSearch_검색이_실패하면_candidate_docs를_빈_목록으로_둔다(monkeypatch):
+    def raise_error():
+        raise Exception("boom")
+
+    monkeypatch.setattr("graph.get_bedrock_runtime_client", raise_error)
+
+    state = {"image_summary": "추락 위험", "candidate_docs": []}
+
+    result = search_knowledge_base(state)
+
+    assert result["candidate_docs"] == []
 
 
 def test_candidate_docs가_없으면_rerank를_호출하지_않고_빈_목록을_반환한다(monkeypatch):

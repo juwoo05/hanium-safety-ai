@@ -6,11 +6,13 @@ from langgraph.graph import END, StateGraph
 from bedrock_utils import extract_converse_text
 from config import (
     BEDROCK_MODEL_ID,
-    KNOWLEDGE_BASE_ID,
+    EMBED_DIMENSION,
+    EMBED_MODEL_ID,
+    OPENSEARCH_INDEX,
     RERANK_MODEL_ARN,
     S3_BUCKET_NAME,
-    get_bedrock_agent_runtime_client,
     get_bedrock_runtime_client,
+    get_opensearch_client,
     get_rerank_client,
     get_s3_client,
 )
@@ -72,20 +74,35 @@ def analyze_with_bedrock(state: AnalysisState) -> AnalysisState:
     return state
 
 
-# retrieve()는 Knowledge Base 내부에서 Titan Embeddings로 쿼리를 자동 벡터화한 뒤
-# OpenSearch를 검색하므로, 별도의 임베딩 노드를 두지 않는다.
+# Bedrock Knowledge Base가 물려있던 AOSS 컬렉션이 삭제되어(비용 문제) KB의 retrieve()가
+# 항상 403으로 실패하는 상태였다(과거 코드에는 예외를 삼키고 빈 컨텍스트로 넘어가는 임시
+# 우회만 있었음 — 검색 없이도 Claude가 그럴듯한 법규를 지어내서 겉으로는 동작하는 것처럼
+# 보였다). 이제 EC2에 직접 띄운 OpenSearch를 Titan Embeddings로 우리가 직접 벡터화해
+# 쿼리한다. scripts/ingest_opensearch.py가 색인한 safety-index를 사용한다.
 def search_knowledge_base(state: AnalysisState) -> AnalysisState:
-    # TEMP-QA-DUMMY: AOSS 데이터 액세스 정책 403 이슈로 KB 검색이 막혀있어 더미 데이터 생성을 위해 임시 우회.
     try:
-        response = get_bedrock_agent_runtime_client().retrieve(
-            knowledgeBaseId=KNOWLEDGE_BASE_ID,
-            retrievalQuery={"text": state["image_summary"]},
-            retrievalConfiguration={"vectorSearchConfiguration": {"numberOfResults": 10}},
+        bedrock = get_bedrock_runtime_client()
+        embed_response = bedrock.invoke_model(
+            modelId=EMBED_MODEL_ID,
+            body=json.dumps({
+                "inputText": state["image_summary"],
+                "dimensions": EMBED_DIMENSION,
+                "normalize": True,
+            }),
+        )
+        query_vector = json.loads(embed_response["body"].read())["embedding"]
+
+        response = get_opensearch_client().search(
+            index=OPENSEARCH_INDEX,
+            body={
+                "size": 10,
+                "query": {"knn": {"vector": {"vector": query_vector, "k": 10}}},
+            },
         )
         state["candidate_docs"] = [
-            result["content"]["text"]
-            for result in response.get("retrievalResults", [])
-            if result.get("content", {}).get("text")
+            hit["_source"]["text"]
+            for hit in response.get("hits", {}).get("hits", [])
+            if hit.get("_source", {}).get("text")
         ]
     except Exception:
         state["candidate_docs"] = []
