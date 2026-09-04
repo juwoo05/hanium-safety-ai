@@ -34,11 +34,13 @@ CHUNK_OVERLAP = 240  # 20%
 
 
 def get_client() -> OpenSearch:
+    ca_cert_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "opensearch-ca.pem")
     return OpenSearch(
         hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
         http_auth=(OPENSEARCH_USER, OPENSEARCH_PASSWORD),
         use_ssl=True,
-        verify_certs=False,
+        verify_certs=True,
+        ca_certs=ca_cert_path,
         ssl_show_warn=False,
     )
 

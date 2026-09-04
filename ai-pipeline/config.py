@@ -82,11 +82,16 @@ def get_translate_client():
 def get_opensearch_client():
     from opensearchpy import OpenSearch
 
+    # 도메인이 없어 공인 CA 인증서는 못 받았지만, 데모 기본 인증서(모든 OpenSearch
+    # 이미지에 동일하게 박혀있어 검증 의미가 없음) 대신 이 인스턴스 전용으로 새로
+    # 생성한 자체서명 인증서를 고정(pinning)해서 검증한다.
+    ca_cert_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "opensearch-ca.pem")
     return OpenSearch(
         hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
         http_auth=(OPENSEARCH_USER, OPENSEARCH_PASSWORD),
         use_ssl=True,
-        verify_certs=False,
+        verify_certs=True,
+        ca_certs=ca_cert_path,
         ssl_show_warn=False,
         timeout=10,
     )
