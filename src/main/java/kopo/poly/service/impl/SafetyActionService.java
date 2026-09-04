@@ -3,17 +3,24 @@ package kopo.poly.service.impl;
 import kopo.poly.dto.request.ActionCreateRequestDTO;
 import kopo.poly.entity.AiSafetyInspection;
 import kopo.poly.entity.SafetyAction;
+import kopo.poly.entity.Site;
 import kopo.poly.entity.User;
 import kopo.poly.entity.enums.ActionStatus;
 import kopo.poly.entity.enums.RiskLevel;
+import kopo.poly.entity.enums.UserRole;
 import kopo.poly.repository.AiSafetyInspectionRepository;
 import kopo.poly.repository.SafetyActionRepository;
+import kopo.poly.repository.SiteMembershipRepository;
+import kopo.poly.repository.SiteRepository;
 import kopo.poly.repository.UserRepository;
 import kopo.poly.service.ISafetyActionService;
 import kopo.poly.specification.SafetyActionSpecifications;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,15 +32,21 @@ public class SafetyActionService implements ISafetyActionService {
     private final SafetyActionRepository safetyActionRepository;
     private final AiSafetyInspectionRepository inspectionRepository;
     private final UserRepository userRepository;
+    private final SiteRepository siteRepository;
+    private final SiteMembershipRepository siteMembershipRepository;
 
     public SafetyActionService(
             SafetyActionRepository safetyActionRepository,
             AiSafetyInspectionRepository inspectionRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            SiteRepository siteRepository,
+            SiteMembershipRepository siteMembershipRepository
     ) {
         this.safetyActionRepository = safetyActionRepository;
         this.inspectionRepository = inspectionRepository;
         this.userRepository = userRepository;
+        this.siteRepository = siteRepository;
+        this.siteMembershipRepository = siteMembershipRepository;
     }
 
     @Override
@@ -69,13 +82,31 @@ public class SafetyActionService implements ISafetyActionService {
         return safetyActionRepository.findByStatus(status);
     }
 
-    // 조치 관리 목록 화면의 필터/검색. 파라미터가 전부 null이면 전체 조치를 최신순으로 반환한다.
+    // 조치 관리 목록 화면의 필터/검색. 파라미터가 전부 null이면 로그인 사용자가 볼 수 있는 범위 내 전체 조치를 최신순으로 반환한다.
     @Override
-    public List<SafetyAction> search(String keyword, ActionStatus status, RiskLevel riskLevel, String siteName) {
+    public List<SafetyAction> search(String keyword, ActionStatus status, RiskLevel riskLevel, String siteName, Long loginUserId) {
         return safetyActionRepository.findAll(
-                SafetyActionSpecifications.search(keyword, status, riskLevel, siteName),
+                SafetyActionSpecifications.search(keyword, status, riskLevel, siteName)
+                        .and(accessScope(loginUserId)),
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
+    }
+
+    // 원청은 자신이 소유한 현장, 하청은 자신이 소속(공유 코드로 입장)된 현장 범위로만 조회하도록 제한한다.
+    // 현장에 매칭 안 되는 수동 등록 조치는 담당자·등록자 본인 것만 예외적으로 허용한다.
+    private Specification<SafetyAction> accessScope(Long loginUserId) {
+        User user = userRepository.findById(loginUserId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."));
+
+        List<String> allowedSiteNames = user.getRole() == UserRole.하청
+                ? siteMembershipRepository.findByUserIdOrderByJoinedAtDesc(loginUserId).stream()
+                        .map(membership -> membership.getSite().getName())
+                        .toList()
+                : siteRepository.findByOwnerIdOrderByNameAsc(loginUserId).stream()
+                        .map(Site::getName)
+                        .toList();
+
+        return SafetyActionSpecifications.withinAccessScope(allowedSiteNames, loginUserId);
     }
 
     // 리포트 헤더와 동일한 이유로, 담당자 실명을 보여주려면 users 테이블을 별도 조회해야 한다.

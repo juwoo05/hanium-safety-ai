@@ -56,12 +56,16 @@ public class UserController {
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error,
                         @RequestParam(required = false) String logout,
+                        @RequestParam(required = false) String expired,
                         Model model) {
         if (error != null) {
             model.addAttribute("loginError", "이메일 또는 비밀번호가 올바르지 않습니다.");
         }
         if (logout != null) {
             model.addAttribute("loginMessage", "로그아웃되었습니다.");
+        }
+        if (expired != null) {
+            model.addAttribute("loginError", "세션이 만료되었습니다. 다시 로그인해주세요.");
         }
         return "auth/login";
     }

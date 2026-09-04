@@ -45,8 +45,8 @@ public class SafetyActionApiController {
             @RequestParam(required = false) String siteName,
             HttpSession session
     ) {
-        requireLoginUserId(session);
-        return safetyActionService.search(keyword, status, riskLevel, siteName).stream()
+        Long loginUserId = requireLoginUserId(session);
+        return safetyActionService.search(keyword, status, riskLevel, siteName, loginUserId).stream()
                 .map(action -> ActionResponseDTO.from(action, safetyActionService.resolveUserName(action.getReporterId())))
                 .toList();
     }

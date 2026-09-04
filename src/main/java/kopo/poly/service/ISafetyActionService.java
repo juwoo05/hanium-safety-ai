@@ -13,8 +13,9 @@ public interface ISafetyActionService {
 
     List<SafetyAction> findByStatus(ActionStatus status);
 
-    // 조치 관리 목록 화면의 필터/검색. 파라미터가 전부 null이면 전체 조치를 최신순으로 반환한다.
-    List<SafetyAction> search(String keyword, ActionStatus status, RiskLevel riskLevel, String siteName);
+    // 조치 관리 목록 화면의 필터/검색. 파라미터가 전부 null이면 로그인 사용자가 볼 수 있는 범위 내 전체 조치를 최신순으로 반환한다.
+    // loginUserId 기준으로 원청은 자신이 소유한 현장, 하청은 자신이 소속된 현장 범위로 결과가 제한된다.
+    List<SafetyAction> search(String keyword, ActionStatus status, RiskLevel riskLevel, String siteName, Long loginUserId);
 
     // 담당자 실명을 보여주기 위한 조회
     String resolveUserName(Long userId);

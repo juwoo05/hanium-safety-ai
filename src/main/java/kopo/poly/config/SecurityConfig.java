@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.csrf.CsrfException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -62,7 +64,20 @@ public class SecurityConfig {
                 )
                 // 기존 화면들이 /api/** 를 CSRF 토큰 없이 fetch 로 호출하고 있어 해당 경로만 예외로 둔다.
                 // 폼 기반 화면(로그인/회원가입/비밀번호 재설정)은 CSRF 보호를 유지한다.
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                // 세션 타임아웃 후 "로그인 유지" 쿠키가 백그라운드에서 새 세션(=새 CSRF 토큰)을 조용히
+                // 발급하는 경우, 화면에는 예전 세션의 CSRF 토큰이 그대로 남아있어 폼 제출(로그아웃 등) 시
+                // CsrfException(=AccessDeniedException)이 발생한다. 이걸 그대로 403 에러 페이지로 보여주는
+                // 대신 로그인 페이지로 안내한다. 그 외의 진짜 인가 거부(AccessDeniedException)는 기본 처리를 따른다.
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            if (accessDeniedException instanceof CsrfException) {
+                                response.sendRedirect(request.getContextPath() + "/login?expired");
+                                return;
+                            }
+                            new AccessDeniedHandlerImpl().handle(request, response, accessDeniedException);
+                        })
+                );
 
         return http.build();
     }
