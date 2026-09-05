@@ -19,7 +19,6 @@
     </div>
     <div class="flex items-center gap-1 sm:gap-3">
       <button class="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">제품 소개</button>
-      <button class="hidden sm:block px-3 py-2 text-sm font-medium text-slate-600 hover:text-[#086CF0] transition-colors">가격</button>
       <a href="/login" class="px-5 py-2.5 bg-[#1A2E44] text-white text-sm font-semibold rounded-lg hover:bg-[#0F2233] transition-colors shadow-sm">시작하기</a>
     </div>
   </div>
@@ -174,49 +173,6 @@
   </div>
 </section>
 
-<!-- Pricing -->
-<section class="container mx-auto px-6 py-20">
-  <h2 class="text-3xl font-bold text-[#1A2E44] text-center mb-12">간편한 요금제</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-    <div class="bg-white rounded-lg p-8 border border-slate-200 shadow-sm">
-      <h3 class="text-2xl font-bold text-[#1A2E44] mb-4">Basic</h3>
-      <div class="mb-6"><span class="text-3xl font-bold text-[#1A2E44]">₩99,000</span><span class="text-gray-600">/월</span></div>
-      <ul class="space-y-3 mb-8">
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>현장 5개</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>월 100건 조치</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>기본 리포트</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>이메일 지원</li>
-      </ul>
-      <button class="w-full py-3 rounded-lg font-semibold border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44] hover:text-white transition-colors">시작하기</button>
-    </div>
-    <div class="bg-white rounded-lg p-8 border border-slate-200 shadow-sm ring-2 ring-[#086CF0] relative">
-      <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#086CF0] text-white px-4 py-1 rounded-full text-sm font-semibold">인기</div>
-      <h3 class="text-2xl font-bold text-[#1A2E44] mb-4">Pro</h3>
-      <div class="mb-6"><span class="text-3xl font-bold text-[#1A2E44]">₩249,000</span><span class="text-gray-600">/월</span></div>
-      <ul class="space-y-3 mb-8">
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>현장 20개</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>월 500건 조치</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>고급 분석</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>AI 위험 분석</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>우선 지원</li>
-      </ul>
-      <button class="w-full py-3 rounded-lg font-semibold bg-[#1A2E44] text-white hover:bg-[#0F2233] transition-colors">시작하기</button>
-    </div>
-    <div class="bg-white rounded-lg p-8 border border-slate-200 shadow-sm">
-      <h3 class="text-2xl font-bold text-[#1A2E44] mb-4">Enterprise</h3>
-      <div class="mb-6"><span class="text-3xl font-bold text-[#1A2E44]">문의</span></div>
-      <ul class="space-y-3 mb-8">
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>무제한 현장</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>무제한 조치</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>맞춤형 리포트</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>API 연동</li>
-        <li class="flex items-center gap-2 text-gray-600"><div class="w-5 h-5 rounded-full bg-[#1A2E44]/10 flex items-center justify-center flex-shrink-0"><div class="w-2 h-2 rounded-full bg-[#1A2E44]"></div></div>전담 매니저</li>
-      </ul>
-      <button class="w-full py-3 rounded-lg font-semibold border-2 border-[#1A2E44] text-[#1A2E44] hover:bg-[#1A2E44] hover:text-white transition-colors">문의하기</button>
-    </div>
-  </div>
-</section>
-
 <!-- Final CTA -->
 <section class="bg-[#1A2E44] py-20" style="border-top:4px solid #FF7A00">
   <div class="container mx-auto px-6 text-center">
@@ -252,7 +208,6 @@
         <h4 class="font-semibold mb-4">제품</h4>
         <ul class="space-y-2 text-gray-300">
           <li><a href="#" class="hover:text-[#1A2E44] transition-colors">기능 소개</a></li>
-          <li><a href="#" class="hover:text-[#1A2E44] transition-colors">가격 안내</a></li>
           <li><a href="#" class="hover:text-[#1A2E44] transition-colors">고객 사례</a></li>
           <li><a href="#" class="hover:text-[#1A2E44] transition-colors">업데이트</a></li>
         </ul>
