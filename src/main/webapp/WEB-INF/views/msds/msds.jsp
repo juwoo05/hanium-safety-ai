@@ -186,20 +186,22 @@
   });
 
   function renderDetect(data) {
-    var kws = (data && data.detectedKeywords) || [];
+    // 서버 DTO가 ai-pipeline(FastAPI) 응답과 1:1 대응하도록 @JsonProperty로 snake_case를
+    // 강제하고 있어(chemical_candidates, cas_no 등), 여기서도 snake_case로 읽어야 한다.
+    var kws = (data && data.detected_keywords) || [];
     var kwWrap = qs('#msdsDetectKeywords');
     if (kws.length) {
       kwWrap.innerHTML = kws.map(function (k) { return '<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">' + esc(k) + '</span>'; }).join('');
       kwWrap.classList.remove('hidden'); kwWrap.classList.add('flex');
     } else { kwWrap.classList.add('hidden'); }
 
-    var cands = (data && data.chemicalCandidates) || [];
+    var cands = (data && data.chemical_candidates) || [];
     var cWrap = qs('#msdsCandidates');
     if (cands.length) {
       cWrap.innerHTML = cands.map(function (c) {
-        return '<button type="button" class="cand-btn text-left px-3 py-2 rounded-lg border border-gray-200 hover:border-[#1A2E44] hover:bg-orange-50/40" data-q="' + esc(c.casNo || c.chemicalName) + '">' +
-          '<span class="block text-sm font-semibold text-gray-900">' + esc(c.chemicalName) + '</span>' +
-          '<span class="block text-xs text-gray-500">' + esc(c.casNo || 'CAS 미상') + (c.productName ? ' · ' + esc(c.productName) : '') + ' · 신뢰도 ' + (c.confidence || 0) + '%</span>' +
+        return '<button type="button" class="cand-btn text-left px-3 py-2 rounded-lg border border-gray-200 hover:border-[#1A2E44] hover:bg-orange-50/40" data-q="' + esc(c.cas_no || c.chemical_name) + '">' +
+          '<span class="block text-sm font-semibold text-gray-900">' + esc(c.chemical_name) + '</span>' +
+          '<span class="block text-xs text-gray-500">' + esc(c.cas_no || 'CAS 미상') + (c.product_name ? ' · ' + esc(c.product_name) : '') + ' · 신뢰도 ' + (c.confidence || 0) + '%</span>' +
           '</button>';
       }).join('');
       cWrap.classList.remove('hidden'); cWrap.classList.add('grid');
