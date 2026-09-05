@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,12 +75,19 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void resetPassword(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
-                .filter(u -> u.getDeletedAt() == null)
+        User user = resolveActiveUser(email)
                 .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 이메일입니다."));
 
         user.changePassword(passwordEncoder.encode(rawPassword));
         userRepository.save(user);
+    }
+
+    // 이메일 중복 로우가 있어도(findByEmail의 NonUniqueResultException을 피해) 활성 계정을
+    // 우선 반환한다. CustomUserDetailsService의 로그인 조회와 동일한 방어 로직.
+    private Optional<User> resolveActiveUser(String email) {
+        return userRepository.findAllByEmail(email).stream()
+                .filter(u -> u.getDeletedAt() == null)
+                .max(Comparator.comparing(User::getId));
     }
 
     @Override
@@ -167,14 +176,18 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void reactivate(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        List<User> users = userRepository.findAllByEmail(email);
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("등록되지 않은 이메일입니다.");
         }
-        if (user.getDeletedAt() == null) {
-            throw new IllegalArgumentException("탈퇴하지 않은 계정입니다.");
-        }
+        User user = users.stream()
+                .filter(u -> u.getDeletedAt() != null && passwordEncoder.matches(password, u.getPassword()))
+                .max(Comparator.comparing(User::getId))
+                .orElseThrow(() -> {
+                    boolean anyPasswordMatches = users.stream().anyMatch(u -> passwordEncoder.matches(password, u.getPassword()));
+                    return new IllegalArgumentException(
+                            anyPasswordMatches ? "탈퇴하지 않은 계정입니다." : "비밀번호가 올바르지 않습니다.");
+                });
         user.reactivate();
         userRepository.save(user);
     }
