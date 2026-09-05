@@ -109,6 +109,12 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
+    // 탈퇴 취소(계정 복구). 비밀번호 확인 후에만 호출되어야 한다.
+    public void reactivate() {
+        this.deletedAt = null;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void markNotificationsSeen() {
         this.notificationsSeenAt = LocalDateTime.now();
     }

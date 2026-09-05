@@ -37,6 +37,9 @@ public interface IUserService {
     // 마이페이지: 현재 비밀번호 확인 후 계정 탈퇴(소프트 삭제)
     void withdraw(Long userId, String currentPassword);
 
+    // 탈퇴 취소(계정 복구). 로그인이 막힌 상태라 세션 없이 이메일+비밀번호로 본인 확인한다.
+    void reactivate(String email, String password);
+
     // 마이페이지: 원청 건설사 정보(사업자번호/대표자/주소) 수정
     User updateCompanyProfile(Long userId, CompanyProfileUpdateRequestDTO request);
 }

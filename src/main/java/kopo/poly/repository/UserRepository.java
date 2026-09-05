@@ -16,5 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
+    // 탈퇴(소프트 삭제)한 계정의 이메일은 중복 체크에서 제외해 재가입을 허용한다.
+    boolean existsByEmailAndDeletedAtIsNull(String email);
+
     List<User> findByUsernameAndCompanyName(String username, String companyName);
 }

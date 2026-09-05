@@ -70,6 +70,19 @@ public class UserController {
         return "auth/login";
     }
 
+    // 탈퇴 계정 복구. 로그인이 막혀 세션이 없으므로 이메일+비밀번호로 본인 확인한다.
+    // (UI 연결 없이 API만 존재 — 탈퇴 취소 화면은 아직 없음)
+    @PostMapping("/api/auth/reactivate")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> reactivate(@RequestParam String email, @RequestParam String password) {
+        try {
+            userService.reactivate(email, password);
+            return ResponseEntity.ok(Map.of("ok", true, "message", "계정이 복구되었습니다."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.ok(Map.of("ok", false, "message", e.getMessage()));
+        }
+    }
+
     // === 로그인 2단계 인증 ===
     // 아이디/비밀번호는 맞았지만 아직 세션 인증이 완료되지 않은 상태에서만 진입 가능
     // (LoginSuccessHandler가 2단계 인증 대상 계정에 한해 PENDING_2FA_USER_ID를 세션에 심어둔다).

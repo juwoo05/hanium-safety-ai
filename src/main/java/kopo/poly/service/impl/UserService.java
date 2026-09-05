@@ -58,7 +58,7 @@ public class UserService implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public boolean isEmailTaken(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.existsByEmailAndDeletedAtIsNull(email);
     }
 
     @Override
@@ -161,6 +161,21 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
         user.withdraw();
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void reactivate(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+        if (user.getDeletedAt() == null) {
+            throw new IllegalArgumentException("탈퇴하지 않은 계정입니다.");
+        }
+        user.reactivate();
         userRepository.save(user);
     }
 
